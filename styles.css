@@ -3,10 +3,7 @@
     justify-content: center;
 }
 
-header {
-    background-color: #A65F40;
-    align-items: center;
-}
+header, section { background-color: #A65F40; }
 
 #wrapper, footer {
     padding: 35px 16%;
@@ -24,8 +21,34 @@ header {
   border-radius: 50%;
 }
 
-h1 { color: white; }
+section, h1 { align-self: center; }
 
-footer {
-    color: darkred;
+#main-container {
+    background-color: white;
+    margin: 5%;
+    height: 100%;
+}
+
+#main-container div {
+    margin: 5%;
+    padding: 5%;
+}
+
+#main-container div h2,
+#main-container div p {
+    display: flex;
+    justify-content: center;
+}
+
+#main-container div h2 {
+    text-decoration: underline;
+    color: #A65F40;
+}
+
+#main-container div p, footer { color: darkred; }
+
+h1 {
+    color: white;
+    padding-left: 5%;
+    padding-right: 5%;
 }
