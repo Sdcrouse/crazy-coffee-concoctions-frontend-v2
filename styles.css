@@ -1,0 +1,15 @@
+header {
+    display: flex;
+    justify-content: center;
+    background-color: #A65F40;
+    align-items: center;
+}
+
+#wrapper {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 35px;
+    padding: 35px 16%;
+}
+
+h1 { color: white; }
