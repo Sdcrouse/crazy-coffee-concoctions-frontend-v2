@@ -3,7 +3,7 @@
     justify-content: center;
 }
 
-header, section { background-color: #A65F40; }
+header, section, nav button { background-color: #A65F40; }
 
 #wrapper {
     display: grid;
@@ -42,15 +42,53 @@ section, h1 { align-self: center; }
     color: #A65F40;
 }
 
-#main-container div p, footer { color: darkred; }
+footer { color: darkred; }
 
 h1 {
-    color: white;
     padding-left: 5%;
     padding-right: 5%;
 }
 
+h1, nav button { color: white; }
+
 footer {
     padding-left: 16%;
     padding-right: 16%;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+}
+
+nav button {
+    margin-bottom: 35px;
+    font-size: 1.3em;
+    width: 100%;
+}
+
+#im-a-teapot + h2,
+#im-a-teapot ~ p {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+#im-a-teapot + h2 {
+    margin-top: 0;
+    color: #A65F40;
+}
+
+#im-a-teapot ~ hr + p {
+    padding-bottom: 5%;
+}
+
+#im-a-teapot {
+    max-width: 100%;
+    height: auto;
+}
+
+hr {
+  height: 5px;
+  width: 90%;
+  background-color: #63A7E4;
 }
