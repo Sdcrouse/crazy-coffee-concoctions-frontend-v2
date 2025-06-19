@@ -2,17 +2,20 @@ import generateHomePage from './components/home.js';
 import { generateSignupPage } from './components/authentication.js';
 
 const titleElement = document.querySelector('title');
-
-generateHomePage();
-
 const homeBtn = document.getElementById('home-btn');
-homeBtn.addEventListener('click', generateHomePage);
-
 const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
-coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
-
 const signupButton = document.getElementById('signup');
-signupButton.addEventListener('click', () => generateSignupPage());
+
+initialPageSetup();
+
+function initialPageSetup() {
+    generateHomePage();
+    
+    homeBtn.addEventListener('click', generateHomePage);
+    coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
+    signupButton.addEventListener('click', () => generateSignupPage());
+}
+
 
 function displayErrorImage(httpStatus) {
     const mainContainer = document.getElementById('main-container');
