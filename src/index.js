@@ -1,5 +1,7 @@
 import generateHomePage from './components/home.js';
 
+const titleElement = document.querySelector('title');
+
 document.addEventListener("DOMContentLoaded", () => {
     generateHomePage();
 
@@ -29,4 +31,6 @@ function displayErrorImage(httpStatus) {
             </small>
         </p>
     `;
+
+    titleElement.innerText = `${httpStatus} - I'm a Teapot!`;
 }

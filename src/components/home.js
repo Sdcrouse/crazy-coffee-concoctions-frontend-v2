@@ -1,5 +1,6 @@
 const generateHomePage = () => {
     const mainContainer = document.getElementById('main-container');
+    const titleElement = document.querySelector('title');
     
     mainContainer.innerHTML = `
         <div>
@@ -11,6 +12,10 @@ const generateHomePage = () => {
             </p>
         </div>
     `;
+
+    if (!titleElement.innerText.startsWith('Crazy')) {
+        titleElement.innerText = 'Crazy Coffee Concoctions';
+    }
 }
 
 export default generateHomePage;
