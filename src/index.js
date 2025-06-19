@@ -3,18 +3,16 @@ import { generateSignupPage } from './components/authentication.js';
 
 const titleElement = document.querySelector('title');
 
-document.addEventListener("DOMContentLoaded", () => {
-    generateHomePage();
+generateHomePage();
 
-    const homeBtn = document.getElementById('home-btn');
-    homeBtn.addEventListener('click', generateHomePage);
-    
-    const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
-    coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
+const homeBtn = document.getElementById('home-btn');
+homeBtn.addEventListener('click', generateHomePage);
 
-    const signupButton = document.getElementById('signup');
-    signupButton.addEventListener('click', () => generateSignupPage());
-});
+const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
+coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
+
+const signupButton = document.getElementById('signup');
+signupButton.addEventListener('click', () => generateSignupPage());
 
 function displayErrorImage(httpStatus) {
     const mainContainer = document.getElementById('main-container');
