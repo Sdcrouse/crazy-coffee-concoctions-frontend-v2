@@ -1,7 +1,11 @@
-import generateHomePage from './components/home.js';
 import { generateSignupPage } from './components/authentication.js';
 
 const titleElement = document.querySelector('title');
+const homePageTitle = titleElement.textContent;
+
+const mainContainer = document.getElementById('main-container');
+const homePageContent = mainContainer.innerHTML;
+
 const homeBtn = document.getElementById('home-btn');
 const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
 const signupButton = document.getElementById('signup');
@@ -12,10 +16,14 @@ function initialPageSetup() {
     generateHomePage();
     
     homeBtn.addEventListener('click', generateHomePage);
-    coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
     signupButton.addEventListener('click', () => generateSignupPage());
+    coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
 }
 
+function generateHomePage() {
+    titleElement.textContent = homePageTitle;
+    mainContainer.innerHTML = homePageContent;
+}
 
 function displayErrorImage(httpStatus) {
     const mainContainer = document.getElementById('main-container');
