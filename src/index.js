@@ -1,4 +1,5 @@
 import generateHomePage from './components/home.js';
+import { generateSignupPage } from './components/authentication.js';
 
 const titleElement = document.querySelector('title');
 
@@ -10,6 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
     coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
+
+    const signupButton = document.getElementById('signup');
+    signupButton.addEventListener('click', () => generateSignupPage());
 });
 
 function displayErrorImage(httpStatus) {
