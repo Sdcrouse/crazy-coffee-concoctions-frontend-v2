@@ -1,6 +1,10 @@
 const mainContainer = document.getElementById('main-container');
+const titleElement = document.querySelector('title');
+const baseTitle = 'Crazy Coffee Concoctions';
 
 export function generateSignupPage() {
+    titleElement.textContent = `${baseTitle} - Sign Up`;
+
     const signupHeading = document.createElement('h2');
     signupHeading.textContent = 'Sign up here!';
     signupHeading.classList.add('center-content', 'coffee-text');
