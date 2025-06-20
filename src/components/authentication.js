@@ -1,9 +1,7 @@
-export function generateSignupPage() {
-    const mainContainer = document.getElementById('main-container');
-
+export function generateSignupPage(mainContainer) {
     mainContainer.innerHTML = `
         <div>
-            <h2>Sign up here!</h2>
+            <h2 class="center-content coffee-text">Sign up here!</h2>
             <form>
                 <p>
                     <label for="username">Username: </label>

@@ -16,7 +16,7 @@ function initialPageSetup() {
     generateHomePage();
     
     homeBtn.addEventListener('click', generateHomePage);
-    signupButton.addEventListener('click', () => generateSignupPage());
+    signupButton.addEventListener('click', () => generateSignupPage(mainContainer));
     coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
 }
 
