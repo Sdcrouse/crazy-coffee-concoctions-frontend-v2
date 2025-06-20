@@ -4,7 +4,7 @@ const titleElement = document.querySelector('title');
 const homePageTitle = titleElement.textContent;
 
 const mainContainer = document.getElementById('main-container');
-const homePageContent = mainContainer.innerHTML;
+const homePageContent = mainContainer.querySelector('div');
 
 const homeBtn = document.getElementById('home-btn');
 const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
@@ -20,7 +20,7 @@ function initialPageSetup() {
 
 function generateHomePage() {
     titleElement.textContent = homePageTitle;
-    mainContainer.innerHTML = homePageContent; // I want to replace this if possible
+    mainContainer.replaceChildren(homePageContent);
 }
 
 function displayErrorImage(httpStatus) {
