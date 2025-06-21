@@ -2,7 +2,7 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
-export function generateSignupPage() {
+export function generateSignupPage(errors = {}) {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupHeading = document.createElement('h2');
@@ -21,8 +21,10 @@ export function generateSignupPage() {
     usernameInput.setAttribute('autocomplete', 'new-username');
     usernameInput.required = true;
 
+    const usernameErrorList = generateErrorList(errors.username);
+
     const usernamePar = document.createElement('p');
-    usernamePar.append(usernameLabel, usernameInput);
+    usernamePar.append(usernameLabel, usernameInput, usernameErrorList);
 
     const passwordLabel = document.createElement('label');
     passwordLabel.setAttribute('for', 'password');
@@ -36,8 +38,10 @@ export function generateSignupPage() {
     passwordInput.setAttribute('autocomplete', 'new-password');
     passwordInput.required = true;
 
+    const passwordErrorList = generateErrorList(errors.password);
+
     const passwordPar = document.createElement('p');
-    passwordPar.append(passwordLabel, passwordInput);
+    passwordPar.append(passwordLabel, passwordInput, passwordErrorList);
 
     const signupButton = document.createElement('button');
     signupButton.setAttribute('type', 'submit');
@@ -48,9 +52,46 @@ export function generateSignupPage() {
 
     const signupForm = document.createElement('form');
     signupForm.append(usernamePar, passwordPar, signupBtnPar);
+    signupForm.addEventListener('submit', e => signup(e, signupForm));
 
     const signupDiv = document.createElement('div');
     signupDiv.append(signupHeading, signupForm);
 
     mainContainer.replaceChildren(signupDiv);
 };
+
+function generateErrorList(errors) {
+    const errorList = document.createElement('ul');
+
+    if (Array.isArray(errors) && errors.length > 0) {
+        errors.forEach(error => {
+            const errorItem = document.createElement('li');
+            errorItem.textContent = error;
+            errorList.append(errorItem);
+        });
+    } else {
+        errorList.style.display = 'none';
+    }
+
+    return errorList;
+}
+
+function signup(event, signupForm) {
+    event.preventDefault();
+
+    const signupFormInputs = new FormData(signupForm);
+    const userData = Object.fromEntries(signupFormInputs);
+    let signupErrors = {
+        username: [],
+        password: []
+    };
+
+    if (!userData.username) { signupErrors.username.push('Username is required'); }
+    if (!userData.password) { signupErrors.password.push('Password is required'); }
+
+    if (signupErrors.username.length === 0 && signupErrors.password.length === 0) {
+        console.log('Signup successful!');
+    } else {
+        generateSignupPage(signupErrors);
+    }
+}
