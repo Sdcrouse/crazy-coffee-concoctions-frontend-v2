@@ -2,7 +2,7 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
-export function generateSignupPage(errors = {}) {
+export function generateSignupPage(errors = {}, username = '', password = '') {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupHeading = document.createElement('h2');
@@ -19,6 +19,7 @@ export function generateSignupPage(errors = {}) {
     usernameInput.setAttribute('name', 'username');
     usernameInput.setAttribute('placeholder', 'Enter username');
     usernameInput.setAttribute('autocomplete', 'new-username');
+    usernameInput.setAttribute('value', username);
     usernameInput.required = true;
 
     const usernameErrorList = generateErrorList(errors.username);
@@ -36,6 +37,7 @@ export function generateSignupPage(errors = {}) {
     passwordInput.setAttribute('name', 'password');
     passwordInput.setAttribute('placeholder', 'Enter password');
     passwordInput.setAttribute('autocomplete', 'new-password');
+    passwordInput.setAttribute('value', password);
     passwordInput.required = true;
 
     const passwordErrorList = generateErrorList(errors.password);
@@ -80,18 +82,27 @@ function signup(event, signupForm) {
     event.preventDefault();
 
     const signupFormInputs = new FormData(signupForm);
-    const userData = Object.fromEntries(signupFormInputs);
+    const { username, password } = Object.fromEntries(signupFormInputs);
     let signupErrors = {
         username: [],
         password: []
     };
 
-    if (!userData.username) { signupErrors.username.push('Username is required'); }
-    if (!userData.password) { signupErrors.password.push('Password is required'); }
+    if (username) {
+        if (username.length < 8) { signupErrors.username.push('Username must be at least eight characters long'); }
+    } else {
+        signupErrors.username.push('Username is required');
+    }
+
+    if (password) {
+        if (password.length < 8) { signupErrors.password.push('Password must be at least eight characters long'); }
+    } else {
+        signupErrors.password.push('Password is required');
+    }
 
     if (signupErrors.username.length === 0 && signupErrors.password.length === 0) {
         console.log('Signup successful!');
     } else {
-        generateSignupPage(signupErrors);
+        generateSignupPage(signupErrors, username, password);
     }
 }
