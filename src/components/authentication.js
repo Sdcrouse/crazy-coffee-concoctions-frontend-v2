@@ -1,3 +1,5 @@
+import createCustomElement from '../utils/createCustomElement.js';
+
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
@@ -5,60 +7,69 @@ const baseTitle = 'Crazy Coffee Concoctions';
 export function generateSignupPage(errors = {}, username = '', password = '') {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
-    const signupHeading = document.createElement('h2');
-    signupHeading.textContent = 'Sign up here!';
-    signupHeading.classList.add('center-content', 'coffee-text');
+    const signupHeading = createCustomElement('h2', {
+        text: 'Sign up here!',
+        classes: 'center-content coffee-text'
+    });
 
-    const usernameLabel = document.createElement('label');
-    usernameLabel.setAttribute('for', 'username');
-    usernameLabel.textContent = 'Username: ';
+    const usernameLabel = createCustomElement('label', {
+        attributes: { for: 'username' },
+        text: 'Username: '
+    });
 
-    const usernameInput = document.createElement('input');
-    usernameInput.setAttribute('type', 'text');
-    usernameInput.setAttribute('id', 'username');
-    usernameInput.setAttribute('name', 'username');
-    usernameInput.setAttribute('placeholder', 'Enter username');
-    usernameInput.setAttribute('autocomplete', 'new-username');
-    usernameInput.setAttribute('value', username);
+    const usernameInput = createCustomElement('input', { attributes: {
+        type: 'text',
+        id: 'username',
+        name: 'username',
+        placeholder: 'Enter username',
+        autocomplete: 'new-username',
+        minLength: 8
+    }});
+    
+    if (username) { usernameInput.setAttribute('value', username); }
     usernameInput.required = true;
 
     const usernameErrorList = generateErrorList(errors.usernameErrors);
+    const usernamePar = createCustomElement('p', {
+        itemsToAppend: [usernameLabel, usernameInput, usernameErrorList]
+    });
 
-    const usernamePar = document.createElement('p');
-    usernamePar.append(usernameLabel, usernameInput, usernameErrorList);
+    const passwordLabel = createCustomElement('label', {
+        attributes: { for: 'password' },
+        text: 'Password: '
+    });
 
-    const passwordLabel = document.createElement('label');
-    passwordLabel.setAttribute('for', 'password');
-    passwordLabel.textContent = 'Password: ';
-
-    const passwordInput = document.createElement('input');
-    passwordInput.setAttribute('type', 'password');
-    passwordInput.setAttribute('id', 'password');
-    passwordInput.setAttribute('name', 'password');
-    passwordInput.setAttribute('placeholder', 'Enter password');
-    passwordInput.setAttribute('autocomplete', 'new-password');
-    passwordInput.setAttribute('value', password);
+    const passwordInput = createCustomElement('input', { attributes: {
+        type: 'password',
+        id: 'password',
+        name: 'password',
+        placeholder: 'Enter password',
+        autocomplete: 'new-password',
+        minLength: 8
+    }});
+    
+    if (password) { passwordInput.setAttribute('value', password); }
     passwordInput.required = true;
 
     const passwordErrorList = generateErrorList(errors.passwordErrors);
 
-    const passwordPar = document.createElement('p');
-    passwordPar.append(passwordLabel, passwordInput, passwordErrorList);
+    const passwordPar = createCustomElement('p', {
+        itemsToAppend: [passwordLabel, passwordInput, passwordErrorList]
+    });
 
-    const signupButton = document.createElement('button');
-    signupButton.setAttribute('type', 'submit');
-    signupButton.textContent = 'Sign Up';
+    const signupButton = createCustomElement('button', {
+        attributes: { type: 'submit' },
+        text: 'Sign Up'
+    });
 
-    const signupBtnPar = document.createElement('p');
-    signupBtnPar.appendChild(signupButton);
+    const signupBtnPar = createCustomElement('p', { itemsToAppend: [signupButton] });
 
-    const signupForm = document.createElement('form');
-    signupForm.append(usernamePar, passwordPar, signupBtnPar);
+    const signupForm = createCustomElement('form', {
+        itemsToAppend: [usernamePar, passwordPar, signupBtnPar]
+    });
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
-    const signupDiv = document.createElement('div');
-    signupDiv.append(signupHeading, signupForm);
-
+    const signupDiv = createCustomElement('div', { itemsToAppend: [signupHeading, signupForm] });
     mainContainer.replaceChildren(signupDiv);
 };
 
@@ -67,8 +78,7 @@ function generateErrorList(errors) {
 
     if (Array.isArray(errors) && errors.length > 0) {
         errors.forEach(error => {
-            const errorItem = document.createElement('li');
-            errorItem.textContent = error;
+            const errorItem = createCustomElement('li', { text: error });
             errorList.append(errorItem);
         });
     } else {
