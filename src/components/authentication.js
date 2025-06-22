@@ -22,7 +22,7 @@ export function generateSignupPage(errors = {}, username = '', password = '') {
     usernameInput.setAttribute('value', username);
     usernameInput.required = true;
 
-    const usernameErrorList = generateErrorList(errors.username);
+    const usernameErrorList = generateErrorList(errors.usernameErrors);
 
     const usernamePar = document.createElement('p');
     usernamePar.append(usernameLabel, usernameInput, usernameErrorList);
@@ -40,7 +40,7 @@ export function generateSignupPage(errors = {}, username = '', password = '') {
     passwordInput.setAttribute('value', password);
     passwordInput.required = true;
 
-    const passwordErrorList = generateErrorList(errors.password);
+    const passwordErrorList = generateErrorList(errors.passwordErrors);
 
     const passwordPar = document.createElement('p');
     passwordPar.append(passwordLabel, passwordInput, passwordErrorList);
@@ -83,26 +83,23 @@ function signup(event, signupForm) {
 
     const signupFormInputs = new FormData(signupForm);
     const { username, password } = Object.fromEntries(signupFormInputs);
-    let signupErrors = {
-        username: [],
-        password: []
-    };
+    let usernameErrors = [], passwordErrors = [];
 
     if (username) {
-        if (username.length < 8) { signupErrors.username.push('Username must be at least eight characters long'); }
+        if (username.length < 8) { usernameErrors.push('Username must be at least eight characters long'); }
     } else {
-        signupErrors.username.push('Username is required');
+        usernameErrors.push('Username is required');
     }
 
     if (password) {
-        if (password.length < 8) { signupErrors.password.push('Password must be at least eight characters long'); }
+        if (password.length < 8) { passwordErrors.push('Password must be at least eight characters long'); }
     } else {
-        signupErrors.password.push('Password is required');
+        passwordErrors.push('Password is required');
     }
 
-    if (signupErrors.username.length === 0 && signupErrors.password.length === 0) {
+    if (usernameErrors.length === 0 && passwordErrors.length === 0) {
         console.log('Signup successful!');
     } else {
-        generateSignupPage(signupErrors, username, password);
+        generateSignupPage({ usernameErrors, passwordErrors }, username, password);
     }
 }
