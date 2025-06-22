@@ -1,4 +1,5 @@
 import { generateSignupPage } from './components/authentication.js';
+import createCustomElement from './utils/createCustomElement.js';
 
 const titleElement = document.querySelector('title');
 const homePageTitle = titleElement.textContent;
@@ -26,52 +27,60 @@ function generateHomePage() {
 function displayErrorImage(httpStatus) {
     titleElement.textContent = `${httpStatus} - I'm a Teapot!`;
 
-    const teapotImage = document.createElement('img');
-    teapotImage.setAttribute('id', 'im-a-teapot');
-    teapotImage.setAttribute('src', `img/${httpStatus}-im-a-teapot.png`);
-    teapotImage.setAttribute('alt', `${httpStatus} I'm a teapot`);
+    const teapotImage = createCustomElement('img', {
+        attributes: {
+            id: 'im-a-teapot',
+            src: `img/${httpStatus}-im-a-teapot.png`,
+            alt: `${httpStatus} I'm a teapot`
+        }
+    });
 
-    const teapotHeading = document.createElement('h2');
-    teapotHeading.setAttribute('id', 'teapot-image-heading');
-    teapotHeading.className = 'extra-padding coffee-text';
-    teapotHeading.textContent = `
-        Sorry! The server is currently unable to brew coffee at the moment because it is now a teapot. 
-        You can't brew coffee with a teapot!
-    `;
+    const teapotHeading = createCustomElement('h2', {
+        attributes: { id: 'teapot-image-heading' },
+        classes: 'extra-padding coffee-text',
+        text: `
+            Sorry! The server is currently unable to brew coffee at the moment because it is now a teapot. 
+            You can't brew coffee with a teapot!
+        `
+    });
 
-    const mdnArticleLink = document.createElement('a');
-    mdnArticleLink.setAttribute('href', 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/418');
-    mdnArticleLink.textContent = 'this handy MDN article';
+    const mdnArticleLink = createCustomElement('a', {
+        attributes: { 'href': 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/418' },
+        text: 'this handy MDN article'
+    });
 
-    let instructions = document.createElement('p');
-    instructions.className = 'extra-padding';
-    instructions.append(
-        'To change the teapot back into a server, please click the "Home" button on the left or refresh the page. Or you can visit ',
-        mdnArticleLink,
-        ' to learn more about this fun little HTTP status code.'
-    );
+    const instructions = createCustomElement('p', {
+        classes: 'extra-padding',
+        itemsToAppend: [
+            'To change the teapot back into a server, please click the "Home" button on the left or refresh the page. Or you can visit ',
+            mdnArticleLink,
+            ' to learn more about this fun little HTTP status code.'
+        ]
+    });
 
-    const errorImageSource = document.createElement('a');
-    errorImageSource.setAttribute('href', 'https://www.drlinkcheck.com/blog/free-http-error-images');
-    errorImageSource.textContent = 'Dr. Link Check';
+    const errorImageSource = createCustomElement('a', {
+        attributes: { href: 'https://www.drlinkcheck.com/blog/free-http-error-images' },
+        text: 'Dr. Link Check'
+    });
 
-    const errorImageLicense = document.createElement('a');
-    errorImageLicense.setAttribute('href', 'https://creativecommons.org/licenses/by/4.0/legalcode');
-    errorImageLicense.textContent = 'Creative Commons CC BY 4.0 license';
+    const errorImageLicense = createCustomElement('a', {
+        attributes: { href: 'https://creativecommons.org/licenses/by/4.0/legalcode' },
+        text: 'Creative Commons CC BY 4.0 license'
+    });
 
-    const errorImageSmallText = document.createElement('small');
-    errorImageSmallText.append(
+    const errorImageSmallText = createCustomElement('small', { itemsToAppend: [
         `\u00A9 2025 "${httpStatus}" image courtesy of `,
         errorImageSource,
         document.createElement('br'),
         'It is available for download free of charge under the ',
         errorImageLicense
-    );
+    ]});
 
-    const errorImageInfo = document.createElement('p');
-    errorImageInfo.setAttribute('id', 'teapot-image-info');
-    errorImageInfo.className = 'extra-padding';
-    errorImageInfo.appendChild(errorImageSmallText);
+    const errorImageInfo = createCustomElement('p', {
+        attributes: { id: 'teapot-image-info' },
+        classes: 'extra-padding',
+        itemsToAppend: [errorImageSmallText]
+    });
 
     let errorFragment = new DocumentFragment();
     errorFragment.append(teapotImage, teapotHeading, instructions, document.createElement('hr'), errorImageInfo);
