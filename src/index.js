@@ -16,7 +16,7 @@ initialPageSetup();
 function initialPageSetup() {    
     homeBtn.addEventListener('click', generateHomePage);
     signupButton.addEventListener('click', generateSignupPage);
-    coffeeTeapotBtn.addEventListener('click', () => displayErrorImage(418));
+    coffeeTeapotBtn.addEventListener('click', generateTeapotPage);
 }
 
 function generateHomePage() {
@@ -24,7 +24,8 @@ function generateHomePage() {
     mainContainer.replaceChildren(homePageContent);
 }
 
-function displayErrorImage(httpStatus) {
+function generateTeapotPage() {
+    const httpStatus = 418;
     titleElement.textContent = `${httpStatus} - I'm a Teapot!`;
 
     const teapotImage = createCustomElement('img', {
@@ -46,13 +47,13 @@ function displayErrorImage(httpStatus) {
 
     const mdnArticleLink = createCustomElement('a', {
         attributes: { 'href': 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/418' },
-        text: 'this handy MDN article'
+        text: 'the official MDN web documentation'
     });
 
     const instructions = createCustomElement('p', {
         classes: 'extra-padding',
         itemsToAppend: [
-            'To change the teapot back into a server, please click the "Home" button on the left or refresh the page. Or you can visit ',
+            'To change the teapot back into a server, please click one of the other buttons on the left or refresh the page. You can also visit ',
             mdnArticleLink,
             ' to learn more about this fun little HTTP status code.'
         ]
