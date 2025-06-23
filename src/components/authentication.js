@@ -12,50 +12,8 @@ export function generateSignupPage(errors = {}, username = '', password = '') {
         classes: 'center-content coffee-text'
     });
 
-    const usernameLabel = createCustomElement('label', {
-        attributes: { for: 'username' },
-        text: 'Username: '
-    });
-
-    const usernameInput = createCustomElement('input', { attributes: {
-        type: 'text',
-        id: 'username',
-        name: 'username',
-        placeholder: 'Enter username',
-        autocomplete: 'new-username',
-        minLength: 8
-    }});
-    
-    if (username) { usernameInput.setAttribute('value', username); }
-    usernameInput.required = true;
-
-    const usernameErrorList = generateErrorList(errors.usernameErrors);
-    const usernamePar = createCustomElement('p', {
-        itemsToAppend: [usernameLabel, usernameInput, usernameErrorList]
-    });
-
-    const passwordLabel = createCustomElement('label', {
-        attributes: { for: 'password' },
-        text: 'Password: '
-    });
-
-    const passwordInput = createCustomElement('input', { attributes: {
-        type: 'password',
-        id: 'password',
-        name: 'password',
-        placeholder: 'Enter password',
-        autocomplete: 'new-password',
-        minLength: 8
-    }});
-    
-    if (password) { passwordInput.setAttribute('value', password); }
-    passwordInput.required = true;
-
-    const passwordErrorList = generateErrorList(errors.passwordErrors);
-
-    const passwordPar = createCustomElement('p', {
-        itemsToAppend: [passwordLabel, passwordInput, passwordErrorList]
-    });
+    const usernameFields = createInputGroup('username', username, errors.usernameErrors);
+    const passwordFields = createInputGroup('password', password, errors.passwordErrors);
 
     const signupButton = createCustomElement('button', {
         attributes: { type: 'submit' },
@@ -65,13 +23,42 @@ export function generateSignupPage(errors = {}, username = '', password = '') {
     const signupBtnPar = createCustomElement('p', { itemsToAppend: [signupButton] });
 
     const signupForm = createCustomElement('form', {
-        itemsToAppend: [usernamePar, passwordPar, signupBtnPar]
+        itemsToAppend: [usernameFields, passwordFields, signupBtnPar]
     });
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
     const signupDiv = createCustomElement('div', { itemsToAppend: [signupHeading, signupForm] });
     mainContainer.replaceChildren(signupDiv);
 };
+
+function createInputGroup(inputName, inputValue, errors, isRequired = true, minLength = 8) {
+    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    
+    const label = createCustomElement('label', {
+        attributes: { for: inputName },
+        text: `${capitalizedInputName}: `
+    });
+
+    const input = createCustomElement('input', { attributes: {
+        type: inputName === 'username' ? 'text' : 'password',
+        id: inputName,
+        name: inputName,
+        placeholder: `Enter ${inputName}`,
+        autocomplete: `new-${inputName}`,
+        minLength
+    }});
+
+    if (inputValue) { input.setAttribute('value', inputValue); }
+    input.required = isRequired;
+
+    const errorList = generateErrorList(errors);
+    
+    const inputGroup = createCustomElement('p', {
+        itemsToAppend: [label, input, errorList]
+    });
+
+    return inputGroup;
+}
 
 function generateErrorList(errors) {
     const errorList = document.createElement('ul');
