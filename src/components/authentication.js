@@ -4,7 +4,7 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
-export function generateSignupPage(errors = {}, username = '', password = '') {
+export function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupHeading = createCustomElement('h2', {
@@ -125,6 +125,6 @@ function signup(event, signupForm) {
     if (usernameErrors.length === 0 && passwordErrors.length === 0) {
         console.log('Signup successful!');
     } else {
-        generateSignupPage({ usernameErrors, passwordErrors }, username, password);
+        generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
     }
 }
