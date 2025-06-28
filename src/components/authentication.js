@@ -80,6 +80,8 @@ function generateErrorList(errors) {
 }
 
 async function signup(event, signupForm) {
+    // TODO: Display an error image for the HTTP 500 status (will need to put a new function in the util folder)
+    // TODO: See other TODOs in case statements below
     // TODO: Save the user to the backend database
     // TODO: Render the login page with a success message when the user signs up
 
@@ -131,6 +133,7 @@ async function signup(event, signupForm) {
     }
 
     const usersURL = 'http://localhost:5000/users';
+    let errorMessage;
 
     try {
         const response = await fetch(usersURL, {
@@ -143,23 +146,36 @@ async function signup(event, signupForm) {
         
         switch (data.status) {
             case 201:
+                // TODO: Display this message on the login page after redirecting to it
                 console.log(data.successMessage);
                 break;
             case 400:
+                // TODO: Display these error messages as a list
+                // Add these errors to their corresponding lists and call generateSignupPage
                 console.error(data.errors);
                 break;
             case 409:
-            case 500:
-                console.error(data.errorMessage)
+                // TODO: Call generateSignupPage with this error
+                // Add it to the corresponding error list (typically 'username' - this status is for users that exist)
+                // errorMessage = data.errorMessage;
+                console.error(data);
+                break;
+            case 500: // TODO: Display a custom error page instead
+                console.error(data);
                 break;
             default:
-                console.error('An unknown error has occurred.');
+                errorMessage = 'An unknown error has occurred. Please try again later.';
+                console.error(data);
+                appendErrorHeading(errorMessage);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-
-        const errorHeading = createCustomElement('h4', { text: `Unexpected error while submitting the signup form: ${error.message}` });
-        document.getElementById('div').appendChild(errorHeading);
+        appendErrorHeading('There was an error while submitting the signup form. Please try again.');
     }
+}
+
+function appendErrorHeading(errorMessage) {
+    const errorHeading = createCustomElement('h4', { text: errorMessage });
+    document.getElementById('signupDiv').appendChild(errorHeading);
 }
