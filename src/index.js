@@ -29,15 +29,15 @@ function generateTeapotPage() {
     titleElement.textContent = `${httpStatus} - I'm a Teapot!`;
 
     const teapotImage = createCustomElement('img', {
+        id: 'im-a-teapot',
         attributes: {
-            id: 'im-a-teapot',
             src: `img/${httpStatus}-im-a-teapot.png`,
             alt: `${httpStatus} I'm a teapot`
         }
     });
 
     const teapotHeading = createCustomElement('h2', {
-        attributes: { id: 'teapot-image-heading' },
+        id: 'teapot-image-heading',
         classes: 'extra-padding coffee-text',
         text: `
             Sorry! The server is currently unable to brew coffee at the moment because it is now a teapot. 
@@ -78,7 +78,7 @@ function generateTeapotPage() {
     ]});
 
     const errorImageInfo = createCustomElement('p', {
-        attributes: { id: 'teapot-image-info' },
+        id: 'teapot-image-info',
         classes: 'extra-padding',
         itemsToAppend: [errorImageSmallText]
     });

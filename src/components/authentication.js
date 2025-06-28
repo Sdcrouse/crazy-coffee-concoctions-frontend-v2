@@ -28,7 +28,7 @@ export function generateSignupPage({ username = '', password = '', errors = {} }
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
     const signupDiv = createCustomElement('div', {
-        attributes: { id: 'signupDiv' },
+        id: 'signupDiv',
         itemsToAppend: [signupHeading, signupForm]
     });
 
@@ -43,14 +43,16 @@ function createInputGroup(inputName, inputValue, errors, isRequired = true, minL
         text: `${capitalizedInputName}: `
     });
 
-    const input = createCustomElement('input', { attributes: {
-        type: inputName === 'username' ? 'text' : 'password',
+    const input = createCustomElement('input', { 
         id: inputName,
-        name: inputName,
-        placeholder: `Enter ${inputName}`,
-        autocomplete: `new-${inputName}`,
-        minLength
-    }});
+        attributes: {
+            type: inputName === 'username' ? 'text' : 'password',
+            name: inputName,
+            placeholder: `Enter ${inputName}`,
+            autocomplete: `new-${inputName}`,
+            minLength
+        }
+    });
 
     if (inputValue) { input.setAttribute('value', inputValue); }
     input.required = isRequired;

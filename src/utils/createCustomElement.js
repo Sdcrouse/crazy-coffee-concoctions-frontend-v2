@@ -1,6 +1,7 @@
-function createCustomElement(tagName, { text = '', classes = '', attributes = {}, itemsToAppend = [] } = {}) {
+function createCustomElement(tagName, { id ='', text = '', classes = '', attributes = {}, itemsToAppend = [] } = {}) {
     const customElement = document.createElement(tagName);
     
+    if (id) { customElement.id = id; }
     if (text) { customElement.textContent = text; }
     if (classes) { customElement.className = classes; }
 
