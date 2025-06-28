@@ -27,7 +27,11 @@ export function generateSignupPage({ username = '', password = '', errors = {} }
     });
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
-    const signupDiv = createCustomElement('div', { itemsToAppend: [signupHeading, signupForm] });
+    const signupDiv = createCustomElement('div', {
+        attributes: { id: 'signupDiv' },
+        itemsToAppend: [signupHeading, signupForm]
+    });
+
     mainContainer.replaceChildren(signupDiv);
 };
 
@@ -75,8 +79,7 @@ function generateErrorList(errors) {
     return errorList;
 }
 
-function signup(event, signupForm) {
-    // TODO: Make sure the username doesn't already exist
+async function signup(event, signupForm) {
     // TODO: Save the user to the backend database
     // TODO: Render the login page with a success message when the user signs up
 
@@ -122,9 +125,41 @@ function signup(event, signupForm) {
         passwordErrors.push('Password is required');
     }
 
-    if (usernameErrors.length === 0 && passwordErrors.length === 0) {
-        console.log('Signup successful!');
-    } else {
+    if (usernameErrors.length > 0 || passwordErrors.length > 0) {
         generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
+        return;
+    }
+
+    const usersURL = 'http://localhost:5000/users';
+
+    try {
+        const response = await fetch(usersURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        switch (data.status) {
+            case 201:
+                console.log(data.successMessage);
+                break;
+            case 400:
+                console.error(data.errors);
+                break;
+            case 409:
+            case 500:
+                console.error(data.errorMessage)
+                break;
+            default:
+                console.error('An unknown error has occurred.');
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+
+        const errorHeading = createCustomElement('h4', { text: `Unexpected error while submitting the signup form: ${error.message}` });
+        document.getElementById('div').appendChild(errorHeading);
     }
 }
