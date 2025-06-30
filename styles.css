@@ -80,16 +80,16 @@ nav button {
 }
 
 
-/* HTTP 418 PAGE STYLES */
+/* ERROR PAGE STYLES */
 
-#im-a-teapot, #internal-server-error {
+.error-image {
     max-width: 100%;
     height: auto;
 }
 
-#teapot-image-heading, #internal-server-error-image-heading { margin-top: 0; }
+.error-image-heading { margin-top: 0; }
 
-#teapot-image-info, #internal-server-error-image-info { padding-bottom: 5%; }
+.error-image-info { padding-bottom: 5%; }
 
 
 /* MAIN CONTAINER STYLES */

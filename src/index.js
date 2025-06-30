@@ -29,7 +29,7 @@ function generateTeapotPage() {
     titleElement.textContent = `${httpStatus} - I'm a Teapot!`;
 
     const teapotImage = createCustomElement('img', {
-        id: 'im-a-teapot',
+        classes: 'error-image',
         attributes: {
             src: `img/${httpStatus}-im-a-teapot.png`,
             alt: `${httpStatus} I'm a teapot`
@@ -37,8 +37,7 @@ function generateTeapotPage() {
     });
 
     const teapotHeading = createCustomElement('h2', {
-        id: 'teapot-image-heading',
-        classes: 'extra-padding coffee-text',
+        classes: 'extra-padding coffee-text error-image-heading',
         text: `
             Sorry! The server is currently unable to brew coffee at the moment because it is now a teapot. 
             You can't brew coffee with a teapot!
@@ -70,7 +69,7 @@ function generateTeapotPage() {
     });
 
     const errorImageSmallText = createCustomElement('small', { itemsToAppend: [
-        `\u00A9 2025 "${httpStatus}" image courtesy of `,
+        `\u00A9 2025 "HTTP ${httpStatus}" image courtesy of `,
         errorImageSource,
         document.createElement('br'),
         'It is available for download free of charge under the ',
@@ -78,8 +77,7 @@ function generateTeapotPage() {
     ]});
 
     const errorImageInfo = createCustomElement('p', {
-        id: 'teapot-image-info',
-        classes: 'extra-padding',
+        classes: 'extra-padding error-image-info',
         itemsToAppend: [errorImageSmallText]
     });
 

@@ -8,7 +8,7 @@ export function generateServerErrorPage(errorMessage) {
     titleElement.textContent = `${httpStatus} - Internal Server Error`;
 
     const serverErrorImage = createCustomElement('img', {
-        id: 'internal-server-error',
+        classes: 'error-image',
         attributes: {
             src: `img/${httpStatus}-internal-server-error.png`,
             alt: `${httpStatus} internal server error`
@@ -16,8 +16,7 @@ export function generateServerErrorPage(errorMessage) {
     });
 
     const serverErrorHeading = createCustomElement('h2', {
-        id: 'internal-server-error-image-heading',
-        classes: 'extra-padding coffee-text',
+        classes: 'extra-padding coffee-text error-image-heading',
         text: errorMessage
     });
 
@@ -40,8 +39,7 @@ export function generateServerErrorPage(errorMessage) {
     ]});
 
     const errorImageInfo = createCustomElement('p', {
-        id: 'internal-server-error-image-info',
-        classes: 'extra-padding',
+        classes: 'extra-padding error-image-info',
         itemsToAppend: [errorImageSmallText]
     });
 
