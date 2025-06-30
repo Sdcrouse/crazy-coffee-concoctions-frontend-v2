@@ -82,14 +82,14 @@ nav button {
 
 /* HTTP 418 PAGE STYLES */
 
-#im-a-teapot {
+#im-a-teapot, #internal-server-error {
     max-width: 100%;
     height: auto;
 }
 
-#teapot-image-heading { margin-top: 0; }
+#teapot-image-heading, #internal-server-error-image-heading { margin-top: 0; }
 
-#teapot-image-info { padding-bottom: 5%; }
+#teapot-image-info, #internal-server-error-image-info { padding-bottom: 5%; }
 
 
 /* MAIN CONTAINER STYLES */

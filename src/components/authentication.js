@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import { generateServerErrorPage } from '../utils/errorPages.js';
 
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
@@ -81,8 +82,7 @@ function generateErrorList(errors) {
     return errorList;
 }
 
-async function signup(event, signupForm) {
-    // TODO: Display an error image for the HTTP 500 status (will need to put a new function in the util folder)
+async function signup(event, signupForm) {    
     // TODO: Save the user to the backend database
     // TODO: Render the login page with a success message when the user signs up
 
@@ -163,8 +163,9 @@ async function signup(event, signupForm) {
                 appendErrorHeading(data.errorMessage);
                 console.error(data);
                 break;
-            case 500: // TODO: Display a custom error page instead
+            case 500:
                 console.error(data);
+                generateServerErrorPage(data.errorMessage);
                 break;
             default:
                 errorMessage = 'An unknown error has occurred. Please try again later.';
