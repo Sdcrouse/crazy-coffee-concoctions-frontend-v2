@@ -5,7 +5,7 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
-export function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
+function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupHeading = createCustomElement('h2', {
@@ -183,3 +183,5 @@ function appendErrorHeading(errorMessage) {
     const errorHeading = createCustomElement('h4', { text: errorMessage });
     document.getElementById('signupDiv').appendChild(errorHeading);
 }
+
+export { generateSignupPage };
