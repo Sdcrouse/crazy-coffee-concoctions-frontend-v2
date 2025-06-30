@@ -83,7 +83,6 @@ function generateErrorList(errors) {
 
 async function signup(event, signupForm) {
     // TODO: Display an error image for the HTTP 500 status (will need to put a new function in the util folder)
-    // TODO: See other TODOs in case statements below
     // TODO: Save the user to the backend database
     // TODO: Render the login page with a success message when the user signs up
 
@@ -152,14 +151,16 @@ async function signup(event, signupForm) {
                 console.log(data.successMessage);
                 break;
             case 400:
-                // TODO: Display these error messages as a list
-                // Add these errors to their corresponding lists and call generateSignupPage
                 console.error(data.errors);
+                
+                const {username: unameErrors, password: passErrors } = data.errors;
+                if (unameErrors) { usernameErrors.push(...unameErrors); }
+                if (passErrors) { passwordErrors.push(...passErrors); }
+
+                generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
                 break;
             case 409:
-                // TODO: Call generateSignupPage with this error
-                // Add it to the corresponding error list (typically 'username' - this status is for users that exist)
-                // errorMessage = data.errorMessage;
+                appendErrorHeading(data.errorMessage);
                 console.error(data);
                 break;
             case 500: // TODO: Display a custom error page instead
