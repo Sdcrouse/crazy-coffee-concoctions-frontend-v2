@@ -46,7 +46,7 @@ function generateTeapotPage() {
         classes: 'error-image',
         attributes: {
             src: `img/${httpStatus}-im-a-teapot.png`,
-            alt: `HTTP ${httpStatus} I'm a teapot`
+            alt: `Cartoon robot stares into a mirror and sees a teapot instead of its own reflection. Text to the right reads "418 I'm a Teapot. No coffee available!"`
         }
     });
 
@@ -79,7 +79,7 @@ function generateServerErrorPage(errorMessage) {
         classes: 'error-image',
         attributes: {
             src: `img/${httpStatus}-internal-server-error.png`,
-            alt: `HTTP ${httpStatus} internal server error`
+            alt: `Broken cartoon robot with smoke rising from a crack in its head. Text to the right reads "500 Internal Server Error. Oh my, something must be broken somewhere..."`
         }
     });
 
