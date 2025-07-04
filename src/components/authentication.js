@@ -82,8 +82,7 @@ function generateErrorList(errors) {
     return errorList;
 }
 
-async function signup(event, signupForm) {    
-    // TODO: Save the user to the backend database
+async function signup(event, signupForm) {
     // TODO: Render the login page with a success message when the user signs up
 
     event.preventDefault();
@@ -160,8 +159,11 @@ async function signup(event, signupForm) {
                 generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
                 break;
             case 409:
-                appendErrorHeading(data.errorMessage);
+                // If there are other error messages with an HTTP 409 status, update this and the backend
+                // For now, the only expected HTTP 409 error is a user who already exists
                 console.error(data);
+                usernameErrors.push(data.errorMessage);
+                generateSignupPage({ username, password, errors: { usernameErrors }});
                 break;
             case 500:
                 console.error(data);
