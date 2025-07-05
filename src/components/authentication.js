@@ -5,6 +5,75 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
+function generateLoginPage() {
+    titleElement.textContent = `${baseTitle} - Log In`;
+
+    const loginHeading = createCustomElement('h2', {
+        text: 'Log in to your account here!',
+        classes: 'center-content coffee-text'
+    });
+
+    const usernameLabel = createCustomElement('label', {
+        attributes: { for: 'username' },
+        text: 'Username: '
+    });
+
+    const usernameInput = createCustomElement('input', {
+        id: 'username',
+        attributes: {
+            type: 'text',
+            name: 'username',
+            placeholder: 'Enter username',
+            autocomplete: 'username'
+        }
+    });
+
+    usernameInput.required = true;
+
+    const usernameInputGroup = createCustomElement('p', {
+        itemsToAppend: [usernameLabel, usernameInput]
+    });
+
+    const passwordLabel = createCustomElement('label', {
+        attributes: { for: 'password' },
+        text: 'Password: '
+    });
+
+    const passwordInput = createCustomElement('input', {
+        id: 'password',
+        attributes: {
+            type: 'password',
+            name: 'password',
+            placeholder: 'Enter password',
+            autocomplete: 'current-password'
+        }
+    });
+
+    passwordInput.required = true;
+
+    const passwordInputGroup = createCustomElement('p', {
+        itemsToAppend: [passwordLabel, passwordInput]
+    });
+
+    const loginButton = createCustomElement('button', {
+        attributes: { type: 'submit' },
+        text: 'Log In'
+    });
+
+    const loginBtnPar = createCustomElement('p', { itemsToAppend: [loginButton] });
+
+    const loginForm = createCustomElement('form', {
+        itemsToAppend: [usernameInputGroup, passwordInputGroup, loginBtnPar]
+    });
+
+    const loginDiv = createCustomElement('div', {
+        id: 'loginDiv',
+        itemsToAppend: [loginHeading, loginForm]
+    });
+
+    mainContainer.replaceChildren(loginDiv);
+}
+
 function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
@@ -186,4 +255,4 @@ function appendErrorHeading(errorMessage) {
     document.getElementById('signupDiv').appendChild(errorHeading);
 }
 
-export { generateSignupPage };
+export { generateSignupPage, generateLoginPage };
