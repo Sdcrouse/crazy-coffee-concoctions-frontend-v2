@@ -5,6 +5,21 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
+function generateForm(submitButtonText, ...formElements) {
+    const submitButton = createCustomElement('button', {
+        attributes: { type: 'submit' },
+        text: submitButtonText
+    });
+
+    const buttonPar = createCustomElement('p', { itemsToAppend: [submitButton] });
+    
+    const form = createCustomElement('form', {
+        itemsToAppend: [...formElements, buttonPar]
+    });
+
+    return form;
+}
+
 function generateLoginPage({ signupSuccessMessage = '' } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
@@ -26,16 +41,7 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
     const usernameInputGroup = createLoginInputGroup('username');
     const passwordInputGroup = createLoginInputGroup('password');
 
-    const loginButton = createCustomElement('button', {
-        attributes: { type: 'submit' },
-        text: 'Log In'
-    });
-
-    const loginBtnPar = createCustomElement('p', { itemsToAppend: [loginButton] });
-
-    const loginForm = createCustomElement('form', {
-        itemsToAppend: [usernameInputGroup, passwordInputGroup, loginBtnPar]
-    });
+    const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
 
     loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
@@ -85,16 +91,7 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
     const usernameFields = createInputGroup('username', username, errors.usernameErrors);
     const passwordFields = createInputGroup('password', password, errors.passwordErrors);
 
-    const signupButton = createCustomElement('button', {
-        attributes: { type: 'submit' },
-        text: 'Sign Up'
-    });
-
-    const signupBtnPar = createCustomElement('p', { itemsToAppend: [signupButton] });
-
-    const signupForm = createCustomElement('form', {
-        itemsToAppend: [usernameFields, passwordFields, signupBtnPar]
-    });
+    const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
     const signupDiv = createCustomElement('div', {
