@@ -5,8 +5,18 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 
-function generateLoginPage() {
+function generateLoginPage({ signupSuccessMessage = '' } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
+
+    const loginDiv = createCustomElement('div', { id: 'login-div' });
+
+    if (signupSuccessMessage) {
+        const signupSuccessHeading = createCustomElement('h3', {
+            id: 'signup-success',
+            text: signupSuccessMessage
+        });
+        loginDiv.appendChild(signupSuccessHeading);
+    }
 
     const loginHeading = createCustomElement('h2', {
         text: 'Log in to your account here!',
@@ -66,11 +76,7 @@ function generateLoginPage() {
         itemsToAppend: [usernameInputGroup, passwordInputGroup, loginBtnPar]
     });
 
-    const loginDiv = createCustomElement('div', {
-        id: 'loginDiv',
-        itemsToAppend: [loginHeading, loginForm]
-    });
-
+    loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
 }
 
@@ -98,7 +104,7 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
     signupForm.addEventListener('submit', e => signup(e, signupForm));
 
     const signupDiv = createCustomElement('div', {
-        id: 'signupDiv',
+        id: 'signup-div',
         itemsToAppend: [signupHeading, signupForm]
     });
 
@@ -152,8 +158,6 @@ function generateErrorList(errors) {
 }
 
 async function signup(event, signupForm) {
-    // TODO: Render the login page with a success message when the user signs up
-
     event.preventDefault();
 
     const signupFormInputs = new FormData(signupForm);
@@ -215,8 +219,7 @@ async function signup(event, signupForm) {
         
         switch (data.status) {
             case 201:
-                // TODO: Display this message on the login page after redirecting to it
-                console.log(data.successMessage);
+                generateLoginPage({ signupSuccessMessage: data.successMessage });
                 break;
             case 400:
                 console.error(data.errors);
@@ -252,7 +255,7 @@ async function signup(event, signupForm) {
 
 function appendErrorHeading(errorMessage) {
     const errorHeading = createCustomElement('h4', { text: errorMessage });
-    document.getElementById('signupDiv').appendChild(errorHeading);
+    document.getElementById('signup-div').appendChild(errorHeading);
 }
 
 export { generateSignupPage, generateLoginPage };
