@@ -23,47 +23,8 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
         classes: 'center-content coffee-text'
     });
 
-    const usernameLabel = createCustomElement('label', {
-        attributes: { for: 'username' },
-        text: 'Username: '
-    });
-
-    const usernameInput = createCustomElement('input', {
-        id: 'username',
-        attributes: {
-            type: 'text',
-            name: 'username',
-            placeholder: 'Enter username',
-            autocomplete: 'username'
-        }
-    });
-
-    usernameInput.required = true;
-
-    const usernameInputGroup = createCustomElement('p', {
-        itemsToAppend: [usernameLabel, usernameInput]
-    });
-
-    const passwordLabel = createCustomElement('label', {
-        attributes: { for: 'password' },
-        text: 'Password: '
-    });
-
-    const passwordInput = createCustomElement('input', {
-        id: 'password',
-        attributes: {
-            type: 'password',
-            name: 'password',
-            placeholder: 'Enter password',
-            autocomplete: 'current-password'
-        }
-    });
-
-    passwordInput.required = true;
-
-    const passwordInputGroup = createCustomElement('p', {
-        itemsToAppend: [passwordLabel, passwordInput]
-    });
+    const usernameInputGroup = createLoginInputGroup('username');
+    const passwordInputGroup = createLoginInputGroup('password');
 
     const loginButton = createCustomElement('button', {
         attributes: { type: 'submit' },
@@ -78,6 +39,39 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
 
     loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
+}
+
+function createLoginInputGroup(inputName) {
+    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    
+    const label = createCustomElement('label', {
+        attributes: { for: inputName },
+        text: `${capitalizedInputName}: `
+    });
+
+    const input = createCustomElement('input', { 
+        id: inputName,
+        attributes: {
+            name: inputName,
+            placeholder: `Enter ${inputName}`
+        }
+    });
+
+    if (inputName === 'password') {
+        input.setAttribute('type', 'password');
+        input.setAttribute('autocomplete', 'current-password');
+    } else {
+        input.setAttribute('type', 'text');
+        input.setAttribute('autocomplete', inputName);
+    }
+
+    input.required = true;
+
+    const inputGroup = createCustomElement('p', {
+        itemsToAppend: [label, input]
+    });
+
+    return inputGroup;
 }
 
 function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
