@@ -21,7 +21,7 @@ function generateForm(submitButtonText, ...formElements) {
     return form;
 }
 
-function generateLoginPage({ signupSuccessMessage = '' } = {}) {
+function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
@@ -39,8 +39,8 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
         classes: 'center-content coffee-text'
     });
 
-    const usernameInputGroup = createLoginInputGroup('username');
-    const passwordInputGroup = createLoginInputGroup('password');
+    const usernameInputGroup = createLoginInputGroup('username', username, errors.usernameErrors);
+    const passwordInputGroup = createLoginInputGroup('password', password, errors.passwordErrors);
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -49,7 +49,7 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
     mainContainer.replaceChildren(loginDiv);
 }
 
-function createLoginInputGroup(inputName) {
+function createLoginInputGroup(inputName, inputValue, errors) {
     const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     
     const label = createCustomElement('label', {
@@ -73,16 +73,21 @@ function createLoginInputGroup(inputName) {
         input.setAttribute('autocomplete', inputName);
     }
 
+    if (inputValue) input.setAttribute('value', inputValue);
     input.required = true;
 
+    const errorList = generateErrorList(errors);
+
     const inputGroup = createCustomElement('p', {
-        itemsToAppend: [label, input]
+        itemsToAppend: [label, input, errorList]
     });
 
     return inputGroup;
 }
 
 async function login(event, loginForm) {
+    // TODO: Display a success message when login succeeds
+    // TODO: Save the token in localStorage and redirect to the user's homepage
     event.preventDefault();
 
     const loginFormInputs = new FormData(loginForm);
@@ -93,8 +98,9 @@ async function login(event, loginForm) {
     if (!password) passwordErrors.push('Password is required');
 
     if (usernameErrors.length > 0 || passwordErrors.length > 0) {
-        console.error('Username errors: ', usernameErrors);
-        console.error('Password errors: ', passwordErrors);
+        generateLoginPage({
+            username, password, errors: { usernameErrors, passwordErrors }
+        });
         return;
     }
 
@@ -111,6 +117,8 @@ async function login(event, loginForm) {
         if (errorMessage) {
             console.error(errorMessage);
         } else {
+            // TODO: Save the token in localStorage and replace mainContainer's contents with the success message
+            // Later, redirect to a concoction-related page (maybe a list of the user's concoctions)
             console.log(data);
         }
     } catch (error) {
@@ -159,7 +167,7 @@ function createInputGroup(inputName, inputValue, errors, isRequired = true, minL
         }
     });
 
-    if (inputValue) { input.setAttribute('value', inputValue); }
+    if (inputValue) input.setAttribute('value', inputValue);
     input.required = isRequired;
 
     const errorList = generateErrorList(errors);
@@ -230,7 +238,9 @@ async function signup(event, signupForm) {
     }
 
     if (usernameErrors.length > 0 || passwordErrors.length > 0) {
-        generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
+        generateSignupPage({
+            username, password, errors: { usernameErrors, passwordErrors }
+        });
         return;
     }
 
