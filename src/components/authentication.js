@@ -4,6 +4,7 @@ import { generateServerErrorPage } from '../utils/errorPages.js';
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
+const apiBase = 'http://localhost:5000/';
 
 function generateForm(submitButtonText, ...formElements) {
     const submitButton = createCustomElement('button', {
@@ -42,6 +43,7 @@ function generateLoginPage({ signupSuccessMessage = '' } = {}) {
     const passwordInputGroup = createLoginInputGroup('password');
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
+    loginForm.addEventListener('submit', e => login(e, loginForm));
 
     loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
@@ -78,6 +80,42 @@ function createLoginInputGroup(inputName) {
     });
 
     return inputGroup;
+}
+
+async function login(event, loginForm) {
+    event.preventDefault();
+
+    const loginFormInputs = new FormData(loginForm);
+    const { username, password } = Object.fromEntries(loginFormInputs);
+    let usernameErrors = [], passwordErrors = [];
+
+    if (!username) usernameErrors.push('Username is required');
+    if (!password) passwordErrors.push('Password is required');
+
+    if (usernameErrors.length > 0 || passwordErrors.length > 0) {
+        console.error('Username errors: ', usernameErrors);
+        console.error('Password errors: ', passwordErrors);
+        return;
+    }
+
+    try {
+        const response = await fetch(apiBase + 'login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        const {errorMessage} = data;
+
+        if (errorMessage) {
+            console.error(errorMessage);
+        } else {
+            console.log(data);
+        }
+    } catch (error) {
+        console.error(error.message);
+    }
 }
 
 function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
@@ -196,11 +234,10 @@ async function signup(event, signupForm) {
         return;
     }
 
-    const usersURL = 'http://localhost:5000/users';
     let errorMessage;
 
     try {
-        const response = await fetch(usersURL, {
+        const response = await fetch(apiBase + 'users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
