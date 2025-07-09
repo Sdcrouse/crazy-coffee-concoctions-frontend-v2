@@ -6,21 +6,6 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000/';
 
-function generateForm(submitButtonText, ...formElements) {
-    const submitButton = createCustomElement('button', {
-        attributes: { type: 'submit' },
-        text: submitButtonText
-    });
-
-    const buttonPar = createCustomElement('p', { itemsToAppend: [submitButton] });
-    
-    const form = createCustomElement('form', {
-        itemsToAppend: [...formElements, buttonPar]
-    });
-
-    return form;
-}
-
 function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
@@ -112,61 +97,6 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
 
     mainContainer.replaceChildren(signupDiv);
 };
-
-function createInputGroup(inputName, inputValue, errors, formAction, options = { minLength: 8 }) {
-    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    
-    const label = createCustomElement('label', {
-        attributes: { for: inputName },
-        text: `${capitalizedInputName}: `
-    });
-
-    const input = createCustomElement('input', { 
-        id: inputName,
-        attributes: {
-            type: inputName === 'password' ? 'password' : 'text',
-            name: inputName,
-            placeholder: `Enter ${inputName}`,
-            minLength: options.minLength
-        }
-    });
-
-    if (formAction === 'register') {
-        input.setAttribute('autocomplete', `new-${inputName}`);
-    } else if (formAction === 'login') {
-        if (inputName === 'password') {
-            input.setAttribute('autocomplete', 'current-password');
-        } else {
-            input.setAttribute('autocomplete', inputName);
-        }
-    }
-
-    if (inputValue) input.setAttribute('value', inputValue);
-    input.required = true;
-
-    const errorList = generateErrorList(errors);
-    
-    const inputGroup = createCustomElement('p', {
-        itemsToAppend: [label, input, errorList]
-    });
-
-    return inputGroup;
-}
-
-function generateErrorList(errors) {
-    const errorList = document.createElement('ul');
-
-    if (Array.isArray(errors) && errors.length > 0) {
-        errors.forEach(error => {
-            const errorItem = createCustomElement('li', { text: error });
-            errorList.append(errorItem);
-        });
-    } else {
-        errorList.style.display = 'none';
-    }
-
-    return errorList;
-}
 
 async function signup(event, signupForm) {
     event.preventDefault();
@@ -263,6 +193,76 @@ async function signup(event, signupForm) {
         console.error(error.message);
         appendErrorHeading('signup-div', 'There was an error while submitting the signup form. Please try again.');
     }
+}
+
+function createInputGroup(inputName, inputValue, errors, formAction, options = { minLength: 8 }) {
+    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    
+    const label = createCustomElement('label', {
+        attributes: { for: inputName },
+        text: `${capitalizedInputName}: `
+    });
+
+    const input = createCustomElement('input', { 
+        id: inputName,
+        attributes: {
+            type: inputName === 'password' ? 'password' : 'text',
+            name: inputName,
+            placeholder: `Enter ${inputName}`,
+            minLength: options.minLength
+        }
+    });
+
+    if (formAction === 'register') {
+        input.setAttribute('autocomplete', `new-${inputName}`);
+    } else if (formAction === 'login') {
+        if (inputName === 'password') {
+            input.setAttribute('autocomplete', 'current-password');
+        } else {
+            input.setAttribute('autocomplete', inputName);
+        }
+    }
+
+    if (inputValue) input.setAttribute('value', inputValue);
+    input.required = true;
+
+    const errorList = generateErrorList(errors);
+    
+    const inputGroup = createCustomElement('p', {
+        itemsToAppend: [label, input, errorList]
+    });
+
+    return inputGroup;
+}
+
+function generateErrorList(errors) {
+    const errorList = document.createElement('ul');
+
+    if (Array.isArray(errors) && errors.length > 0) {
+        errors.forEach(error => {
+            const errorItem = createCustomElement('li', { text: error });
+            errorList.append(errorItem);
+        });
+    } else {
+        errorList.style.display = 'none';
+    }
+
+    return errorList;
+}
+
+function generateForm(submitButtonText, ...formElements) {
+    const submitButton = createCustomElement('button', {
+        attributes: { type: 'submit' },
+        text: submitButtonText
+    });
+
+    const buttonPar = createCustomElement('p', { itemsToAppend: [submitButton] });
+    
+    const form = createCustomElement('form', {
+        itemsToAppend: [...formElements, buttonPar]
+    });
+
+    return form;
 }
 
 function appendErrorHeading(elementId, errorMessage) {
