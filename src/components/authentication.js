@@ -87,6 +87,7 @@ async function login(event, loginForm) {
         }
     } catch (error) {
         console.error(error.message);
+        appendErrorHeading('login-div', 'There was an error while submitting the login form. Please try again.');
     }
 }
 
@@ -255,18 +256,18 @@ async function signup(event, signupForm) {
             default:
                 errorMessage = 'An unknown error has occurred. Please try again later.';
                 console.error(data);
-                appendErrorHeading(errorMessage);
+                appendErrorHeading('signup-div', errorMessage);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        appendErrorHeading('There was an error while submitting the signup form. Please try again.');
+        appendErrorHeading('signup-div', 'There was an error while submitting the signup form. Please try again.');
     }
 }
 
-function appendErrorHeading(errorMessage) {
+function appendErrorHeading(elementId, errorMessage) {
     const errorHeading = createCustomElement('h4', { text: errorMessage });
-    document.getElementById('signup-div').appendChild(errorHeading);
+    document.getElementById(elementId).appendChild(errorHeading);
 }
 
 export { generateSignupPage, generateLoginPage };
