@@ -39,50 +39,14 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
         classes: 'center-content coffee-text'
     });
 
-    const usernameInputGroup = createLoginInputGroup('username', username, errors.usernameErrors);
-    const passwordInputGroup = createLoginInputGroup('password', password, errors.passwordErrors);
+    const usernameInputGroup = createInputGroup('username', username, errors.usernameErrors, 'login', { minLength: 2 });
+    const passwordInputGroup = createInputGroup('password', password, errors.passwordErrors, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
 
     loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
-}
-
-function createLoginInputGroup(inputName, inputValue, errors) {
-    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    
-    const label = createCustomElement('label', {
-        attributes: { for: inputName },
-        text: `${capitalizedInputName}: `
-    });
-
-    const input = createCustomElement('input', { 
-        id: inputName,
-        attributes: {
-            name: inputName,
-            placeholder: `Enter ${inputName}`
-        }
-    });
-
-    if (inputName === 'password') {
-        input.setAttribute('type', 'password');
-        input.setAttribute('autocomplete', 'current-password');
-    } else {
-        input.setAttribute('type', 'text');
-        input.setAttribute('autocomplete', inputName);
-    }
-
-    if (inputValue) input.setAttribute('value', inputValue);
-    input.required = true;
-
-    const errorList = generateErrorList(errors);
-
-    const inputGroup = createCustomElement('p', {
-        itemsToAppend: [label, input, errorList]
-    });
-
-    return inputGroup;
 }
 
 async function login(event, loginForm) {
@@ -134,8 +98,8 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
         classes: 'center-content coffee-text'
     });
 
-    const usernameFields = createInputGroup('username', username, errors.usernameErrors);
-    const passwordFields = createInputGroup('password', password, errors.passwordErrors);
+    const usernameFields = createInputGroup('username', username, errors.usernameErrors, 'register');
+    const passwordFields = createInputGroup('password', password, errors.passwordErrors, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -148,7 +112,7 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
     mainContainer.replaceChildren(signupDiv);
 };
 
-function createInputGroup(inputName, inputValue, errors, isRequired = true, minLength = 8) {
+function createInputGroup(inputName, inputValue, errors, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     
     const label = createCustomElement('label', {
@@ -159,16 +123,25 @@ function createInputGroup(inputName, inputValue, errors, isRequired = true, minL
     const input = createCustomElement('input', { 
         id: inputName,
         attributes: {
-            type: inputName === 'username' ? 'text' : 'password',
+            type: inputName === 'password' ? 'password' : 'text',
             name: inputName,
             placeholder: `Enter ${inputName}`,
-            autocomplete: `new-${inputName}`,
-            minLength
+            minLength: options.minLength
         }
     });
 
+    if (formAction === 'register') {
+        input.setAttribute('autocomplete', `new-${inputName}`);
+    } else if (formAction === 'login') {
+        if (inputName === 'password') {
+            input.setAttribute('autocomplete', 'current-password');
+        } else {
+            input.setAttribute('autocomplete', inputName);
+        }
+    }
+
     if (inputValue) input.setAttribute('value', inputValue);
-    input.required = isRequired;
+    input.required = true;
 
     const errorList = generateErrorList(errors);
     
