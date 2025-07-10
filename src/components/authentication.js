@@ -6,6 +6,8 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000/';
 
+// TODO: Have this function and generateSignupPage call generateErrorList BEFORE createInputGroup (which should then NOT call generateErrorList)
+// Additionally, have some default arguments for 'errors' to make it clear that the values should be arrays
 function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
@@ -61,14 +63,40 @@ async function login(event, loginForm) {
         });
         
         const data = await response.json();
-        const {errorMessage} = data;
+        
+        switch (data.status) {
+            case 200:
+                // TODO: Save the token in localStorage and replace mainContainer's contents with the success message
+                // Later, redirect to a concoction-related page (maybe a list of the user's concoctions)
+                console.log(data);
+                break;
+            case 401:
+                // Currently, this is expecting at most one username error and/or one password error
+                // If multiple errors are later returned for usernames and passwords, this should be updated
+                console.error(data);
 
-        if (errorMessage) {
-            console.error(errorMessage);
-        } else {
-            // TODO: Save the token in localStorage and replace mainContainer's contents with the success message
-            // Later, redirect to a concoction-related page (maybe a list of the user's concoctions)
-            console.log(data);
+                const {username: unameError, password: passError } = data.errors;
+                if (unameError) { usernameErrors.push(unameError); }
+                if (passError) { passwordErrors.push(passError); }
+
+                generateLoginPage({ username, password, errors: { usernameErrors, passwordErrors } });
+                break;
+            case 404:
+                // Currently, this only expects a "User not found" error; this can be updated with other error messages later.
+                console.error(data);
+                usernameErrors.push(data.errors.username);
+                generateLoginPage({
+                    username, password, errors: { usernameErrors }
+                });
+                break;
+            case 500:
+                console.error(data);
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                console.error(data);
+                appendErrorHeading('login-div', 'An unknown error has occurred. Please try again later.');
+                break;
         }
     } catch (error) {
         console.error(error.message);
@@ -164,7 +192,7 @@ async function signup(event, signupForm) {
                 generateLoginPage({ signupSuccessMessage: data.successMessage });
                 break;
             case 400:
-                console.error(data.errors);
+                console.error(data);
                 
                 const {username: unameErrors, password: passErrors } = data.errors;
                 if (unameErrors) { usernameErrors.push(...unameErrors); }
