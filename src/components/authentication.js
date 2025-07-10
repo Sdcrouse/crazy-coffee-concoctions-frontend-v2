@@ -6,8 +6,7 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000/';
 
-// TODO: Have this function and generateSignupPage call generateErrorList BEFORE createInputGroup (which should then NOT call generateErrorList)
-// Additionally, have some default arguments for 'errors' to make it clear that the values should be arrays
+// TODO: Consider making the errors into a UserErrors object
 function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
@@ -26,8 +25,10 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
         classes: 'center-content coffee-text'
     });
 
-    const usernameInputGroup = createInputGroup('username', username, errors.usernameErrors, 'login', { minLength: 2 });
-    const passwordInputGroup = createInputGroup('password', password, errors.passwordErrors, 'login', { minLength: 2 });
+    const usernameErrorList = generateErrorList(errors.usernameErrors);
+    const usernameInputGroup = createInputGroup('username', username, usernameErrorList, 'login', { minLength: 2 });
+    const passwordErrorList = generateErrorList(errors.passwordErrors);
+    const passwordInputGroup = createInputGroup('password', password, passwordErrorList, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -112,8 +113,10 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
         classes: 'center-content coffee-text'
     });
 
-    const usernameFields = createInputGroup('username', username, errors.usernameErrors, 'register');
-    const passwordFields = createInputGroup('password', password, errors.passwordErrors, 'register');
+    const usernameErrorList = generateErrorList(errors.usernameErrors);
+    const usernameFields = createInputGroup('username', username, usernameErrorList, 'register');
+    const passwordErrorList = generateErrorList(errors.passwordErrors);
+    const passwordFields = createInputGroup('password', password, passwordErrorList, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -223,6 +226,21 @@ async function signup(event, signupForm) {
     }
 }
 
+function generateErrorList(errors) {
+    const errorList = document.createElement('ul');
+
+    if (Array.isArray(errors) && errors.length > 0) {
+        errors.forEach(error => {
+            const errorItem = createCustomElement('li', { text: error });
+            errorList.append(errorItem);
+        });
+    } else {
+        errorList.style.display = 'none';
+    }
+
+    return errorList;
+}
+
 function createInputGroup(inputName, inputValue, errors, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     
@@ -253,29 +271,12 @@ function createInputGroup(inputName, inputValue, errors, formAction, options = {
 
     if (inputValue) input.setAttribute('value', inputValue);
     input.required = true;
-
-    const errorList = generateErrorList(errors);
     
     const inputGroup = createCustomElement('p', {
-        itemsToAppend: [label, input, errorList]
+        itemsToAppend: [label, input, errors]
     });
 
     return inputGroup;
-}
-
-function generateErrorList(errors) {
-    const errorList = document.createElement('ul');
-
-    if (Array.isArray(errors) && errors.length > 0) {
-        errors.forEach(error => {
-            const errorItem = createCustomElement('li', { text: error });
-            errorList.append(errorItem);
-        });
-    } else {
-        errorList.style.display = 'none';
-    }
-
-    return errorList;
 }
 
 function generateForm(submitButtonText, ...formElements) {
