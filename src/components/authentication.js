@@ -38,8 +38,7 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
 }
 
 async function login(event, loginForm) {
-    // TODO: Display a success message when login succeeds
-    // TODO: Save the token in localStorage and redirect to the user's homepage
+    // TODO: Redirect to the user's homepage after logging in
     event.preventDefault();
 
     const loginFormInputs = new FormData(loginForm);
@@ -67,9 +66,11 @@ async function login(event, loginForm) {
         
         switch (data.status) {
             case 200:
-                // TODO: Save the token in localStorage and replace mainContainer's contents with the success message
-                // Later, redirect to a concoction-related page (maybe a list of the user's concoctions)
-                console.log(data);
+                // TODO: Redirect to a concoction-related page (maybe a list of the user's concoctions)
+                localStorage.setItem('token', data.token);
+                document.getElementById('signup').style.display = 'none';
+                document.getElementById('login').style.display = 'none';
+                mainContainer.replaceChildren(createCustomElement('h2', { text: data.successMessage }));
                 break;
             case 401:
                 // Currently, this is expecting at most one username error and/or one password error
