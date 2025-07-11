@@ -6,7 +6,6 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000/';
 
-// TODO: Consider making the errors into a UserErrors object
 function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
@@ -25,10 +24,8 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
         classes: 'center-content coffee-text'
     });
 
-    const usernameErrorList = generateErrorList(errors.usernameErrors);
-    const usernameInputGroup = createInputGroup('username', username, usernameErrorList, 'login', { minLength: 2 });
-    const passwordErrorList = generateErrorList(errors.passwordErrors);
-    const passwordInputGroup = createInputGroup('password', password, passwordErrorList, 'login', { minLength: 2 });
+    const usernameInputGroup = createInputGroup('username', username, errors.usernameErrors, 'login', { minLength: 2 });
+    const passwordInputGroup = createInputGroup('password', password, errors.passwordErrors, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -114,10 +111,8 @@ function generateSignupPage({ username = '', password = '', errors = {} } = {}) 
         classes: 'center-content coffee-text'
     });
 
-    const usernameErrorList = generateErrorList(errors.usernameErrors);
-    const usernameFields = createInputGroup('username', username, usernameErrorList, 'register');
-    const passwordErrorList = generateErrorList(errors.passwordErrors);
-    const passwordFields = createInputGroup('password', password, passwordErrorList, 'register');
+    const usernameFields = createInputGroup('username', username, errors.usernameErrors, 'register');
+    const passwordFields = createInputGroup('password', password, errors.passwordErrors, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -227,22 +222,8 @@ async function signup(event, signupForm) {
     }
 }
 
-function generateErrorList(errors) {
-    const errorList = createCustomElement('ul', { classes: 'error-message-list' });
-
-    if (Array.isArray(errors) && errors.length > 0) {
-        errors.forEach(error => {
-            const errorItem = createCustomElement('li', { text: error });
-            errorList.append(errorItem);
-        });
-    } else {
-        errorList.style.display = 'none';
-    }
-
-    return errorList;
-}
-
-function createInputGroup(inputName, inputValue, errors, formAction, options = { minLength: 8 }) {
+// TODO: Style the other error messages and success messages
+function createInputGroup(inputName, inputValue, inputErrors, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     
     const label = createCustomElement('label', {
@@ -260,11 +241,6 @@ function createInputGroup(inputName, inputValue, errors, formAction, options = {
         }
     });
 
-    if (errors.querySelectorAll('li').length > 0) {
-        console.log("There are errors.");
-        input.className = 'input-validation-error';
-    }
-
     if (formAction === 'register') {
         input.setAttribute('autocomplete', `new-${inputName}`);
     } else if (formAction === 'login') {
@@ -280,10 +256,31 @@ function createInputGroup(inputName, inputValue, errors, formAction, options = {
     
     const inputGroup = createCustomElement('p', {
         classes: 'center-content',
-        itemsToAppend: [label, input, errors]
+        itemsToAppend: [label, input]
     });
 
+    if (Array.isArray(inputErrors) && inputErrors.length > 0) {
+        input.className = 'input-validation-error';
+
+        const inputErrorList = generateErrorList(inputErrors);
+        const inputFragment = new DocumentFragment();
+        inputFragment.append(inputGroup, inputErrorList);
+
+        return inputFragment;
+    }
+
     return inputGroup;
+}
+
+function generateErrorList(errors) {
+    const errorList = createCustomElement('ul', { classes: 'error-message-list' });
+
+    errors.forEach(error => {
+        const errorItem = createCustomElement('li', { text: error });
+        errorList.append(errorItem);
+    });
+
+    return errorList;
 }
 
 function generateForm(submitButtonText, ...formElements) {
