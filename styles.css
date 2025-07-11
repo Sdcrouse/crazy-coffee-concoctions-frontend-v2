@@ -22,10 +22,24 @@ section {
     background-color: #A65F40;
 }
 
+form input {
+    margin-left: 2%;
+}
+
 hr {
   height: 5px;
   width: 90%;
   background-color: #63A7E4;
+}
+
+button[type="submit"] {
+    color: white;
+    background-color: #63A7E4;
+    width: 20%;
+    height: 20%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    font-weight: 600;
 }
 
 footer {
@@ -90,6 +104,19 @@ nav button {
 .error-image-heading { margin-top: 0; }
 
 .error-image-info { padding-bottom: 5%; }
+
+
+/* MESSAGE STYLES */
+
+.input-validation-error {
+    background-color: #fef3f2;
+    border-color: red;
+}
+
+ul.error-message-list {
+    background-color: #F8D7DA;
+    color: #58151C;
+}
 
 
 /* MAIN CONTAINER STYLES */

@@ -228,7 +228,7 @@ async function signup(event, signupForm) {
 }
 
 function generateErrorList(errors) {
-    const errorList = document.createElement('ul');
+    const errorList = createCustomElement('ul', { classes: 'error-message-list' });
 
     if (Array.isArray(errors) && errors.length > 0) {
         errors.forEach(error => {
@@ -260,6 +260,11 @@ function createInputGroup(inputName, inputValue, errors, formAction, options = {
         }
     });
 
+    if (errors.querySelectorAll('li').length > 0) {
+        console.log("There are errors.");
+        input.className = 'input-validation-error';
+    }
+
     if (formAction === 'register') {
         input.setAttribute('autocomplete', `new-${inputName}`);
     } else if (formAction === 'login') {
@@ -274,6 +279,7 @@ function createInputGroup(inputName, inputValue, errors, formAction, options = {
     input.required = true;
     
     const inputGroup = createCustomElement('p', {
+        classes: 'center-content',
         itemsToAppend: [label, input, errors]
     });
 
@@ -286,7 +292,9 @@ function generateForm(submitButtonText, ...formElements) {
         text: submitButtonText
     });
 
-    const buttonPar = createCustomElement('p', { itemsToAppend: [submitButton] });
+    const buttonPar = createCustomElement('p', {
+        classes: 'center-content', itemsToAppend: [submitButton]
+    });
     
     const form = createCustomElement('form', {
         itemsToAppend: [...formElements, buttonPar]
