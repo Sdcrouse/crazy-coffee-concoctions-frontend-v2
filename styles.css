@@ -59,6 +59,10 @@ nav button {
 
 .coffee-text { color: #A65F40; }
 
+.error-text { color: red; }
+
+.success-text { color: green; }
+
 
 /* BOX STYLES */
 
@@ -113,9 +117,14 @@ nav button {
     border-color: red;
 }
 
-ul.error-message-list {
+.error-message-list {
     background-color: #F8D7DA;
     color: #58151C;
+    margin: 0 20%;
+}
+
+.error-message-list li {
+    padding: 2% 5%;
 }
 
 

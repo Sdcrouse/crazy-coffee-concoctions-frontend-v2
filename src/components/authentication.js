@@ -13,8 +13,8 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
 
     if (signupSuccessMessage) {
         const signupSuccessHeading = createCustomElement('h3', {
-            id: 'signup-success',
-            text: signupSuccessMessage
+            text: signupSuccessMessage,
+            classes: 'success-text center-content'
         });
         loginDiv.appendChild(signupSuccessHeading);
     }
@@ -67,7 +67,9 @@ async function login(event, loginForm) {
                 localStorage.setItem('token', data.token);
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
-                mainContainer.replaceChildren(createCustomElement('h2', { text: data.successMessage }));
+                mainContainer.replaceChildren(createCustomElement('h2', {
+                    text: data.successMessage, classes: 'success-text center-content'
+                }));
                 break;
             case 401:
                 // Currently, this is expecting at most one username error and/or one password error
@@ -222,7 +224,6 @@ async function signup(event, signupForm) {
     }
 }
 
-// TODO: Style the other error messages and success messages
 function createInputGroup(inputName, inputValue, inputErrors, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     
@@ -260,6 +261,7 @@ function createInputGroup(inputName, inputValue, inputErrors, formAction, option
     });
 
     if (Array.isArray(inputErrors) && inputErrors.length > 0) {
+        label.className = 'error-text';
         input.className = 'input-validation-error';
 
         const inputErrorList = generateErrorList(inputErrors);
@@ -301,7 +303,7 @@ function generateForm(submitButtonText, ...formElements) {
 }
 
 function appendErrorHeading(elementId, errorMessage) {
-    const errorHeading = createCustomElement('h4', { text: errorMessage });
+    const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'center-content error-text' });
     document.getElementById(elementId).appendChild(errorHeading);
 }
 
