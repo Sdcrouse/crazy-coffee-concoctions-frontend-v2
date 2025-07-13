@@ -64,7 +64,6 @@ async function login(event, loginForm) {
         switch (data.status) {
             case 200:
                 // TODO: Redirect to a concoction-related page (maybe a list of the user's concoctions)
-                localStorage.setItem('token', data.token);
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
                 mainContainer.replaceChildren(createCustomElement('h2', {
@@ -180,7 +179,7 @@ async function signup(event, signupForm) {
     let errorMessage;
 
     try {
-        const response = await fetch(apiBase + 'users', {
+        const response = await fetch(apiBase + 'signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
