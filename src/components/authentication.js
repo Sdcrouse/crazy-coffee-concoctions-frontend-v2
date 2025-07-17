@@ -63,12 +63,21 @@ async function login(event, loginForm) {
         
         switch (data.status) {
             case 200:
-                // TODO: Redirect to a concoction-related page (maybe a list of the user's concoctions)
+                // TODO: Move this into a separate concoction file
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
-                mainContainer.replaceChildren(createCustomElement('h2', {
-                    text: data.successMessage, classes: 'success-text center-content'
-                }));
+
+                const newResponse = await fetch(apiBase + 'concoctions', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                const newData = await newResponse.json();
+
+                mainContainer.replaceChildren(
+                    createCustomElement('h2', { text: data.successMessage, classes: 'success-text center-content' }),
+                    createCustomElement('p', { text: newData.message, classes: 'center-content' })
+                );
                 break;
             case 401:
                 // Currently, this is expecting at most one username error and/or one password error
