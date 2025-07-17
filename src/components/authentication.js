@@ -4,7 +4,7 @@ import { generateServerErrorPage } from '../utils/errorPages.js';
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
-const apiBase = 'http://localhost:5000/';
+const apiBase = 'http://localhost:5000';
 
 function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
@@ -53,7 +53,7 @@ async function login(event, loginForm) {
     }
 
     try {
-        const response = await fetch(apiBase + 'login', {
+        const response = await fetch(`${apiBase}/users/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -69,7 +69,7 @@ async function login(event, loginForm) {
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
 
-                const newResponse = await fetch(apiBase + 'concoctions', {
+                const newResponse = await fetch(`${apiBase}/concoctions`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
@@ -190,7 +190,7 @@ async function signup(event, signupForm) {
     let errorMessage;
 
     try {
-        const response = await fetch(apiBase + 'signup', {
+        const response = await fetch(`${apiBase}/users/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
