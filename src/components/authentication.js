@@ -56,6 +56,7 @@ async function login(event, loginForm) {
         const response = await fetch(apiBase + 'login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ username, password })
         });
         
@@ -64,6 +65,7 @@ async function login(event, loginForm) {
         switch (data.status) {
             case 200:
                 // TODO: Move this into a separate concoction file
+                // TODO: Add logic for the different responses returned by the get /concoctions request (currently 200, 401, and 500)
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
 
