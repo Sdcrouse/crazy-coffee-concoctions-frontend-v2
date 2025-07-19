@@ -5,9 +5,10 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
-export async function generateConcoctionsPage(successMessage) {
+export async function generateConcoctionsPage(successMessage = '') {
     titleElement.textContent = `${baseTitle} - Your Concoctions`;
 
+    // TODO: Move this logic into a separate getConcoctions function
     // TODO: Add logic for the different responses returned by the get /concoctions request (currently 200, 401, and 500)
     const newResponse = await fetch(`${apiBase}/concoctions`, {
         method: 'GET',

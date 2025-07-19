@@ -67,7 +67,8 @@ async function login(event, loginForm) {
             case 200:
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
-                generateConcoctionsPage(data.successMessage);
+                document.getElementById('display-concoctions').style.display = 'initial';
+                await generateConcoctionsPage(data.successMessage);
                 break;
             case 401:
                 // Currently, this is expecting at most one username error and/or one password error
