@@ -1,5 +1,6 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
+import { generateConcoctionsPage } from './concoctions.js';
 
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
@@ -64,22 +65,9 @@ async function login(event, loginForm) {
         
         switch (data.status) {
             case 200:
-                // TODO: Move this into a separate concoction file
-                // TODO: Add logic for the different responses returned by the get /concoctions request (currently 200, 401, and 500)
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
-
-                const newResponse = await fetch(`${apiBase}/concoctions`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
-                const newData = await newResponse.json();
-
-                mainContainer.replaceChildren(
-                    createCustomElement('h2', { text: data.successMessage, classes: 'success-text center-content' }),
-                    createCustomElement('p', { text: newData.message, classes: 'center-content' })
-                );
+                generateConcoctionsPage(data.successMessage);
                 break;
             case 401:
                 // Currently, this is expecting at most one username error and/or one password error
