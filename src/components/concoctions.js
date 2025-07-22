@@ -1,5 +1,6 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
+import { generateLoginPage } from './authentication.js';
 
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
@@ -44,7 +45,14 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 );
                 mainContainer.replaceChildren(concoctionsDiv);
                 break;
-            // TODO: Add a case for 401 error messages and redirect people to the login page
+            case 400:
+            case 401:
+                console.error(data);
+                document.getElementById('signup').style.display = 'initial';
+                document.getElementById('login').style.display = 'initial';
+                document.getElementById('display-concoctions').style.display = 'none';
+                generateLoginPage({ invalidSessionMessage: data.message });
+                break;
             case 500:
                 console.error(data);
                 generateServerErrorPage(data.errorMessage);

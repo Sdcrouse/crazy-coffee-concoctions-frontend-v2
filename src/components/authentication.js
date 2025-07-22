@@ -7,7 +7,9 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
-function generateLoginPage({ signupSuccessMessage = '', username = '', password = '', errors = {} } = {}) {
+function generateLoginPage(
+    { signupSuccessMessage = '', invalidSessionMessage = '', username = '', password = '', errors = {} } = {}
+) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
@@ -18,6 +20,12 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
             classes: 'success-text center-content'
         });
         loginDiv.appendChild(signupSuccessHeading);
+    } else if (invalidSessionMessage) {
+        const invalidSessionHeading = createCustomElement('h3', {
+            text: invalidSessionMessage,
+            classes: 'error-text center-content'
+        });
+        loginDiv.appendChild(invalidSessionHeading);
     }
 
     const loginHeading = createCustomElement('h2', {
@@ -36,7 +44,6 @@ function generateLoginPage({ signupSuccessMessage = '', username = '', password 
 }
 
 async function login(event, loginForm) {
-    // TODO: Redirect to the user's homepage after logging in
     event.preventDefault();
 
     const loginFormInputs = new FormData(loginForm);
@@ -70,8 +77,9 @@ async function login(event, loginForm) {
                 document.getElementById('display-concoctions').style.display = 'initial';
                 await generateConcoctionsPage(data.successMessage);
                 break;
+            case 400:
             case 401:
-                // Currently, this is expecting at most one username error and/or one password error
+                // Currently, cases 400 and 401 are expecting at most one username error and/or one password error
                 // If multiple errors are later returned for usernames and passwords, this should be updated
                 console.error(data);
 
