@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import { generateServerErrorPage } from '../utils/errorPages.js';
 
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
@@ -25,19 +26,50 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
     concoctionsDiv.appendChild(concoctionsHeading);
 
-    // TODO: Add logic for the different responses returned by the get /concoctions request (currently 200, 401, and 500)
     // TODO: Move this logic into a separate getConcoctions function
     // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function)
     // Just remember that I am ALSO sending this function a success message when the user logs in
-    const newResponse = await fetch(`${apiBase}/concoctions`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-    });
-    const newData = await newResponse.json();
+    try {
+        const response = await fetch(`${apiBase}/concoctions`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        const data = await response.json();
 
-    concoctionsDiv.appendChild(
-        createCustomElement('p', { text: newData.message, classes: 'center-content' })
-    );
-    mainContainer.replaceChildren(concoctionsDiv);
+        switch (data.status) {
+            case 200:
+                concoctionsDiv.appendChild(
+                    createCustomElement('p', { text: data.message, classes: 'center-content' })
+                );
+                mainContainer.replaceChildren(concoctionsDiv);
+                break;
+            // TODO: Add a case for 401 error messages and redirect people to the login page
+            case 500:
+                console.error(data);
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                console.error(data);
+
+                const errorHeading = createCustomElement('h4', {
+                    text: 'An unknown error has occurred on the server. Please try again later.',
+                    classes: 'center-content error-text'
+                });
+                
+                concoctionsDiv.appendChild(errorHeading);
+                mainContainer.replaceChildren(concoctionsDiv);
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+
+        const errorHeading = createCustomElement('h4', {
+            text: 'An unknown error occurred while getting your concoctions. Please try again later.',
+            classes: 'center-content error-text'
+        });
+        
+        concoctionsDiv.appendChild(errorHeading);
+        mainContainer.replaceChildren(concoctionsDiv);
+    }
 };
