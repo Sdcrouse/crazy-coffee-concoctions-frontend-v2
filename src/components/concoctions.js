@@ -31,12 +31,33 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
     // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function)
     // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
-        const response = await fetch(`${apiBase}/concoctions`, {
+        let response = await fetch(`${apiBase}/concoctions`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
-        const data = await response.json();
+        let data = await response.json();
+
+        if (data.status === 400 || data.status === 401) {
+            data = await refreshSession();
+
+            if (data.status !== 200) {
+                console.error(data);
+                document.getElementById('signup').style.display = 'initial';
+                document.getElementById('login').style.display = 'initial';
+                document.getElementById('display-concoctions').style.display = 'none';
+                generateLoginPage({ invalidSessionMessage: data.errorMessage });
+                return;
+            }
+
+            response = await fetch(`${apiBase}/concoctions`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            data = await response.json();
+        }
 
         switch (data.status) {
             case 200:
@@ -44,14 +65,6 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                     createCustomElement('p', { text: data.message, classes: 'center-content' })
                 );
                 mainContainer.replaceChildren(concoctionsDiv);
-                break;
-            case 400:
-            case 401:
-                console.error(data);
-                document.getElementById('signup').style.display = 'initial';
-                document.getElementById('login').style.display = 'initial';
-                document.getElementById('display-concoctions').style.display = 'none';
-                generateLoginPage({ invalidSessionMessage: data.message });
                 break;
             case 500:
                 console.error(data);
@@ -81,3 +94,13 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
         mainContainer.replaceChildren(concoctionsDiv);
     }
 };
+
+async function refreshSession() {
+    const response = await fetch(`${apiBase}/users/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+
+    return await response.json();
+}
