@@ -27,16 +27,11 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
     concoctionsDiv.appendChild(concoctionsHeading);
 
-    // TODO: Move this logic into a separate getConcoctions function
+    // TODO?: Move this logic into a separate getConcoctions function
     // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function)
     // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
-        let response = await fetch(`${apiBase}/concoctions`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
-        let data = await response.json();
+        let data = await fetchConcoctions();
 
         if (data.status === 400 || data.status === 401) {
             data = await refreshSession();
@@ -50,13 +45,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 return;
             }
 
-            response = await fetch(`${apiBase}/concoctions`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            });
-
-            data = await response.json();
+            data = await fetchConcoctions();
         }
 
         switch (data.status) {
@@ -94,6 +83,16 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
         mainContainer.replaceChildren(concoctionsDiv);
     }
 };
+
+async function fetchConcoctions() {
+    const response = await fetch(`${apiBase}/concoctions`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+
+    return await response.json();
+}
 
 async function refreshSession() {
     const response = await fetch(`${apiBase}/users/refresh`, {
