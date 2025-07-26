@@ -8,12 +8,14 @@ const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
 function generateLoginPage(
-    { signupSuccessMessage = '', invalidSessionMessage = '', username = '', password = '', errors = {} } = {}
+    { signupSuccessMessage = '', invalidSessionMessage = '', logoutMessage = '', username = '', password = '', errors = {} } = {}
 ) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
 
+    // TODO: Move this into a separate function
+    // It may be better to have two variables: successMessage and errorMessage instead of signupSuccessMessage, logoutMessage, etc.
     if (signupSuccessMessage) {
         const signupSuccessHeading = createCustomElement('h3', {
             text: signupSuccessMessage,
@@ -26,6 +28,12 @@ function generateLoginPage(
             classes: 'error-text center-content'
         });
         loginDiv.appendChild(invalidSessionHeading);
+    } else if (logoutMessage) {
+        const logoutSuccessHeading = createCustomElement('h3', {
+            text: logoutMessage,
+            classes: 'center-content'
+        });
+        loginDiv.appendChild(logoutSuccessHeading);
     }
 
     const loginHeading = createCustomElement('h2', {
@@ -75,6 +83,7 @@ async function login(event, loginForm) {
                 document.getElementById('signup').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('display-concoctions').style.display = 'initial';
+                document.getElementById('logout').style.display = 'initial';
                 await generateConcoctionsPage(data.successMessage);
                 break;
             case 400:
@@ -184,7 +193,7 @@ async function signup(event, signupForm) {
         return;
     }
 
-    let errorMessage;
+    let errorMessage; // TODO: Remove this variable
 
     try {
         const response = await fetch(`${apiBase}/users/signup`, {
@@ -228,6 +237,44 @@ async function signup(event, signupForm) {
     } catch (error) {
         console.error(error.message);
         appendErrorHeading('signup-div', 'There was an error while submitting the signup form. Please try again.');
+    }
+}
+
+async function logout() {
+    try {
+        const response = await fetch(`${apiBase}/users/logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+    
+        const data = await response.json();
+
+        switch (data.status) {
+            case 200:
+                document.getElementById('signup').style.display = 'initial';
+                document.getElementById('login').style.display = 'initial';
+                document.getElementById('display-concoctions').style.display = 'none';
+                document.getElementById('logout').style.display = 'none';
+                generateLoginPage({ logoutMessage: data.logoutSuccessMessage });
+                break;
+            case 400:
+            case 401:
+                console.error(data);
+                generateLoginPage({ logoutMessage: data.errorMessage });
+                break;
+            case 500:
+                console.error(data);
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                console.error(data);
+                appendErrorHeading('main-container', 'An unknown error has occurred. Please try again later.');
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+        appendErrorHeading('main-container', 'There was an error while logging you out. Please try again.');
     }
 }
 
@@ -314,4 +361,4 @@ function appendErrorHeading(elementId, errorMessage) {
     document.getElementById(elementId).appendChild(errorHeading);
 }
 
-export { generateSignupPage, generateLoginPage };
+export { generateSignupPage, generateLoginPage, logout };
