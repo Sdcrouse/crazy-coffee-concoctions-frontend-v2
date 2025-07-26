@@ -193,8 +193,6 @@ async function signup(event, signupForm) {
         return;
     }
 
-    let errorMessage; // TODO: Remove this variable
-
     try {
         const response = await fetch(`${apiBase}/users/signup`, {
             method: 'POST',
@@ -229,9 +227,8 @@ async function signup(event, signupForm) {
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
-                errorMessage = 'An unknown error has occurred. Please try again later.';
                 console.error(data);
-                appendErrorHeading('signup-div', errorMessage);
+                appendErrorHeading('signup-div', 'An unknown error has occurred. Please try again later.');
                 break;
         }
     } catch (error) {
