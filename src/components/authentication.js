@@ -73,10 +73,7 @@ async function login(event, loginForm) {
         
         switch (data.status) {
             case 200:
-                document.getElementById('signup').style.display = 'none';
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('display-concoctions').style.display = 'initial';
-                document.getElementById('logout').style.display = 'initial';
+                toggleButtonDisplay();
                 await generateConcoctionsPage(data.successMessage);
                 break;
             case 400:
@@ -245,19 +242,13 @@ async function logout() {
 
         switch (data.status) {
             case 200:
-                document.getElementById('signup').style.display = 'initial';
-                document.getElementById('login').style.display = 'initial';
-                document.getElementById('display-concoctions').style.display = 'none';
-                document.getElementById('logout').style.display = 'none';
+                toggleButtonDisplay(false);
                 generateLoginPage({ messages: { successMessage: data.logoutSuccessMessage } });
                 break;
             case 400:
             case 401:
                 console.error(data);
-                document.getElementById('signup').style.display = 'initial';
-                document.getElementById('login').style.display = 'initial';
-                document.getElementById('display-concoctions').style.display = 'none';
-                document.getElementById('logout').style.display = 'none';
+                toggleButtonDisplay(false);
                 generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 break;
             case 500:
@@ -356,6 +347,25 @@ function generateForm(submitButtonText, ...formElements) {
 function appendErrorHeading(elementId, errorMessage) {
     const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'center-content error-text' });
     document.getElementById(elementId).appendChild(errorHeading);
+}
+
+function toggleButtonDisplay(userIsLoggedIn = true) {
+    const signupButton = document.getElementById('signup');
+    const loginButton = document.getElementById('login');
+    const concoctionsButton = document.getElementById('display-concoctions');
+    const logoutButton = document.getElementById('logout');
+
+    if (userIsLoggedIn) {
+        signupButton.style.display = 'none';
+        loginButton.style.display = 'none';
+        concoctionsButton.style.display = 'initial';
+        logoutButton.style.display = 'initial';
+    } else {
+        signupButton.style.display = 'initial';
+        loginButton.style.display = 'initial';
+        concoctionsButton.style.display = 'none';
+        logoutButton.style.display = 'none';
+    }
 }
 
 export { generateSignupPage, generateLoginPage, logout };
