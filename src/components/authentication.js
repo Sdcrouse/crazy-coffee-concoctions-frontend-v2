@@ -254,6 +254,10 @@ async function logout() {
             case 400:
             case 401:
                 console.error(data);
+                document.getElementById('signup').style.display = 'initial';
+                document.getElementById('login').style.display = 'initial';
+                document.getElementById('display-concoctions').style.display = 'none';
+                document.getElementById('logout').style.display = 'none';
                 generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 break;
             case 500:
