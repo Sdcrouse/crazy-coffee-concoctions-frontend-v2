@@ -7,33 +7,26 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
-function generateLoginPage(
-    { signupSuccessMessage = '', invalidSessionMessage = '', logoutMessage = '', username = '', password = '', errors = {} } = {}
-) {
+function generateLoginPage({
+    username = '', password = '', messages = {}, errors = {}
+} = {}) {
+    
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
 
-    // TODO: Move this into a separate function
-    // It may be better to have two variables: successMessage and errorMessage instead of signupSuccessMessage, logoutMessage, etc.
-    if (signupSuccessMessage) {
-        const signupSuccessHeading = createCustomElement('h3', {
-            text: signupSuccessMessage,
+    if (messages.successMessage) {
+        const successHeading = createCustomElement('h3', {
+            text: messages.successMessage,
             classes: 'success-text center-content'
         });
-        loginDiv.appendChild(signupSuccessHeading);
-    } else if (invalidSessionMessage) {
-        const invalidSessionHeading = createCustomElement('h3', {
-            text: invalidSessionMessage,
+        loginDiv.appendChild(successHeading);
+    } else if (messages.errorMessage) {
+        const errorHeading = createCustomElement('h3', {
+            text: messages.errorMessage,
             classes: 'error-text center-content'
         });
-        loginDiv.appendChild(invalidSessionHeading);
-    } else if (logoutMessage) {
-        const logoutSuccessHeading = createCustomElement('h3', {
-            text: logoutMessage,
-            classes: 'center-content'
-        });
-        loginDiv.appendChild(logoutSuccessHeading);
+        loginDiv.appendChild(errorHeading);
     }
 
     const loginHeading = createCustomElement('h2', {
@@ -121,7 +114,10 @@ async function login(event, loginForm) {
     }
 }
 
-function generateSignupPage({ username = '', password = '', errors = {} } = {}) {
+function generateSignupPage({
+    username = '', password = '', errors = {}
+} = {}) {
+    
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupHeading = createCustomElement('h2', {
@@ -204,7 +200,7 @@ async function signup(event, signupForm) {
         
         switch (data.status) {
             case 201:
-                generateLoginPage({ signupSuccessMessage: data.successMessage });
+                generateLoginPage({ messages: { successMessage: data.successMessage } });
                 break;
             case 400:
                 console.error(data);
@@ -253,12 +249,12 @@ async function logout() {
                 document.getElementById('login').style.display = 'initial';
                 document.getElementById('display-concoctions').style.display = 'none';
                 document.getElementById('logout').style.display = 'none';
-                generateLoginPage({ logoutMessage: data.logoutSuccessMessage });
+                generateLoginPage({ messages: { successMessage: data.logoutSuccessMessage } });
                 break;
             case 400:
             case 401:
                 console.error(data);
-                generateLoginPage({ logoutMessage: data.errorMessage });
+                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 break;
             case 500:
                 console.error(data);
