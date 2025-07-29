@@ -57,11 +57,13 @@ nav button {
     color: white;
 }
 
+#signup, #login, #logout { background-color: #63A7E4; }
+
 .coffee-text { color: #A65F40; }
 
 .error-text { color: red; }
 
-.success-text { color: green; }
+.success-text { color: #2581c8; }
 
 
 /* BOX STYLES */
