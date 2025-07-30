@@ -51,11 +51,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
         switch (data.status) {
             case 200:
-                concoctionsDiv.appendChild(
-                    createCustomElement('p', { text: data.message, classes: 'center-content' })
-                );
-
-                const {concoctions} = data;
+                const {concoctions, noConcoctionsMessage} = data;
 
                 if (concoctions) {
                     const concoctionsList = document.createElement('ul');
@@ -68,6 +64,10 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                     }
 
                     concoctionsDiv.appendChild(concoctionsList);
+                } else {
+                    concoctionsDiv.appendChild(
+                        createCustomElement('p', { text: noConcoctionsMessage, classes: 'center-content' })
+                    );
                 }
 
                 mainContainer.replaceChildren(concoctionsDiv);
