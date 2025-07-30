@@ -28,7 +28,8 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
     concoctionsDiv.appendChild(concoctionsHeading);
 
     // TODO?: Move this logic into a separate getConcoctions function
-    // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function)
+    // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function.
+    // I could name that function "createConcoctionsList" or something similar.)
     // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
         let data = await fetchConcoctions();
@@ -53,6 +54,22 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 concoctionsDiv.appendChild(
                     createCustomElement('p', { text: data.message, classes: 'center-content' })
                 );
+
+                const {concoctions} = data;
+
+                if (concoctions) {
+                    const concoctionsList = document.createElement('ul');
+
+                    for (const concoction of concoctions) {
+                        const concoctionItem = createCustomElement(
+                            'li', { text: `${concoction.name}, created on ${concoction.created}` }
+                        );
+                        concoctionsList.appendChild(concoctionItem);
+                    }
+
+                    concoctionsDiv.appendChild(concoctionsList);
+                }
+
                 mainContainer.replaceChildren(concoctionsDiv);
                 break;
             case 500:
