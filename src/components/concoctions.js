@@ -42,7 +42,8 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 document.getElementById('signup').style.display = 'initial';
                 document.getElementById('login').style.display = 'initial';
                 document.getElementById('display-concoctions').style.display = 'none';
-                generateLoginPage({ invalidSessionMessage: data.errorMessage });
+                document.getElementById('logout').style.display = 'none';
+                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 return;
             }
 
@@ -130,13 +131,25 @@ async function refreshSession() {
 
 async function generateConcoctionPage(concoctionId) {
     try {
-        const response = await fetch(`${apiBase}/concoctions/${concoctionId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
+        // TODO: Combine this function and fetchConcoctions into one function, fetchConcoctionData
+        // I may be able to add the following if statement to it!
+        let data = await fetchConcoction(concoctionId);
 
-        const data = await response.json();
+        if (data.status === 400 || data.status === 401) {
+            data = await refreshSession();
+
+            if (data.status !== 200) {
+                console.error(data);
+                document.getElementById('signup').style.display = 'initial';
+                document.getElementById('login').style.display = 'initial';
+                document.getElementById('display-concoctions').style.display = 'none';
+                document.getElementById('logout').style.display = 'none';
+                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                return;
+            }
+
+            data = await fetchConcoction(concoctionId);
+        }
 
         switch(data.status) {
             case 200:
@@ -174,4 +187,14 @@ async function generateConcoctionPage(concoctionId) {
         
         document.getElementById(`concoction-${concoctionId}`).appendChild(errorHeading);
     }
+}
+
+async function fetchConcoction(concoctionId) {
+    const response = await fetch(`${apiBase}/concoctions/${concoctionId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+
+    return await response.json();
 }
