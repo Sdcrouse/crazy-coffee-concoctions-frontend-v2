@@ -242,13 +242,13 @@ async function logout() {
 
         switch (data.status) {
             case 200:
-                toggleButtonDisplay(false);
+                toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ messages: { successMessage: data.logoutSuccessMessage } });
                 break;
             case 400:
             case 401:
                 console.error(data);
-                toggleButtonDisplay(false);
+                toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 break;
             case 500:
@@ -349,7 +349,7 @@ function appendErrorHeading(elementId, errorMessage) {
     document.getElementById(elementId).appendChild(errorHeading);
 }
 
-function toggleButtonDisplay(userIsLoggedIn = true) {
+function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
     const signupButton = document.getElementById('signup');
     const loginButton = document.getElementById('login');
     const concoctionsButton = document.getElementById('display-concoctions');
@@ -368,4 +368,4 @@ function toggleButtonDisplay(userIsLoggedIn = true) {
     }
 }
 
-export { generateSignupPage, generateLoginPage, logout };
+export { generateSignupPage, generateLoginPage, logout, toggleButtonDisplay };

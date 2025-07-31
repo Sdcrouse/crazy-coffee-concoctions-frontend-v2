@@ -1,6 +1,6 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
-import { generateLoginPage } from './authentication.js';
+import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
 
 const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
@@ -39,10 +39,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
             if (data.status !== 200) {
                 console.error(data);
-                document.getElementById('signup').style.display = 'initial';
-                document.getElementById('login').style.display = 'initial';
-                document.getElementById('display-concoctions').style.display = 'none';
-                document.getElementById('logout').style.display = 'none';
+                toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 return;
             }
@@ -140,10 +137,7 @@ async function generateConcoctionPage(concoctionId) {
 
             if (data.status !== 200) {
                 console.error(data);
-                document.getElementById('signup').style.display = 'initial';
-                document.getElementById('login').style.display = 'initial';
-                document.getElementById('display-concoctions').style.display = 'none';
-                document.getElementById('logout').style.display = 'none';
+                toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ messages: { errorMessage: data.errorMessage } });
                 return;
             }
