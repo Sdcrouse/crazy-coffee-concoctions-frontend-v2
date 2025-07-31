@@ -6,6 +6,7 @@ const mainContainer = document.getElementById('main-container');
 const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
+const concoctionsUrl = `${apiBase}/concoctions`;
 
 export async function generateConcoctionsPage(loginSuccessMessage = '') {
     titleElement.textContent = `${baseTitle} - Your Concoctions`;
@@ -32,7 +33,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
     // I could name that function "createConcoctionsList" or something similar.)
     // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
-        let data = await fetchConcoctions();
+        let data = await fetchConcoctionData(concoctionsUrl);
 
         if (data.status === 400 || data.status === 401) {
             data = await refreshSession();
@@ -44,7 +45,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 return;
             }
 
-            data = await fetchConcoctions();
+            data = await fetchConcoctionData(concoctionsUrl);
         }
 
         switch (data.status) {
@@ -106,8 +107,8 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
     }
 };
 
-async function fetchConcoctions() {
-    const response = await fetch(`${apiBase}/concoctions`, {
+async function fetchConcoctionData(url) {
+    const response = await fetch(url, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
@@ -128,9 +129,7 @@ async function refreshSession() {
 
 async function generateConcoctionPage(concoctionId) {
     try {
-        // TODO: Combine this function and fetchConcoctions into one function, fetchConcoctionData
-        // I may be able to add the following if statement to it!
-        let data = await fetchConcoction(concoctionId);
+        let data = await fetchConcoctionData(`${concoctionsUrl}/${concoctionId}`);
 
         if (data.status === 400 || data.status === 401) {
             data = await refreshSession();
@@ -142,7 +141,7 @@ async function generateConcoctionPage(concoctionId) {
                 return;
             }
 
-            data = await fetchConcoction(concoctionId);
+            data = await fetchConcoctionData(`${concoctionsUrl}/${concoctionId}`);
         }
 
         switch(data.status) {
@@ -181,14 +180,4 @@ async function generateConcoctionPage(concoctionId) {
         
         document.getElementById(`concoction-${concoctionId}`).appendChild(errorHeading);
     }
-}
-
-async function fetchConcoction(concoctionId) {
-    const response = await fetch(`${apiBase}/concoctions/${concoctionId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-    });
-
-    return await response.json();
 }
