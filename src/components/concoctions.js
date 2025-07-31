@@ -51,16 +51,23 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
         switch (data.status) {
             case 200:
-                const {concoctions, noConcoctionsMessage} = data;
+                // TODO: Make the list of concoctions look better - maybe replace the list with <div>s?
+                const { concoctions, noConcoctionsMessage } = data;
 
                 if (concoctions) {
                     const concoctionsList = document.createElement('ul');
 
                     for (const concoction of concoctions) {
+                        const { id, name, created } = concoction;
+
                         const concoctionItem = createCustomElement(
-                            'li', { text: `${concoction.name}, created on ${concoction.created}` }
+                            'li', { id: `concoction-${id}`, text: `${name}, created on ${created}` }
                         );
-                        concoctionsList.appendChild(concoctionItem);
+
+                        const concoctionButton = createCustomElement('button', { text: 'View Concoction' });
+                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(id));
+
+                        concoctionsList.append(concoctionItem, concoctionButton);
                     }
 
                     concoctionsDiv.appendChild(concoctionsList);
@@ -119,4 +126,52 @@ async function refreshSession() {
     });
 
     return await response.json();
+}
+
+async function generateConcoctionPage(concoctionId) {
+    try {
+        const response = await fetch(`${apiBase}/concoctions/${concoctionId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        switch(data.status) {
+            case 200:
+                const { name } = data.concoction;    
+                titleElement.textContent = `${baseTitle} - ${name}`;
+
+                const concoctionName = createCustomElement('h2', { text: name, classes: 'center-content coffee-text' });
+                const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
+                concoctionDiv.appendChild(concoctionName);
+                mainContainer.replaceChildren(concoctionDiv);
+
+                break;
+            case 500:
+                console.error(data);
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                console.error(data);
+
+                const errorHeading = createCustomElement('h4', {
+                    text: 'An unknown error has occurred on the server. Please try again later.',
+                    classes: 'center-content error-text'
+                });
+                
+                document.getElementById(`concoction-${concoctionId}`).appendChild(errorHeading);
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+
+        const errorHeading = createCustomElement('h4', {
+            text: 'An unexpected error occurred while fetching this concoction. Please try again later.',
+            classes: 'center-content error-text'
+        });
+        
+        document.getElementById(`concoction-${concoctionId}`).appendChild(errorHeading);
+    }
 }
