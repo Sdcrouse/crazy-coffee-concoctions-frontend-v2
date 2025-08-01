@@ -1,8 +1,7 @@
 /* GENERAL STYLES */
 
 h1 {
-    padding-left: 5%;
-    padding-right: 5%;
+    padding: 0 5%;
     align-self: center;
 }
 
@@ -12,13 +11,13 @@ nav {
 }
 
 nav button {
-    margin-bottom: 35px;
+    margin-bottom: 25px;
     font-size: 1.3em;
     width: 100%;
+    padding: 0.3em;
 }
 
 section {
-    align-self: center;
     background-color: #A65F40;
 }
 
@@ -37,15 +36,21 @@ button[type="submit"] {
     background-color: #63A7E4;
     width: 20%;
     height: 20%;
-    padding-top: 2%;
-    padding-bottom: 2%;
-    font-weight: 600;
+    padding: 2%;
+    font-size: 100%;
 }
 
 footer {
     padding-left: 16%;
     padding-right: 16%;
     color: darkred;
+}
+
+ul li button {
+    margin-left: 2%;
+    height: 2em;
+    background-color: #2581c8;
+    color: white;
 }
 
 
@@ -135,7 +140,6 @@ nav button {
 #main-container {
     background-color: white;
     margin: 5%;
-    height: 100%;
 }
 
 #main-container div h2 { text-decoration: underline; }
