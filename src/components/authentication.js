@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import appendErrorHeading from '../utils/appendErrorHeading.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -22,11 +23,7 @@ function generateLoginPage({
         });
         loginDiv.appendChild(successHeading);
     } else if (messages.errorMessage) {
-        const errorHeading = createCustomElement('h3', {
-            text: messages.errorMessage,
-            classes: 'error-text center-content'
-        });
-        loginDiv.appendChild(errorHeading);
+        appendErrorHeading(loginDiv, messages.errorMessage, 'h3');
     }
 
     const loginHeading = createCustomElement('h2', {
@@ -342,11 +339,6 @@ function generateForm(submitButtonText, ...formElements) {
     });
 
     return form;
-}
-
-function appendErrorHeading(elementId, errorMessage) {
-    const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'center-content error-text' });
-    document.getElementById(elementId).appendChild(errorHeading);
 }
 
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
