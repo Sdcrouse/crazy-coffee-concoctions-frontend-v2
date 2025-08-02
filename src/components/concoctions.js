@@ -147,14 +147,18 @@ async function generateConcoctionPage(concoctionId) {
 
         switch(data.status) {
             case 200:
-                const { name } = data.concoction;    
+                const { name, instructions, notes } = data.concoction;    
                 titleElement.textContent = `${baseTitle} - ${name}`;
 
-                const concoctionName = createCustomElement('h2', { text: name, classes: 'center-content coffee-text' });
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
+                const concoctionName = createCustomElement('h2', { text: name, classes: 'center-content coffee-text' });
                 concoctionDiv.appendChild(concoctionName);
-                mainContainer.replaceChildren(concoctionDiv);
 
+                const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
+                createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
+                if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
+
+                mainContainer.replaceChildren(concoctionDiv, concoctionAttrsWrapper);
                 break;
             case 500:
                 console.error(data);
@@ -181,4 +185,10 @@ async function generateConcoctionPage(concoctionId) {
         
         document.getElementById(`concoction-${concoctionId}`).appendChild(errorHeading);
     }
+}
+
+function createAndAppendAttribute(attributeName, attributeValue, attributeWrapper) {
+    const attributeHeading = createCustomElement('h3', { text: `${attributeName}:`, classes: 'coffee-text' });
+    const attributeText = createCustomElement('p', { text: attributeValue });
+    attributeWrapper.append(attributeHeading, attributeText);
 }
