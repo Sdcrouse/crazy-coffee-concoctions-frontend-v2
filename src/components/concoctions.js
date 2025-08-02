@@ -1,5 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
-import appendErrorHeading from '../utils/appendErrorHeading.js';
+import { appendErrorHeading, appendSuccessHeading } from '../utils/messageHeadings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
 
@@ -13,19 +13,9 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
     titleElement.textContent = `${baseTitle} - Your Concoctions`;
 
     const concoctionsDiv = createCustomElement('div', { id: 'concoctions-div' });
-
-    if (loginSuccessMessage) {
-        // TODO: Move this into a utility function (possibly in the same file as error headings)
-        // There may be similar code elsewhere (e.g. the logout function)
-        const loginSuccessHeading = createCustomElement('h3', {
-            text: loginSuccessMessage,
-            classes: 'success-text center-content'
-        });
-        concoctionsDiv.appendChild(loginSuccessHeading);
-    }
+    if (loginSuccessMessage) appendSuccessHeading(concoctionsDiv, loginSuccessMessage);
 
     // TODO: Move this and other similar h2 headings from this file and authentication.js, into a utility function
-    // I will probably update the appendErrorHeading file by renaming it appendHeadings.js and adding functions for success headings and regular headings
     const concoctionsHeading = createCustomElement('h2', {
         text: 'Your Concoctions',
         classes: 'center-content coffee-text'

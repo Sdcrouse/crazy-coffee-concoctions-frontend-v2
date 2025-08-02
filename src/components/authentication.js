@@ -1,5 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
-import appendErrorHeading from '../utils/appendErrorHeading.js';
+import { appendErrorHeading, appendSuccessHeading } from '../utils/messageHeadings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -15,15 +15,12 @@ function generateLoginPage({
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
+    const { successMessage, errorMessage } = messages;
 
-    if (messages.successMessage) {
-        const successHeading = createCustomElement('h3', {
-            text: messages.successMessage,
-            classes: 'success-text center-content'
-        });
-        loginDiv.appendChild(successHeading);
-    } else if (messages.errorMessage) {
-        appendErrorHeading(loginDiv, messages.errorMessage, 'h3');
+    if (successMessage) {
+        appendSuccessHeading(loginDiv, successMessage);
+    } else if (errorMessage) {
+        appendErrorHeading(loginDiv, errorMessage, 'h3');
     }
 
     const loginHeading = createCustomElement('h2', {
