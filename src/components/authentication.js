@@ -1,5 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
-import { appendErrorHeading, appendSuccessHeading } from '../utils/messageHeadings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -23,18 +23,15 @@ function generateLoginPage({
         appendErrorHeading(loginDiv, errorMessage, 'h3');
     }
 
-    const loginHeading = createCustomElement('h2', {
-        text: 'Log in to your account here!',
-        classes: 'center-content coffee-text'
-    });
+    appendPageHeading(loginDiv, 'Log in to your account here!');
 
     const usernameInputGroup = createInputGroup('username', username, errors.usernameErrors, 'login', { minLength: 2 });
     const passwordInputGroup = createInputGroup('password', password, errors.passwordErrors, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
+    loginDiv.appendChild(loginForm);
 
-    loginDiv.append(loginHeading, loginForm);
     mainContainer.replaceChildren(loginDiv);
 }
 
@@ -111,21 +108,15 @@ function generateSignupPage({
     
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
-    const signupHeading = createCustomElement('h2', {
-        text: 'Sign up here!',
-        classes: 'center-content coffee-text'
-    });
+    const signupDiv = createCustomElement('div', { id: 'signup-div' });
+    appendPageHeading(signupDiv, 'Sign up here!');
 
     const usernameFields = createInputGroup('username', username, errors.usernameErrors, 'register');
     const passwordFields = createInputGroup('password', password, errors.passwordErrors, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
-
-    const signupDiv = createCustomElement('div', {
-        id: 'signup-div',
-        itemsToAppend: [signupHeading, signupForm]
-    });
+    signupDiv.appendChild(signupForm);
 
     mainContainer.replaceChildren(signupDiv);
 };

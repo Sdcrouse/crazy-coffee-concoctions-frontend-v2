@@ -1,5 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
-import { appendErrorHeading, appendSuccessHeading } from '../utils/messageHeadings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
 
@@ -14,14 +14,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
     const concoctionsDiv = createCustomElement('div', { id: 'concoctions-div' });
     if (loginSuccessMessage) appendSuccessHeading(concoctionsDiv, loginSuccessMessage);
-
-    // TODO: Move this and other similar h2 headings from this file and authentication.js, into a utility function
-    const concoctionsHeading = createCustomElement('h2', {
-        text: 'Your Concoctions',
-        classes: 'center-content coffee-text'
-    });
-
-    concoctionsDiv.appendChild(concoctionsHeading);
+    appendPageHeading(concoctionsDiv, 'Your Concoctions');
 
     // TODO?: Move this logic into a separate getConcoctions function
     // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function.
@@ -130,12 +123,12 @@ async function generateConcoctionPage(concoctionId) {
 
         switch(data.status) {
             case 200:
-                const { name, instructions, notes } = data.concoction;    
+                const { name, instructions, notes } = data.concoction;
+
                 titleElement.textContent = `${baseTitle} - ${name}`;
 
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
-                const concoctionName = createCustomElement('h2', { text: name, classes: 'center-content coffee-text' });
-                concoctionDiv.appendChild(concoctionName);
+                appendPageHeading(concoctionDiv, name);
 
                 const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
                 createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);

@@ -19,4 +19,13 @@ function appendSuccessHeading(wrapper, successMessage) {
     wrapper.appendChild(successHeading);
 }
 
-export { appendErrorHeading, appendSuccessHeading };
+function appendPageHeading(wrapper, pageTitle) {
+    const pageHeading = createCustomElement('h2', {
+        text: pageTitle,
+        classes: 'center-content coffee-text'
+    });
+
+    wrapper.appendChild(pageHeading);
+}
+
+export { appendErrorHeading, appendSuccessHeading, appendPageHeading };
