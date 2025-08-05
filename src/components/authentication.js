@@ -103,17 +103,22 @@ async function login(event, loginForm) {
     }
 }
 
-function generateSignupPage({
-    username = '', password = '', errors = {}
-} = {}) {
-    
+function generateSignupPage(userInfo) {
     titleElement.textContent = `${baseTitle} - Sign Up`;
 
     const signupDiv = createCustomElement('div', { id: 'signup-div' });
     appendPageHeading(signupDiv, 'Sign up here!');
 
-    const usernameFields = createInputGroup('username', username, errors.usernameErrors, 'register');
-    const passwordFields = createInputGroup('password', password, errors.passwordErrors, 'register');
+    let username, password, usernameErrors, passwordErrors;
+    if (userInfo) {
+        username = userInfo.username;
+        password = userInfo.password;
+        usernameErrors = userInfo.usernameErrors;
+        passwordErrors = userInfo.passwordErrors;
+    }
+    
+    const usernameFields = createInputGroup('username', username, usernameErrors, 'register');
+    const passwordFields = createInputGroup('password', password, passwordErrors, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -131,10 +136,7 @@ async function signup(event, signupForm) {
     const user = new User(username, password);
     
     if (!user.validateCredentials()) {
-        const { usernameErrors, passwordErrors } = user;
-        generateSignupPage({
-            username, password, errors: { usernameErrors, passwordErrors }
-        });
+        generateSignupPage(user);
         return;
     }
 
@@ -158,16 +160,14 @@ async function signup(event, signupForm) {
                 if (usernameErrors) user.addUsernameErrors(usernameErrors);
                 if (passwordErrors) user.addPasswordErrors(passwordErrors);
 
-                generateSignupPage({
-                    username, password, errors: { usernameErrors: user.usernameErrors, passwordErrors: user.passwordErrors }
-                });
+                generateSignupPage(user);
                 break;
             case 409:
                 // If there are other error messages with an HTTP 409 status, update this and the backend
                 // For now, the only expected HTTP 409 error is a user who already exists
                 console.error(data);
                 user.addUsernameErrors([data.errorMessage]);
-                generateSignupPage({ username, password, errors: { usernameErrors: user.usernameErrors }});
+                generateSignupPage(user);
                 break;
             case 500:
                 console.error(data);
