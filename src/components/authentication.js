@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
@@ -126,23 +127,10 @@ async function signup(event, signupForm) {
 
     const signupFormInputs = new FormData(signupForm);
     const { username, password } = Object.fromEntries(signupFormInputs);
-    let usernameErrors = [], passwordErrors = [];
+    const user = new User(username, password);
 
-    if (username) {
-        let usernameRegex = /^[\w\.]+$/;
-        if (!usernameRegex.test(username)) {
-            usernameErrors.push('Username must only contain letters, numbers, periods, and underscores');
-        }
-
-        usernameRegex = /^[a-zA-Z].*[a-zA-Z\d]$/;
-        if (!usernameRegex.test(username)) {
-            usernameErrors.push('Username must start with a letter and end with a letter or number');
-        }
-
-        if (username.length < 8) { usernameErrors.push('Username must be at least eight characters long'); }
-    } else {
-        usernameErrors.push('Username is required');
-    }
+    let usernameErrors = user.validateUsername();
+    let passwordErrors = [];
 
     if (password) {
         const containsOneOfEach = 
