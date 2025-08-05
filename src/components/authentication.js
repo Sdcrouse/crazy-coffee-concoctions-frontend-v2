@@ -127,15 +127,11 @@ async function signup(event, signupForm) {
 
     const signupFormInputs = new FormData(signupForm);
     const { username, password } = Object.fromEntries(signupFormInputs);
+    
     const user = new User(username, password);
-
-    let usernameErrors = user.validateUsername();
-    let passwordErrors = user.validatePassword();
-
-    if (usernameErrors.length > 0 || passwordErrors.length > 0) {
-        generateSignupPage({
-            username, password, errors: { usernameErrors, passwordErrors }
-        });
+    
+    if (!user.validateCredentials()) {
+        generateSignupPage({ username, password, errors: user.errors });
         return;
     }
 
@@ -155,18 +151,18 @@ async function signup(event, signupForm) {
             case 400:
                 console.error(data);
                 
-                const {username: unameErrors, password: passErrors } = data.errors;
-                if (unameErrors) { usernameErrors.push(...unameErrors); }
-                if (passErrors) { passwordErrors.push(...passErrors); }
+                const {username: usernameErrors, password: passwordErrors } = data.errors;
+                if (usernameErrors) user.addUsernameErrors(usernameErrors);
+                if (passwordErrors) user.addPasswordErrors(passwordErrors);
 
-                generateSignupPage({ username, password, errors: { usernameErrors, passwordErrors } });
+                generateSignupPage({ username, password, errors: user.errors });
                 break;
             case 409:
                 // If there are other error messages with an HTTP 409 status, update this and the backend
                 // For now, the only expected HTTP 409 error is a user who already exists
                 console.error(data);
-                usernameErrors.push(data.errorMessage);
-                generateSignupPage({ username, password, errors: { usernameErrors }});
+                user.addUsernameErrors([data.errorMessage]);
+                generateSignupPage({ username, password, errors: { usernameErrors: user.errors.usernameErrors }});
                 break;
             case 500:
                 console.error(data);

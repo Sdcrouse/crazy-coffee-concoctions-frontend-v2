@@ -8,7 +8,11 @@ export default class User {
         this.#password = password;
     }
 
-    validateUsername() {
+    get errors() {
+        return this.#errors;
+    }
+
+    #validateUsername() {
         const username = this.#username;
         const usernameErrors = this.#errors.usernameErrors;
 
@@ -27,11 +31,9 @@ export default class User {
         } else {
             usernameErrors.push('Username is required');
         }
-
-        return usernameErrors;
     }
 
-    validatePassword() {
+    #validatePassword() {
         const password = this.#password;
         const passwordErrors = this.#errors.passwordErrors;
 
@@ -54,7 +56,19 @@ export default class User {
         } else {
             passwordErrors.push('Password is required');
         }
+    }
 
-        return passwordErrors;
+    validateCredentials() {
+        this.#validateUsername();
+        this.#validatePassword();
+        return (this.#errors.usernameErrors.length === 0) && (this.#errors.passwordErrors.length === 0);
+    }
+
+    addUsernameErrors(errors) {
+        this.#errors.usernameErrors.push(...errors);
+    }
+
+    addPasswordErrors(errors) {
+        this.#errors.passwordErrors.push(...errors);
     }
 }
