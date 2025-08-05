@@ -9,6 +9,10 @@ export default class User {
         this.#password = password;
     }
 
+    get username() {
+        return this.#username;
+    }
+
     get usernameErrors() {
         return this.#usernameErrors;
     }
@@ -21,7 +25,7 @@ export default class User {
         const username = this.#username;
         const usernameErrors = this.#usernameErrors;
 
-        if (username) {
+        if (username && username.trim().length > 0) {
             let usernameRegex = /^[\w\.]+$/;
             if (!usernameRegex.test(username)) {
                 usernameErrors.push('Username must only contain letters, numbers, periods, and underscores');
@@ -42,7 +46,7 @@ export default class User {
         const password = this.#password;
         const passwordErrors = this.#passwordErrors;
 
-        if (password) {
+        if (password && password.trim().length > 0) {
             const containsOneOfEach = 
                 /[a-zA-Z]+/.test(password) // letters
                 && /\d+/.test(password) // numbers
@@ -55,7 +59,10 @@ export default class User {
 
             if (password.length < 8) { passwordErrors.push('Password must be at least eight characters long'); }
 
-            if (password.includes(this.#username) || password.toLowerCase().includes('password')) {
+            if (
+                (this.#username && password.includes(this.#username))
+                || password.toLowerCase().includes('password')
+            ) {
                 passwordErrors.push("Password must not contain the username or the word 'password' (either upper or lowercase)");
             }
         } else {

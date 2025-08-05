@@ -109,16 +109,15 @@ function generateSignupPage(userInfo) {
     const signupDiv = createCustomElement('div', { id: 'signup-div' });
     appendPageHeading(signupDiv, 'Sign up here!');
 
-    let username, password, usernameErrors, passwordErrors;
+    let username, usernameErrors, passwordErrors;
     if (userInfo) {
         username = userInfo.username;
-        password = userInfo.password;
         usernameErrors = userInfo.usernameErrors;
         passwordErrors = userInfo.passwordErrors;
     }
     
     const usernameFields = createInputGroup('username', username, usernameErrors, 'register');
-    const passwordFields = createInputGroup('password', password, passwordErrors, 'register');
+    const passwordFields = createInputGroup('password', undefined, passwordErrors, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
