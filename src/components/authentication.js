@@ -165,7 +165,7 @@ async function signup(event, signupForm) {
                 // If there are other error messages with an HTTP 409 status, update this and the backend
                 // For now, the only expected HTTP 409 error is a user who already exists
                 console.error(data);
-                user.addUsernameErrors([data.errorMessage]);
+                user.addUsernameError(data.errorMessage);
                 generateSignupPage(user);
                 break;
             case 500:
