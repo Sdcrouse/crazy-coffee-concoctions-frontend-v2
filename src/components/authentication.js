@@ -130,27 +130,7 @@ async function signup(event, signupForm) {
     const user = new User(username, password);
 
     let usernameErrors = user.validateUsername();
-    let passwordErrors = [];
-
-    if (password) {
-        const containsOneOfEach = 
-            /[a-zA-Z]+/.test(password) // letters
-            && /\d+/.test(password) // numbers
-            && /[!@#$%^&*_+=?<>,.]+/.test(password); // special characters
-
-        if (!containsOneOfEach) {
-            passwordErrors.push(`Password must contain one of each of the following types of characters: 
-                lower and/or uppercase letters (a-z, A-Z), numbers (0-9), and special characters (!@#$%^&*_+=?<>,.)`);
-        }
-
-        if (password.length < 8) { passwordErrors.push('Password must be at least eight characters long'); }
-
-        if (password.includes(username) || password.toLowerCase().includes('password')) {
-            passwordErrors.push("Password must not contain the username or the word 'password' (either upper or lowercase)");
-        }
-    } else {
-        passwordErrors.push('Password is required');
-    }
+    let passwordErrors = user.validatePassword();
 
     if (usernameErrors.length > 0 || passwordErrors.length > 0) {
         generateSignupPage({
