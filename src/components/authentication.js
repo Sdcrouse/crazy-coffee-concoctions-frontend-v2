@@ -131,7 +131,10 @@ async function signup(event, signupForm) {
     const user = new User(username, password);
     
     if (!user.validateCredentials()) {
-        generateSignupPage({ username, password, errors: user.errors });
+        const { usernameErrors, passwordErrors } = user;
+        generateSignupPage({
+            username, password, errors: { usernameErrors, passwordErrors }
+        });
         return;
     }
 
@@ -151,18 +154,20 @@ async function signup(event, signupForm) {
             case 400:
                 console.error(data);
                 
-                const {username: usernameErrors, password: passwordErrors } = data.errors;
+                const { username: usernameErrors, password: passwordErrors } = data.errors;
                 if (usernameErrors) user.addUsernameErrors(usernameErrors);
                 if (passwordErrors) user.addPasswordErrors(passwordErrors);
 
-                generateSignupPage({ username, password, errors: user.errors });
+                generateSignupPage({
+                    username, password, errors: { usernameErrors: user.usernameErrors, passwordErrors: user.passwordErrors }
+                });
                 break;
             case 409:
                 // If there are other error messages with an HTTP 409 status, update this and the backend
                 // For now, the only expected HTTP 409 error is a user who already exists
                 console.error(data);
                 user.addUsernameErrors([data.errorMessage]);
-                generateSignupPage({ username, password, errors: { usernameErrors: user.errors.usernameErrors }});
+                generateSignupPage({ username, password, errors: { usernameErrors: user.usernameErrors }});
                 break;
             case 500:
                 console.error(data);

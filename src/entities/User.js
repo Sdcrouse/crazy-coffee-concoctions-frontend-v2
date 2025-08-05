@@ -1,20 +1,25 @@
 export default class User {
     #username;
     #password;
-    #errors = { usernameErrors: [], passwordErrors: [] };
+    #usernameErrors = [];
+    #passwordErrors = [];
 
     constructor(username, password) {
         this.#username = username;
         this.#password = password;
     }
 
-    get errors() {
-        return this.#errors;
+    get usernameErrors() {
+        return this.#usernameErrors;
+    }
+
+    get passwordErrors() {
+        return this.#passwordErrors;
     }
 
     #validateUsername() {
         const username = this.#username;
-        const usernameErrors = this.#errors.usernameErrors;
+        const usernameErrors = this.#usernameErrors;
 
         if (username) {
             let usernameRegex = /^[\w\.]+$/;
@@ -35,7 +40,7 @@ export default class User {
 
     #validatePassword() {
         const password = this.#password;
-        const passwordErrors = this.#errors.passwordErrors;
+        const passwordErrors = this.#passwordErrors;
 
         if (password) {
             const containsOneOfEach = 
@@ -61,14 +66,14 @@ export default class User {
     validateCredentials() {
         this.#validateUsername();
         this.#validatePassword();
-        return (this.#errors.usernameErrors.length === 0) && (this.#errors.passwordErrors.length === 0);
+        return (this.#usernameErrors.length === 0) && (this.#passwordErrors.length === 0);
     }
 
     addUsernameErrors(errors) {
-        this.#errors.usernameErrors.push(...errors);
+        this.#usernameErrors.push(...errors);
     }
 
     addPasswordErrors(errors) {
-        this.#errors.passwordErrors.push(...errors);
+        this.#passwordErrors.push(...errors);
     }
 }
