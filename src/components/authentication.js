@@ -37,15 +37,18 @@ function generateLoginPage({
 }
 
 async function login(event, loginForm) {
+    // TODO: Update the generateLoginPage function and EVERY function that calls it
+
     event.preventDefault();
 
     const loginFormInputs = new FormData(loginForm);
     const { username, password } = Object.fromEntries(loginFormInputs);
-    let usernameErrors = [], passwordErrors = [];
+    let user = new User(username, password);
 
-    if (!username) usernameErrors.push('Username is required');
-    if (!password) passwordErrors.push('Password is required');
+    if (!username || username.trim().length === 0) user.addUsernameError('Username is required');
+    if (!password || password.trim().length === 0) user.addPasswordError('Password is required');
 
+    let { usernameErrors, passwordErrors } = user;
     if (usernameErrors.length > 0 || passwordErrors.length > 0) {
         generateLoginPage({
             username, password, errors: { usernameErrors, passwordErrors }
@@ -74,18 +77,18 @@ async function login(event, loginForm) {
                 // If multiple errors are later returned for usernames and passwords, this should be updated
                 console.error(data);
 
-                const {username: unameError, password: passError } = data.errors;
-                if (unameError) { usernameErrors.push(unameError); }
-                if (passError) { passwordErrors.push(passError); }
+                const {username: usernameError, password: passwordError } = data.errors;
+                if (usernameError) user.addUsernameError(usernameError);
+                if (passwordError) user.addPasswordError(passwordError);
 
-                generateLoginPage({ username, password, errors: { usernameErrors, passwordErrors } });
+                generateLoginPage({ username, password, errors: { usernameErrors: user.usernameErrors, passwordErrors: user.passwordErrors } });
                 break;
             case 404:
                 // Currently, this only expects a "User not found" error; this can be updated with other error messages later.
                 console.error(data);
-                usernameErrors.push(data.errors.username);
+                user.addUsernameError(data.errors.username);
                 generateLoginPage({
-                    username, password, errors: { usernameErrors }
+                    username, password, errors: { usernameErrors: user.usernameErrors }
                 });
                 break;
             case 500:
