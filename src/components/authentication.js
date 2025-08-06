@@ -9,10 +9,7 @@ const titleElement = document.querySelector('title');
 const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
-function generateLoginPage({
-    username = '', password = '', messages = {}, errors = {}
-} = {}) {
-    
+function generateLoginPage({ userInfo = null, messages = {} } = {}) {
     titleElement.textContent = `${baseTitle} - Log In`;
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
@@ -26,8 +23,15 @@ function generateLoginPage({
 
     appendPageHeading(loginDiv, 'Log in to your account here!');
 
-    const usernameInputGroup = createInputGroup('username', username, errors.usernameErrors, 'login', { minLength: 2 });
-    const passwordInputGroup = createInputGroup('password', password, errors.passwordErrors, 'login', { minLength: 2 });
+    let username, usernameErrors, passwordErrors;
+    if (userInfo) {
+        username = userInfo.username;
+        usernameErrors = userInfo.usernameErrors;
+        passwordErrors = userInfo.passwordErrors;
+    }
+
+    const usernameInputGroup = createInputGroup('username', username, usernameErrors, 'login', { minLength: 2 });
+    const passwordInputGroup = createInputGroup('password', undefined, passwordErrors, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -37,22 +41,19 @@ function generateLoginPage({
 }
 
 async function login(event, loginForm) {
-    // TODO: Update the generateLoginPage function and EVERY function that calls it
-
     event.preventDefault();
 
     const loginFormInputs = new FormData(loginForm);
     const { username, password } = Object.fromEntries(loginFormInputs);
     let user = new User(username, password);
 
+    // TODO: Move this logic into a separate utility function (Refactor the User class with it, too!)
     if (!username || username.trim().length === 0) user.addUsernameError('Username is required');
     if (!password || password.trim().length === 0) user.addPasswordError('Password is required');
 
     let { usernameErrors, passwordErrors } = user;
     if (usernameErrors.length > 0 || passwordErrors.length > 0) {
-        generateLoginPage({
-            username, password, errors: { usernameErrors, passwordErrors }
-        });
+        generateLoginPage({ userInfo: user });
         return;
     }
 
@@ -77,19 +78,17 @@ async function login(event, loginForm) {
                 // If multiple errors are later returned for usernames and passwords, this should be updated
                 console.error(data);
 
-                const {username: usernameError, password: passwordError } = data.errors;
+                const { username: usernameError, password: passwordError } = data.errors;
                 if (usernameError) user.addUsernameError(usernameError);
                 if (passwordError) user.addPasswordError(passwordError);
 
-                generateLoginPage({ username, password, errors: { usernameErrors: user.usernameErrors, passwordErrors: user.passwordErrors } });
+                generateLoginPage({ userInfo: user });
                 break;
             case 404:
                 // Currently, this only expects a "User not found" error; this can be updated with other error messages later.
                 console.error(data);
                 user.addUsernameError(data.errors.username);
-                generateLoginPage({
-                    username, password, errors: { usernameErrors: user.usernameErrors }
-                });
+                generateLoginPage({ userInfo: user });
                 break;
             case 500:
                 console.error(data);
