@@ -23,15 +23,8 @@ function generateLoginPage({ userInfo = null, messages = {} } = {}) {
 
     appendPageHeading(loginDiv, 'Log in to your account here!');
 
-    let username, usernameErrors, passwordErrors;
-    if (userInfo) {
-        username = userInfo.username;
-        usernameErrors = userInfo.usernameErrors;
-        passwordErrors = userInfo.passwordErrors;
-    }
-
-    const usernameInputGroup = createInputGroup('username', username, usernameErrors, 'login', { minLength: 2 });
-    const passwordInputGroup = createInputGroup('password', undefined, passwordErrors, 'login', { minLength: 2 });
+    const usernameInputGroup = createUserInputGroup('username', userInfo, 'login', { minLength: 2 });
+    const passwordInputGroup = createUserInputGroup('password', userInfo, 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -110,16 +103,9 @@ function generateSignupPage(userInfo) {
 
     const signupDiv = createCustomElement('div', { id: 'signup-div' });
     appendPageHeading(signupDiv, 'Sign up here!');
-
-    let username, usernameErrors, passwordErrors;
-    if (userInfo) {
-        username = userInfo.username;
-        usernameErrors = userInfo.usernameErrors;
-        passwordErrors = userInfo.passwordErrors;
-    }
     
-    const usernameFields = createInputGroup('username', username, usernameErrors, 'register');
-    const passwordFields = createInputGroup('password', undefined, passwordErrors, 'register');
+    const usernameFields = createUserInputGroup('username', userInfo, 'register');
+    const passwordFields = createUserInputGroup('password', userInfo, 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -221,31 +207,43 @@ async function logout() {
     }
 }
 
-function createInputGroup(inputName, inputValue, inputErrors, formAction, options = { minLength: 8 }) {
-    const capitalizedInputName = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+function createUserInputGroup(userInputName, userInfo, formAction, options = { minLength: 8 }) {
+    const capitalizedInputName = userInputName.charAt(0).toUpperCase() + userInputName.slice(1);
     
     const label = createCustomElement('label', {
-        attributes: { for: inputName },
+        attributes: { for: userInputName },
         text: `${capitalizedInputName}: `
     });
 
     const input = createCustomElement('input', { 
-        id: inputName,
+        id: userInputName,
         attributes: {
-            type: inputName === 'password' ? 'password' : 'text',
-            name: inputName,
-            placeholder: `Enter ${inputName}`,
+            type: userInputName === 'password' ? 'password' : 'text',
+            name: userInputName,
+            placeholder: `Enter ${userInputName}`,
             minLength: options.minLength
         }
     });
 
     if (formAction === 'register') {
-        input.setAttribute('autocomplete', `new-${inputName}`);
+        input.setAttribute('autocomplete', `new-${userInputName}`);
     } else if (formAction === 'login') {
-        if (inputName === 'password') {
+        if (userInputName === 'password') {
             input.setAttribute('autocomplete', 'current-password');
         } else {
-            input.setAttribute('autocomplete', inputName);
+            input.setAttribute('autocomplete', userInputName);
+        }
+    }
+
+    let inputValue, inputErrors;
+
+    if (userInfo) {
+        if (userInputName === 'username') {
+            inputValue = userInfo.username;
+            inputErrors = userInfo.usernameErrors;
+        } else {
+            // For now, the user input is either a username or password; this can be updated later if need be.
+            inputErrors = userInfo.passwordErrors;
         }
     }
 
