@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
@@ -40,12 +41,11 @@ async function login(event, loginForm) {
     const { username, password } = Object.fromEntries(loginFormInputs);
     let user = new User(username, password);
 
-    // TODO: Move this logic into a separate utility function (Refactor the User class with it, too!)
-    if (!username || username.trim().length === 0) user.addUsernameError('Username is required');
-    if (!password || password.trim().length === 0) user.addPasswordError('Password is required');
+    if (isEmpty(username)) user.addUsernameError('Username is required');
+    if (isEmpty(password)) user.addPasswordError('Password is required');
 
     let { usernameErrors, passwordErrors } = user;
-    if (usernameErrors.length > 0 || passwordErrors.length > 0) {
+    if (!isEmpty(usernameErrors) || !isEmpty(passwordErrors)) {
         generateLoginPage({ userInfo: user });
         return;
     }

@@ -1,3 +1,5 @@
+import isEmpty from "../utils/isEmpty.js";
+
 export default class User {
     #username;
     #password;
@@ -24,7 +26,9 @@ export default class User {
     #validateUsername() {
         const username = this.#username;
 
-        if (username && username.trim().length > 0) {
+        if (isEmpty(username)) {
+            this.addUsernameError('Username is required');
+        } else {
             let usernameRegex = /^[\w\.]+$/;
             if (!usernameRegex.test(username)) {
                 this.addUsernameError('Username must only contain letters, numbers, periods, and underscores');
@@ -36,15 +40,15 @@ export default class User {
             }
 
             if (username.length < 8) this.addUsernameError('Username must be at least eight characters long');
-        } else {
-            this.addUsernameError('Username is required');
         }
     }
 
     #validatePassword() {
         const password = this.#password;
 
-        if (password && password.trim().length > 0) {
+        if (isEmpty(password)) {
+            this.addPasswordError('Password is required');
+        } else {
             const containsOneOfEach = 
                 /(?=.*[a-z])(?=.*[A-Z])/.test(password) // at least one uppercase and lowercase letter
                 && /\d+/.test(password) // numbers
@@ -63,15 +67,13 @@ export default class User {
             ) {
                 this.addPasswordError("Password must not contain the username or the word 'password' (either upper or lowercase)");
             }
-        } else {
-            this.addPasswordError('Password is required');
         }
     }
 
     validateCredentials() {
         this.#validateUsername();
         this.#validatePassword();
-        return (this.#usernameErrors.length === 0) && (this.#passwordErrors.length === 0);
+        return isEmpty(this.#usernameErrors) && isEmpty(this.#passwordErrors);
     }
 
     addUsernameError(error) {
