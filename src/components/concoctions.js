@@ -1,16 +1,15 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import generatePageTitle from '../utils/pageTitle.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
 
 const mainContainer = document.getElementById('main-container');
-const titleElement = document.querySelector('title');
-const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 const concoctionsUrl = `${apiBase}/concoctions`;
 
 export async function generateConcoctionsPage(loginSuccessMessage = '') {
-    titleElement.textContent = `${baseTitle} - Your Concoctions`;
+    generatePageTitle('Your Concoctions');
 
     const concoctionsDiv = createCustomElement('div', { id: 'concoctions-div' });
     if (loginSuccessMessage) appendSuccessHeading(concoctionsDiv, loginSuccessMessage);
@@ -125,7 +124,7 @@ async function generateConcoctionPage(concoctionId) {
             case 200:
                 const { name, instructions, notes } = data.concoction;
 
-                titleElement.textContent = `${baseTitle} - ${name}`;
+                generatePageTitle(name);
 
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
                 appendPageHeading(concoctionDiv, name);

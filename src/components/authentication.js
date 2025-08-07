@@ -1,4 +1,5 @@
 import createCustomElement from '../utils/createCustomElement.js';
+import generatePageTitle from '../utils/pageTitle.js';
 import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
@@ -6,12 +7,10 @@ import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
 const mainContainer = document.getElementById('main-container');
-const titleElement = document.querySelector('title');
-const baseTitle = 'Crazy Coffee Concoctions';
 const apiBase = 'http://localhost:5000';
 
 function generateLoginPage({ userInfo = null, messages = {} } = {}) {
-    titleElement.textContent = `${baseTitle} - Log In`;
+    generatePageTitle('Log In');
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
     const { successMessage, errorMessage } = messages;
@@ -99,7 +98,7 @@ async function login(event, loginForm) {
 }
 
 function generateSignupPage(userInfo) {
-    titleElement.textContent = `${baseTitle} - Sign Up`;
+    generatePageTitle('Sign Up');
 
     const signupDiv = createCustomElement('div', { id: 'signup-div' });
     appendPageHeading(signupDiv, 'Sign up here!');

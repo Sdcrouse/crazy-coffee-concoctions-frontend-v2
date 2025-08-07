@@ -1,10 +1,10 @@
 import createCustomElement from "./createCustomElement.js";
+import generatePageTitle from "./pageTitle.js";
 
-const titleElement = document.querySelector('title');
 const mainContainer = document.getElementById('main-container');
 
 function generateErrorPage(httpStatusNo, httpStatusText, errorImage, errorMessage, ...otherElements) {
-    titleElement.textContent = `${httpStatusNo} - ${httpStatusText}`;
+    generatePageTitle(`${httpStatusNo} - ${httpStatusText}`, false);
 
     const errorImageHeading = createCustomElement('h2', {
         classes: 'extra-padding coffee-text error-image-heading',
