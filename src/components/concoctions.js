@@ -1,5 +1,6 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
+import Concoction from '../entities/Concoction.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
@@ -43,14 +44,13 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                 if (concoctions) {
                     const concoctionsList = document.createElement('ul');
 
-                    for (const concoction of concoctions) {
-                        const { id, name, created } = concoction;
-
-                        const concoctionItem = createCustomElement('li', { id: `concoction-${id}` });
-                        const concoctionPar = createCustomElement('p', { text: `${name}, created on ${created}` });
+                    for (const concoctionData of concoctions) {
+                        const concoction = new Concoction(concoctionData);
+                        const concoctionItem = createCustomElement('li', { id: `concoction-${concoction.id}` });
+                        const concoctionPar = createCustomElement('p', { text: `${concoction.name}, created on ${concoction.created}` });
                         
                         const concoctionButton = createCustomElement('button', { text: 'View Concoction' });
-                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(id));
+                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction.id));
                         
                         concoctionPar.appendChild(concoctionButton);
                         concoctionItem.appendChild(concoctionPar);
