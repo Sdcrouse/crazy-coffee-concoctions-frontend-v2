@@ -46,8 +46,8 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
 
                     for (const concoctionData of concoctions) {
                         const concoction = new Concoction(concoctionData);
-                        const concoctionItem = createCustomElement('li', { id: `concoction-${concoction.id}` });
-                        const concoctionPar = createCustomElement('p', { text: `${concoction.name}, created on ${concoction.created}` });
+                        const concoctionItem = createCustomElement('li', { id: concoction.listItemId() });
+                        const concoctionPar = createCustomElement('p', { text: concoction.description() });
                         
                         const concoctionButton = createCustomElement('button', { text: 'View Concoction' });
                         concoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction.id));

@@ -17,7 +17,15 @@ export default class Concoction {
         return this.#name;
     }
 
-    get created() {
-        return this.#created;
+    listItemId() {
+        return `concoction-${this.#id}`;
+    }
+
+    description() {
+        const dateCreated = new Date(this.#created);
+        const createdDate = dateCreated.toLocaleDateString('en-US');
+        const createdTime = dateCreated.toLocaleTimeString('en-US');
+
+        return `${this.#name}, created on ${createdDate} at ${createdTime}`;
     }
 };
