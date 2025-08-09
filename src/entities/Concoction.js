@@ -2,6 +2,8 @@ export default class Concoction {
     #id;
     #name;
     #created;
+    #instructions;
+    #notes;
 
     constructor(concoctionData) {
         this.#id = concoctionData.id;
@@ -17,6 +19,14 @@ export default class Concoction {
         return this.#name;
     }
 
+    get instructions() {
+        return this.#instructions;
+    }
+
+    get notes() {
+        return this.#notes;
+    }
+
     listItemId() {
         return `concoction-${this.#id}`;
     }
@@ -27,5 +37,10 @@ export default class Concoction {
         const createdTime = dateCreated.toLocaleTimeString('en-US');
 
         return `${this.#name}, created on ${createdDate} at ${createdTime}`;
+    }
+
+    addData(additionalData) {
+        this.#instructions = additionalData.instructions;
+        this.#notes = additionalData.notes;
     }
 };

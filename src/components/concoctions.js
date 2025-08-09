@@ -50,7 +50,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
                         const concoctionPar = createCustomElement('p', { text: concoction.description() });
                         
                         const concoctionButton = createCustomElement('button', { text: 'View Concoction' });
-                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction.id));
+                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
                         
                         concoctionPar.appendChild(concoctionButton);
                         concoctionItem.appendChild(concoctionPar);
@@ -103,27 +103,28 @@ async function refreshSession() {
     return await response.json();
 }
 
-async function generateConcoctionPage(concoctionId) {
+async function generateConcoctionPage(concoction) {
     try {
-        let data = await fetchConcoctionData(`${concoctionsUrl}/${concoctionId}`);
+        let additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
 
-        if (data.status === 400 || data.status === 401) {
-            data = await refreshSession();
+        if (additionalData.status === 400 || additionalData.status === 401) {
+            additionalData = await refreshSession();
 
-            if (data.status !== 200) {
-                console.error(data);
+            if (additionalData.status !== 200) {
+                console.error(additionalData);
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                generateLoginPage({ messages: { errorMessage: additionalData.errorMessage } });
                 return;
             }
 
-            data = await fetchConcoctionData(`${concoctionsUrl}/${concoctionId}`);
+            additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
         }
 
-        switch(data.status) {
+        switch(additionalData.status) {
             case 200:
-                const { name, instructions, notes } = data.concoction;
+                concoction.addData(additionalData.concoction);
 
+                const { name, instructions, notes } = concoction;
                 generatePageTitle(name);
 
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
@@ -136,17 +137,17 @@ async function generateConcoctionPage(concoctionId) {
                 mainContainer.replaceChildren(concoctionDiv, concoctionAttrsWrapper);
                 break;
             case 500:
-                console.error(data);
-                generateServerErrorPage(data.errorMessage);
+                console.error(additionalData);
+                generateServerErrorPage(additionalData.errorMessage);
                 break;
             default:
-                console.error(data);
-                appendErrorHeading(`concoction-${concoctionId}`, 'An unknown error has occurred on the server. Please try again later.');
+                console.error(additionalData);
+                appendErrorHeading(concoction.listItemId(), 'An unknown error has occurred on the server. Please try again later.');
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        appendErrorHeading(`concoction-${concoctionId}`, 'An unexpected error occurred while fetching this concoction. Please try again later.');
+        appendErrorHeading(concoction.listItemId(), 'An unexpected error occurred while fetching this concoction. Please try again later.');
     }
 }
 
