@@ -1,0 +1,44 @@
+export default class Coffee {
+    #amount;
+    #brand;
+    #blend;
+    #beanType;
+    #roast;
+
+    constructor(coffeeData) {
+        this.#amount = coffeeData.amount;
+        this.#brand = coffeeData.brand;
+        this.#blend = coffeeData.blend;
+        this.#beanType = coffeeData.beanType;
+        this.#roast = coffeeData.roast;
+    }
+
+    description() {
+        let descriptionParts = [this.#amount, `of ${this.#brand}`, this.#blend];
+
+        // if (this.#roast || this.#beanType) {
+        //     descriptionParts.push('-');
+
+        //     if (this.#roast) descriptionParts.push(`a ${this.#roast} roast`);
+        //     if (this.#beanType) descriptionParts.push(`with ${this.#beanType} beans`);
+        // }
+
+        if (this.#roast){
+            if (this.#beanType) {
+                descriptionParts.push(`(${this.#roast} Roast`);
+            } else {
+                descriptionParts.push(`(${this.#roast} Roast)`);
+            }
+        }
+
+        if (this.#beanType) {
+            if (this.#roast) {
+                descriptionParts.push(`with ${this.#beanType} beans)`);
+            } else {
+                descriptionParts.push(`(with ${this.#beanType} beans)`);
+            }
+        }
+
+        return descriptionParts.join(' ');
+    }
+};

@@ -1,6 +1,7 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
 import Concoction from '../entities/Concoction.js';
+import Coffee from '../entities/Coffee.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
@@ -127,10 +128,14 @@ async function generateConcoctionPage(concoction) {
                 const { name, instructions, notes } = concoction;
                 generatePageTitle(name);
 
+                const coffee = new Coffee(additionalData.coffee);
+                concoction.coffee = coffee;
+
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
                 appendPageHeading(concoctionDiv, name);
 
                 const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
+                createAndAppendAttribute("Coffee", coffee.description(), concoctionAttrsWrapper);
                 createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
                 if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
 

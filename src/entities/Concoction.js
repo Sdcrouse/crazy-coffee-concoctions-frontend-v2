@@ -4,6 +4,7 @@ export default class Concoction {
     #created;
     #instructions;
     #notes;
+    #coffee;
 
     constructor(concoctionData) {
         this.#id = concoctionData.id;
@@ -25,6 +26,10 @@ export default class Concoction {
 
     get notes() {
         return this.#notes;
+    }
+
+    set coffee(coffeeData) {
+        this.#coffee = coffeeData;
     }
 
     listItemId() {
