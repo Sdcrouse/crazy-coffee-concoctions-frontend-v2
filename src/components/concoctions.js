@@ -11,7 +11,15 @@ const mainContainer = document.getElementById('main-container');
 const apiBase = 'http://localhost:5000';
 const concoctionsUrl = `${apiBase}/concoctions`;
 
-export async function generateConcoctionsPage(loginSuccessMessage = '') {
+async function generateNewConcoctionPage() {
+    generatePageTitle('New Concoction');
+
+    const newConcoctionDiv = createCustomElement('div', { id: 'new-concoction-div' });
+    appendPageHeading(newConcoctionDiv, 'New Concoction');
+    mainContainer.replaceChildren(newConcoctionDiv);
+}
+
+async function generateConcoctionsPage(loginSuccessMessage = '') {
     generatePageTitle('Your Concoctions');
 
     const concoctionsDiv = createCustomElement('div', { id: 'concoctions-div' });
@@ -83,7 +91,7 @@ export async function generateConcoctionsPage(loginSuccessMessage = '') {
         appendErrorHeading(concoctionsDiv, 'An unknown error occurred while getting your concoctions. Please try again later.');
         mainContainer.replaceChildren(concoctionsDiv);
     }
-};
+}
 
 async function fetchConcoctionData(url) {
     const response = await fetch(url, {
@@ -186,3 +194,5 @@ function createAndAppendIngredientList(ingredients, ingredientCategories, wrappe
         wrapper.append(ingredientHeading, ingredientList);
     }
 }
+
+export { generateNewConcoctionPage, generateConcoctionsPage };

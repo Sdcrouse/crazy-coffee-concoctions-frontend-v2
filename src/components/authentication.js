@@ -299,17 +299,20 @@ function generateForm(submitButtonText, ...formElements) {
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
     const signupButton = document.getElementById('signup');
     const loginButton = document.getElementById('login');
+    const newConcoctionButton = document.getElementById('new-concoction');
     const concoctionsButton = document.getElementById('display-concoctions');
     const logoutButton = document.getElementById('logout');
 
     if (userIsLoggedIn) {
         signupButton.style.display = 'none';
         loginButton.style.display = 'none';
+        newConcoctionButton.style.display = 'initial';
         concoctionsButton.style.display = 'initial';
         logoutButton.style.display = 'initial';
     } else {
         signupButton.style.display = 'initial';
         loginButton.style.display = 'initial';
+        newConcoctionButton.style.display = 'none';
         concoctionsButton.style.display = 'none';
         logoutButton.style.display = 'none';
     }
