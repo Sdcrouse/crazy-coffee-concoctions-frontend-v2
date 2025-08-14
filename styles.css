@@ -92,6 +92,12 @@ nav button {
     margin-bottom: 7%;
 }
 
+.concoction-attribute ul {
+    margin-top: 0;
+    padding-inline-start: 0;
+    list-style-type: none;
+}
+
 #main-container div { padding: 5%; }
 
 #main-container .concoction-attribute {

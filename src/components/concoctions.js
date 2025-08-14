@@ -2,6 +2,7 @@ import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
+import Ingredient from '../entities/Ingredient.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
@@ -131,11 +132,17 @@ async function generateConcoctionPage(concoction) {
                 const coffee = new Coffee(additionalData.coffee);
                 concoction.coffee = coffee;
 
+                for (let ingredientData of additionalData.ingredients) {
+                    const ingredient = new Ingredient(ingredientData);
+                    concoction.addIngredient(ingredient);
+                }
+
                 const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
                 appendPageHeading(concoctionDiv, name);
 
                 const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
                 createAndAppendAttribute("Coffee", coffee.description(), concoctionAttrsWrapper);
+                createAndAppendIngredientList(concoction.ingredients, concoction.ingredientCategories, concoctionAttrsWrapper);
                 createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
                 if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
 
@@ -160,4 +167,22 @@ function createAndAppendAttribute(attributeName, attributeValue, attributeWrappe
     const attributeHeading = createCustomElement('h3', { text: `${attributeName}:`, classes: 'coffee-text' });
     const attributeText = createCustomElement('p', { text: attributeValue });
     attributeWrapper.append(attributeHeading, attributeText);
+}
+
+function createAndAppendIngredientList(ingredients, ingredientCategories, wrapper) {
+    for (let category of ingredientCategories) {
+        const ingredientsByCategory = ingredients[category];
+        if (ingredientsByCategory.length === 0) continue;
+    
+        const categoryName = ingredientsByCategory.length === 1 ? category : `${category}s`;
+        const ingredientHeading = createCustomElement('h3', { text: `${categoryName}:`, classes: 'coffee-text' });
+        const ingredientList = document.createElement('ul');
+        
+        for (let ingredient of ingredients[category]) {
+            const description = createCustomElement('li', { text: ingredient.description() });
+            ingredientList.appendChild(description);
+        }
+
+        wrapper.append(ingredientHeading, ingredientList);
+    }
 }

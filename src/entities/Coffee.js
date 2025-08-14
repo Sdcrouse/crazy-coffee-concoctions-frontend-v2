@@ -14,14 +14,7 @@ export default class Coffee {
     }
 
     description() {
-        let descriptionParts = [this.#amount, `of ${this.#brand}`, this.#blend];
-
-        // if (this.#roast || this.#beanType) {
-        //     descriptionParts.push('-');
-
-        //     if (this.#roast) descriptionParts.push(`a ${this.#roast} roast`);
-        //     if (this.#beanType) descriptionParts.push(`with ${this.#beanType} beans`);
-        // }
+        let descriptionParts = [this.#amount, this.#brand, this.#blend];
 
         if (this.#roast){
             if (this.#beanType) {

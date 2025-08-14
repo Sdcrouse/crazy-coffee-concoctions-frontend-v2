@@ -2,14 +2,23 @@ export default class Concoction {
     #id;
     #name;
     #created;
+    #coffee;
+    #ingredients;
+    #ingredientCategories;
     #instructions;
     #notes;
-    #coffee;
 
     constructor(concoctionData) {
         this.#id = concoctionData.id;
         this.#name = concoctionData.name;
         this.#created = concoctionData.created;
+        this.#ingredients = {
+            'Liquid': [],
+            'Sweetener': [],
+            'Creamer': [],
+            'Additional Ingredient': []
+        };
+        this.#ingredientCategories = ['Liquid', 'Sweetener', 'Creamer', 'Additional Ingredient'];
     }
 
     get id() {
@@ -18,6 +27,14 @@ export default class Concoction {
 
     get name() {
         return this.#name;
+    }
+
+    get ingredients() {
+        return this.#ingredients;
+    }
+
+    get ingredientCategories() {
+        return this.#ingredientCategories;
     }
 
     get instructions() {
@@ -30,6 +47,10 @@ export default class Concoction {
 
     set coffee(coffeeData) {
         this.#coffee = coffeeData;
+    }
+
+    addIngredient(ingredient) {
+        this.#ingredients[ingredient.category].push(ingredient);
     }
 
     listItemId() {
