@@ -49,7 +49,43 @@ async function generateNewConcoctionPage() {
     
     const divider = document.createElement('hr');
 
-    const newConcoctionForm = generateForm('Create Concoction', requiredFieldMessage, concNameGroup, divider);
+    const coffeeHeading = createCustomElement('h3', { text: 'Coffee:', classes: 'coffee-text' });
+    const coffeeAmountGroup = createCoffeeInputGroup('Amount', 'Enter amount (e.g. 2 tsp)', 50, true);
+    const coffeeBrandGroup = createCoffeeInputGroup('Brand', 'Enter brand (e.g. Folgers)', 50, true);
+    const coffeeBlendGroup = createCoffeeInputGroup('Blend', 'Enter blend (e.g. Instant)', 75, true);
+
+    const coffeeRoastLabel = createCustomElement('label', {
+        attributes: { for: 'roast' },
+        text: 'Roast:'
+    });
+
+    const coffeeRoastOptions = createCustomElement('select', { id: 'roast', attributes: { name: 'roast' } });
+    coffeeRoastOptions.append(
+        createCustomElement('option', { text: '--Please choose a roast--', attributes: { value: '' } }),
+        createCustomElement('option', { text: 'Blonde', attributes: { value: 'Blonde' } }),
+        createCustomElement('option', { text: 'Light', attributes: { value: 'Light' } }),
+        createCustomElement('option', { text: 'Medium-Light', attributes: { value: 'Medium-Light' } }),
+        createCustomElement('option', { text: 'Medium', attributes: { value: 'Medium' } }),
+        createCustomElement('option', { text: 'Medium-Dark', attributes: { value: 'Medium-Dark' } }),
+        createCustomElement('option', { text: 'Dark', attributes: { value: 'Dark' } }),
+    );
+
+    const coffeeRoastGroup = document.createElement('p');
+    coffeeRoastGroup.appendChild(createCustomElement('li', { itemsToAppend: [coffeeRoastLabel, coffeeRoastOptions] }));
+
+    const coffeeBeanGroup = createCoffeeInputGroup('BeanType', 'Enter bean type (e.g. Kona)', 30, false, 'Bean Type');
+
+    const coffeeList = createCustomElement('ul', {
+        classes: 'indented-input no-list-marker',
+        itemsToAppend: [coffeeHeading, coffeeAmountGroup, coffeeBrandGroup, coffeeBlendGroup, coffeeRoastGroup, coffeeBeanGroup]
+    });
+    
+    const divider2 = document.createElement('hr');
+
+    const newConcoctionForm = generateForm('Create Concoction',
+        requiredFieldMessage, concNameGroup, divider,
+        coffeeList, divider2
+    );
     newConcoctionForm.addEventListener('submit', e => {
         e.preventDefault();
         console.log('Concoction created!');
@@ -57,6 +93,27 @@ async function generateNewConcoctionPage() {
 
     newConcoctionDiv.appendChild(newConcoctionForm);
     mainContainer.replaceChildren(newConcoctionDiv);
+}
+
+function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
+    const label = createCustomElement('label', {
+        attributes: { for: `coffee${inputName}` },
+        text: `${labelText}:`
+    });
+
+    const input = createCustomElement('input', {
+        id: `coffee${inputName}`,
+        attributes: { type: 'text', name: `coffee${inputName}`, maxLength, placeholder, autocomplete: 'on' }
+    });
+
+    if (isRequired) {
+        label.className = 'required-field';
+        input.required = true;
+    }
+
+    const coffeeInputGroup = document.createElement('p');
+    coffeeInputGroup.appendChild(createCustomElement('li', { itemsToAppend: [label, input] }));
+    return coffeeInputGroup;
 }
 
 async function generateConcoctionsPage(loginSuccessMessage = '') {
@@ -224,7 +281,7 @@ function createAndAppendIngredientList(ingredients, ingredientCategories, wrappe
     
         const categoryName = ingredientsByCategory.length === 1 ? category : `${category}s`;
         const ingredientHeading = createCustomElement('h3', { text: `${categoryName}:`, classes: 'coffee-text' });
-        const ingredientList = document.createElement('ul');
+        const ingredientList = createCustomElement('ul', { classes: 'no-list-marker' });
         
         for (let ingredient of ingredients[category]) {
             const description = createCustomElement('li', { text: ingredient.description() });

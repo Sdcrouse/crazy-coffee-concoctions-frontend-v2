@@ -22,7 +22,7 @@ section {
     padding: 5%;
 }
 
-form input { margin-left: 2%; }
+form input, select { margin-left: 2%; }
 
 hr {
   height: 5px;
@@ -95,7 +95,6 @@ nav button {
 .concoction-attribute ul {
     margin-top: 0;
     padding-inline-start: 0;
-    list-style-type: none;
 }
 
 .indented-input { padding-inline-start: 40px; }
@@ -123,6 +122,9 @@ nav button {
   border-radius: 50%;
 }
 
+/* LIST STYLES */
+
+.no-list-marker { list-style-type: none; }
 
 /* ERROR PAGE STYLES */
 
