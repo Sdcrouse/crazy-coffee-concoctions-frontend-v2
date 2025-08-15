@@ -1,5 +1,7 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
+import generateForm from '../utils/generateForm.js';
+import isEmpty from '../utils/isEmpty.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
 import Ingredient from '../entities/Ingredient.js';
@@ -16,6 +18,44 @@ async function generateNewConcoctionPage() {
 
     const newConcoctionDiv = createCustomElement('div', { id: 'new-concoction-div' });
     appendPageHeading(newConcoctionDiv, 'New Concoction');
+
+    const requiredFieldMessage = createCustomElement('p', {
+        classes: 'required-field center-content',
+        text: 'Red text indicates a required field.'
+    });
+
+    const concNameLabel = createCustomElement('label', {
+        classes: 'required-field',
+        attributes: { for: 'concoctionName' },
+        text: 'Name:'
+    });
+
+    const concNameInput = createCustomElement('input', { 
+        id: 'concoctionName',
+        attributes: {
+            type: 'text',
+            name: 'concoctionName',
+            maxLength: 50,
+            placeholder: `Enter concoction name`,
+            autocomplete: 'on'
+        }
+    });
+    concNameInput.required = true;
+
+    const concNameGroup = createCustomElement('p', {
+        classes: 'indented-input',
+        itemsToAppend: [concNameLabel, concNameInput]
+    });
+    
+    const divider = document.createElement('hr');
+
+    const newConcoctionForm = generateForm('Create Concoction', requiredFieldMessage, concNameGroup, divider);
+    newConcoctionForm.addEventListener('submit', e => {
+        e.preventDefault();
+        console.log('Concoction created!');
+    });
+
+    newConcoctionDiv.appendChild(newConcoctionForm);
     mainContainer.replaceChildren(newConcoctionDiv);
 }
 
@@ -180,7 +220,7 @@ function createAndAppendAttribute(attributeName, attributeValue, attributeWrappe
 function createAndAppendIngredientList(ingredients, ingredientCategories, wrapper) {
     for (let category of ingredientCategories) {
         const ingredientsByCategory = ingredients[category];
-        if (ingredientsByCategory.length === 0) continue;
+        if (isEmpty(ingredientsByCategory)) continue;
     
         const categoryName = ingredientsByCategory.length === 1 ? category : `${category}s`;
         const ingredientHeading = createCustomElement('h3', { text: `${categoryName}:`, classes: 'coffee-text' });

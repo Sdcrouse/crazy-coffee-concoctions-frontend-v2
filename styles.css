@@ -63,7 +63,7 @@ nav button {
 
 .coffee-text { color: #A65F40; }
 
-.error-text { color: red; }
+.error-text, .required-field { color: red; }
 
 .success-text { color: #2581c8; }
 
@@ -97,6 +97,8 @@ nav button {
     padding-inline-start: 0;
     list-style-type: none;
 }
+
+.indented-input { padding-inline-start: 40px; }
 
 #main-container div { padding: 5%; }
 

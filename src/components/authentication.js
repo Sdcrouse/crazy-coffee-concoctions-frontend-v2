@@ -1,5 +1,6 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
+import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
@@ -277,23 +278,6 @@ function generateErrorList(errors) {
     });
 
     return errorList;
-}
-
-function generateForm(submitButtonText, ...formElements) {
-    const submitButton = createCustomElement('button', {
-        attributes: { type: 'submit' },
-        text: submitButtonText
-    });
-
-    const buttonPar = createCustomElement('p', {
-        classes: 'center-content', itemsToAppend: [submitButton]
-    });
-    
-    const form = createCustomElement('form', {
-        itemsToAppend: [...formElements, buttonPar]
-    });
-
-    return form;
 }
 
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
