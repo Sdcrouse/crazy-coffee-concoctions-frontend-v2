@@ -24,27 +24,10 @@ async function generateNewConcoctionPage() {
         text: 'Red text indicates a required field.'
     });
 
-    const concNameLabel = createCustomElement('label', {
-        classes: 'required-field',
-        attributes: { for: 'concoctionName' },
-        text: 'Name:'
-    });
-
-    const concNameInput = createCustomElement('input', { 
-        id: 'concoctionName',
-        attributes: {
-            type: 'text',
-            name: 'concoctionName',
-            maxLength: 50,
-            placeholder: `Enter concoction name`,
-            autocomplete: 'on'
-        }
-    });
-    concNameInput.required = true;
-
+    const concNameLabelAndInput = createLabelAndTextInput('concoctionName', 'Name', 'Enter concoction name', 50, true);
     const concNameGroup = createCustomElement('p', {
         classes: 'indented-input',
-        itemsToAppend: [concNameLabel, concNameInput]
+        itemsToAppend: concNameLabelAndInput
     });
     
     const divider = document.createElement('hr');
@@ -54,11 +37,7 @@ async function generateNewConcoctionPage() {
     const coffeeBrandGroup = createCoffeeInputGroup('Brand', 'Enter brand (e.g. Folgers)', 50, true);
     const coffeeBlendGroup = createCoffeeInputGroup('Blend', 'Enter blend (e.g. Instant)', 75, true);
 
-    const coffeeRoastLabel = createCustomElement('label', {
-        attributes: { for: 'roast' },
-        text: 'Roast:'
-    });
-
+    const coffeeRoastLabel = createLabel('roast', 'Roast', false);
     const coffeeRoastOptions = createCustomElement('select', { id: 'roast', attributes: { name: 'roast' } });
     coffeeRoastOptions.append(
         createCustomElement('option', { text: '--Please choose a roast--', attributes: { value: '' } }),
@@ -95,24 +74,33 @@ async function generateNewConcoctionPage() {
     mainContainer.replaceChildren(newConcoctionDiv);
 }
 
-function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
+function createLabel(labelFor, labelText, isRequired) {
     const label = createCustomElement('label', {
-        attributes: { for: `coffee${inputName}` },
+        attributes: { for: labelFor },
         text: `${labelText}:`
     });
 
-    const input = createCustomElement('input', {
-        id: `coffee${inputName}`,
-        attributes: { type: 'text', name: `coffee${inputName}`, maxLength, placeholder, autocomplete: 'on' }
+    if (isRequired) label.className = 'required-field';
+    return label;
+}
+
+function createLabelAndTextInput(inputName, labelText, placeholder, maxLength, isRequired) {
+    const label = createLabel(inputName, labelText, isRequired);
+
+    const textInput = createCustomElement('input', {
+        id: inputName,
+        attributes: { type: 'text', name: inputName, maxLength, placeholder, autocomplete: 'on' }
     });
+    if (isRequired) textInput.required = true;
 
-    if (isRequired) {
-        label.className = 'required-field';
-        input.required = true;
-    }
+    return [label, textInput];
+}
 
+function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
+    const coffeeLabelAndInput = createLabelAndTextInput(`coffee${inputName}`, labelText, placeholder, maxLength, isRequired);
     const coffeeInputGroup = document.createElement('p');
-    coffeeInputGroup.appendChild(createCustomElement('li', { itemsToAppend: [label, input] }));
+    
+    coffeeInputGroup.appendChild(createCustomElement('li', { itemsToAppend: coffeeLabelAndInput }));
     return coffeeInputGroup;
 }
 
