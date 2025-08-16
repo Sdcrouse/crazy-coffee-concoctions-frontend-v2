@@ -60,11 +60,27 @@ async function generateNewConcoctionPage() {
     });
     
     const divider2 = document.createElement('hr');
+    const ingredientsHeading = createCustomElement('h3', { text: 'Ingredients:', classes: 'coffee-text indented-input' });
+    const liquidsHeading = createCustomElement('h4', { text: 'Liquids:', classes: 'indented-input' });
 
+    const liquid1Category = createCustomElement('input', {
+        attributes: { type: 'hidden', name: 'category', value: 'Liquid' }
+    });
+    const liquid1Amount = createLabelAndTextInput('liquid1Amount', 'Amount', 'Enter amount (e.g. 2 cups)', 50, true, 'amount');
+    const liquid1Name = createLabelAndTextInput('liquid1Name', 'Name', 'Enter name (e.g. hot water)', 50, true, 'name');
+
+    const liquid1InputGroup = document.createElement('p');
+    liquid1InputGroup.appendChild(createCustomElement('li', { itemsToAppend: [liquid1Category, ...liquid1Amount, ...liquid1Name] }));
+
+    const liquidsList = createCustomElement('ol', { itemsToAppend: [liquid1InputGroup] });
+    const ingredientsDivider1 = createCustomElement('hr', { classes: 'ingredients-divider' });
+    
     const newConcoctionForm = generateForm('Create Concoction',
         requiredFieldMessage, concNameGroup, divider,
-        coffeeList, divider2
+        coffeeList, divider2, ingredientsHeading,
+        liquidsHeading, liquidsList, ingredientsDivider1
     );
+    
     newConcoctionForm.addEventListener('submit', e => {
         e.preventDefault();
         console.log('Concoction created!');
@@ -84,11 +100,11 @@ function createLabel(labelFor, labelText, isRequired) {
     return label;
 }
 
-function createLabelAndTextInput(inputName, labelText, placeholder, maxLength, isRequired) {
-    const label = createLabel(inputName, labelText, isRequired);
+function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isRequired, inputName = inputId) {
+    const label = createLabel(inputId, labelText, isRequired);
 
     const textInput = createCustomElement('input', {
-        id: inputName,
+        id: inputId,
         attributes: { type: 'text', name: inputName, maxLength, placeholder, autocomplete: 'on' }
     });
     if (isRequired) textInput.required = true;
@@ -99,7 +115,7 @@ function createLabelAndTextInput(inputName, labelText, placeholder, maxLength, i
 function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
     const coffeeLabelAndInput = createLabelAndTextInput(`coffee${inputName}`, labelText, placeholder, maxLength, isRequired);
     const coffeeInputGroup = document.createElement('p');
-    
+
     coffeeInputGroup.appendChild(createCustomElement('li', { itemsToAppend: coffeeLabelAndInput }));
     return coffeeInputGroup;
 }

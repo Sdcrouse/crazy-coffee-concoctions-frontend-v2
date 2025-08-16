@@ -22,12 +22,20 @@ section {
     padding: 5%;
 }
 
+form ol { padding-inline-start: 55px; }
+form ol input { margin-right: 4%; }
+
 form input, select { margin-left: 2%; }
 
 hr {
   height: 5px;
   width: 90%;
   background-color: #63A7E4;
+}
+
+.ingredients-divider {
+    height: 3px;
+    background-color: #A65F40;
 }
 
 button[type="submit"] {
