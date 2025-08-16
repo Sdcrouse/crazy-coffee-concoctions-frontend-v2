@@ -10,13 +10,6 @@ nav {
     flex-direction: column;
 }
 
-nav button {
-    margin-bottom: 25px;
-    font-size: 1.3em;
-    width: 100%;
-    padding: 0.3em;
-}
-
 section {
     background-color: #A65F40;
     padding: 5%;
@@ -38,6 +31,21 @@ hr {
     background-color: #A65F40;
 }
 
+footer {
+    padding-left: 16%;
+    padding-right: 16%;
+    color: darkred;
+}
+
+/* BUTTON STYLES */
+
+nav button {
+    margin-bottom: 25px;
+    font-size: 1.3em;
+    width: 100%;
+    padding: 0.3em;
+}
+
 button[type="submit"] {
     color: white;
     background-color: #63A7E4;
@@ -45,17 +53,17 @@ button[type="submit"] {
     font-size: 100%;
 }
 
-footer {
-    padding-left: 16%;
-    padding-right: 16%;
-    color: darkred;
-}
-
 ul li button {
     margin-left: 2%;
     height: 2em;
     background-color: #2581c8;
     color: white;
+}
+
+.add-ingredient {
+    color: white;
+    background-color: green;
+    padding: 3px 5px;
 }
 
 
