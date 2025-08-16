@@ -13,8 +13,6 @@ const mainContainer = document.getElementById('main-container');
 const apiBase = 'http://localhost:5000';
 const concoctionsUrl = `${apiBase}/concoctions`;
 
-let liquidCount = 0;
-
 async function generateNewConcoctionPage() {
     generatePageTitle('New Concoction');
 
@@ -70,9 +68,14 @@ async function generateNewConcoctionPage() {
     
     const addLiquidButton = createCustomElement('button', { text: 'Add Liquid', classes: 'add-ingredient' });
     addLiquidButton.addEventListener('click', e => addLiquid(liquidsList, e));
+
+    const removeLiquidButton = createCustomElement('button', { id: 'remove-liquid-btn', text: 'Remove Liquid', classes: 'remove-ingredient' });
+    removeLiquidButton.style.display = 'none';
+    removeLiquidButton.addEventListener('click', e => removeLiquid(liquidsList, e));
+
     const liquidButtons = createCustomElement('p', {
         classes: 'center-content',
-        itemsToAppend: [addLiquidButton]
+        itemsToAppend: [addLiquidButton, removeLiquidButton]
     });
 
     const ingredientsDivider1 = createCustomElement('hr', { classes: 'ingredients-divider' });
@@ -116,7 +119,9 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
 
 function addLiquid(liquidsList, e) {
     if (e) e.preventDefault();
-    liquidCount++;
+    
+    let liquidCount = liquidsList.childElementCount + 1;
+    if (liquidCount === 2) document.getElementById('remove-liquid-btn').style.display = 'initial';
 
     const liquidCategory = createCustomElement('input', {
         attributes: { type: 'hidden', name: 'category', value: 'Liquid' }
@@ -130,6 +135,21 @@ function addLiquid(liquidsList, e) {
     );
 
     liquidsList.appendChild(liquidInputGroup);
+}
+
+function removeLiquid(liquidsList, e) {
+    e.preventDefault();
+
+    let liquidCount = liquidsList.childElementCount;
+    if (liquidCount === 1) { // Edge case
+        appendErrorHeading(liquidsList, 'Cannot remove this ingredient. A concoction needs to have at least one liquid.');
+        return;
+    }
+    
+    liquidCount--;
+    if (liquidCount === 1) document.getElementById('remove-liquid-btn').style.display = 'none';
+
+    liquidsList.removeChild(liquidsList.lastChild);
 }
 
 function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {

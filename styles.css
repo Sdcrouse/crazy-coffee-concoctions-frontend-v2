@@ -66,6 +66,13 @@ ul li button {
     padding: 3px 5px;
 }
 
+.remove-ingredient {
+    color: white;
+    background-color: red;
+    margin-left: 2%;
+    padding: 3px 5px;
+}
+
 
 /* COLOR STYLES */
 
