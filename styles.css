@@ -17,6 +17,7 @@ section {
 
 form ol { padding-inline-start: 55px; }
 form ol input { margin-right: 4%; }
+form ol .error-text { padding-inline-end: 55px; }
 
 form input, select { margin-left: 2%; }
 

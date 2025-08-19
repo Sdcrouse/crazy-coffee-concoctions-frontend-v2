@@ -29,7 +29,7 @@ async function generateNewConcoctionPage() {
         classes: 'indented-input',
         itemsToAppend: concNameLabelAndInput
     });
-    const divider = document.createElement('hr');
+    const divider1 = document.createElement('hr');
 
     const coffeeHeading = createCustomElement('h3', { text: 'Coffee:', classes: 'coffee-text' });
     const coffeeAmountGroup = createCoffeeInputGroup('Amount', 'Enter amount (e.g. 2 tsp)', 50, true);
@@ -62,11 +62,13 @@ async function generateNewConcoctionPage() {
     const liquidInputs = generateIngredientInputs('Liquid', addLiquid, 1, 'Cannot remove this liquid. A concoction needs to have at least one liquid.');
     const sweetenerInputs = generateIngredientInputs('Sweetener', addSweetener, 0, 'There are no sweeteners to remove.');
     const creamerInputs = generateIngredientInputs('Creamer', addCreamer, 0, 'There are no creamers to remove.');
-    
+    const additionalIngredientInputs = generateIngredientInputs('Additional Ingredient', addAdditionalIngredient, 0, 'There are no additional ingredients to remove.');
+    const divider3 = document.createElement('hr');
+
     const newConcoctionForm = generateForm('Create Concoction',
-        requiredFieldMessage, concNameGroup, divider,
+        requiredFieldMessage, concNameGroup, divider1,
         coffeeList, divider2, ingredientsHeading,
-        ...liquidInputs, ...sweetenerInputs, ...creamerInputs
+        ...liquidInputs, ...sweetenerInputs, ...creamerInputs, ...additionalIngredientInputs, divider3
     );
     
     newConcoctionForm.addEventListener('submit', e => {
@@ -113,7 +115,8 @@ function generateIngredientInputs(category, addIngredientFunction, minIngredient
     const addIngredientButton = createCustomElement('button', { text: `Add ${category}`, classes: 'add-ingredient' });
     addIngredientButton.addEventListener('click', e => addIngredientFunction(ingredientsList, e));
 
-    const categoryLowerCase = category[0].toLowerCase() + category.slice(1);
+    const categoryLowerCase = (category === 'Additional Ingredient') ? 'ingredient' : category[0].toLowerCase() + category.slice(1);
+    
     const removeIngredientButton = createCustomElement('button', { id: `remove-${categoryLowerCase}-btn`, text: `Remove ${category}`, classes: 'remove-ingredient' });
     removeIngredientButton.style.display = 'none';
     removeIngredientButton.addEventListener('click',
@@ -124,13 +127,15 @@ function generateIngredientInputs(category, addIngredientFunction, minIngredient
         classes: 'center-content',
         itemsToAppend: [addIngredientButton, removeIngredientButton]
     });
-    const ingredientsDivider = createCustomElement('hr', { classes: 'ingredients-divider' });
 
-    return [ingredientsHeading, ingredientsList, ingredientButtons, ingredientsDivider];
+    let ingredientInputs = [ingredientsHeading, ingredientsList, ingredientButtons];
+    if (category !== 'Additional Ingredient') ingredientInputs.push(createCustomElement('hr', { classes: 'ingredients-divider' }));
+    return ingredientInputs;
 }
 
 function addIngredient(category, ingredientsList, ingredientCount, amountPlaceholder, namePlaceholder) {
-    const categoryTitleCase = category[0].toUpperCase() + category.slice(1);
+    const categoryTitleCase = (category === 'additional') ? 'Additional Ingredient': category[0].toUpperCase() + category.slice(1);
+    
     const categoryInput = createCustomElement('input', {
         attributes: { type: 'hidden', name: 'category', value: categoryTitleCase }
     });
@@ -176,6 +181,18 @@ function addCreamer(creamersList, e) {
     }
 
     addIngredient('creamer', creamersList, creamerCount, 'Enter amount (e.g. 1 1/2 tsp)', 'Enter a brand and/or flavor');
+}
+
+function addAdditionalIngredient(ingredientsList, e) {
+    e.preventDefault();
+
+    const ingredientCount = ingredientsList.childElementCount + 1;
+    if (ingredientCount === 1) {
+        ingredientsList.style.display = 'block';
+        document.getElementById('remove-ingredient-btn').style.display = 'initial';
+    }
+
+    addIngredient('additional', ingredientsList, ingredientCount, 'Enter amount (e.g. a pinch)', 'Enter name (e.g. cinnamon)');
 }
 
 function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientCount, minIngredientMessage) {
