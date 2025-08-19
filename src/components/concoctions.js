@@ -61,11 +61,12 @@ async function generateNewConcoctionPage() {
     const ingredientsHeading = createCustomElement('h3', { text: 'Ingredients:', classes: 'coffee-text indented-input' });
     const liquidInputs = generateIngredientInputs('Liquid', addLiquid, 1, 'Cannot remove this liquid. A concoction needs to have at least one liquid.');
     const sweetenerInputs = generateIngredientInputs('Sweetener', addSweetener, 0, 'There are no sweeteners to remove.');
+    const creamerInputs = generateIngredientInputs('Creamer', addCreamer, 0, 'There are no creamers to remove.');
     
     const newConcoctionForm = generateForm('Create Concoction',
         requiredFieldMessage, concNameGroup, divider,
         coffeeList, divider2, ingredientsHeading,
-        ...liquidInputs, ...sweetenerInputs
+        ...liquidInputs, ...sweetenerInputs, ...creamerInputs
     );
     
     newConcoctionForm.addEventListener('submit', e => {
@@ -105,7 +106,7 @@ function generateIngredientInputs(category, addIngredientFunction, minIngredient
     const ingredientsList = document.createElement('ol');
     if (category === 'Liquid') {
         addIngredientFunction(ingredientsList);
-    } else if (category === 'Sweetener') {
+    } else {
         ingredientsList.style.display = 'none';
     }
     
@@ -163,6 +164,18 @@ function addSweetener(sweetenersList, e) {
     }
 
     addIngredient('sweetener', sweetenersList, sweetenerCount, 'Enter amount (e.g. 1 tsp)', "Enter name (e.g. sugar)");
+}
+
+function addCreamer(creamersList, e) {
+    e.preventDefault();
+
+    const creamerCount = creamersList.childElementCount + 1;
+    if (creamerCount === 1) {
+        creamersList.style.display = 'block';
+        document.getElementById('remove-creamer-btn').style.display = 'initial';
+    }
+
+    addIngredient('creamer', creamersList, creamerCount, 'Enter amount (e.g. 1 1/2 tsp)', 'Enter a brand and/or flavor');
 }
 
 function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientCount, minIngredientMessage) {
