@@ -29,7 +29,6 @@ async function generateNewConcoctionPage() {
         classes: 'indented-input',
         itemsToAppend: concNameLabelAndInput
     });
-    
     const divider = document.createElement('hr');
 
     const coffeeHeading = createCustomElement('h3', { text: 'Coffee:', classes: 'coffee-text' });
@@ -53,60 +52,20 @@ async function generateNewConcoctionPage() {
     coffeeRoastGroup.appendChild(createCustomElement('li', { itemsToAppend: [coffeeRoastLabel, coffeeRoastOptions] }));
 
     const coffeeBeanGroup = createCoffeeInputGroup('BeanType', 'Enter bean type (e.g. Kona)', 30, false, 'Bean Type');
-
     const coffeeList = createCustomElement('ul', {
         classes: 'indented-input no-list-marker',
         itemsToAppend: [coffeeHeading, coffeeAmountGroup, coffeeBrandGroup, coffeeBlendGroup, coffeeRoastGroup, coffeeBeanGroup]
     });
-    
     const divider2 = document.createElement('hr');
+
     const ingredientsHeading = createCustomElement('h3', { text: 'Ingredients:', classes: 'coffee-text indented-input' });
-    const liquidsHeading = createCustomElement('h4', { text: 'Liquids:', classes: 'indented-input' });
-    
-    const liquidsList = document.createElement('ol');
-    addLiquid(liquidsList);
-    
-    const addLiquidButton = createCustomElement('button', { text: 'Add Liquid', classes: 'add-ingredient' });
-    addLiquidButton.addEventListener('click', e => addLiquid(liquidsList, e));
-
-    const removeLiquidButton = createCustomElement('button', { id: 'remove-liquid-btn', text: 'Remove Liquid', classes: 'remove-ingredient' });
-    removeLiquidButton.style.display = 'none';
-    removeLiquidButton.addEventListener('click',
-        e => removeIngredient(e, 'liquid', liquidsList, 1, 'Cannot remove this ingredient. A concoction needs to have at least one liquid.')
-    );
-
-    const liquidButtons = createCustomElement('p', {
-        classes: 'center-content',
-        itemsToAppend: [addLiquidButton, removeLiquidButton]
-    });
-
-    const ingredientsDivider1 = createCustomElement('hr', { classes: 'ingredients-divider' });
-    const sweetenersHeading = createCustomElement('h4', { text: 'Sweeteners:', classes: 'indented-input' });
-    
-    const sweetenersList = document.createElement('ol');
-    sweetenersList.style.display = 'none';
-
-    const addSweetenerButton = createCustomElement('button', { text: 'Add Sweetener', classes: 'add-ingredient' });
-    addSweetenerButton.addEventListener('click', e => addSweetener(sweetenersList, e));
-
-    const removeSweetenerButton = createCustomElement('button', { id: 'remove-sweetener-btn', text: 'Remove Sweetener', classes: 'remove-ingredient' });
-    removeSweetenerButton.style.display = 'none';
-    removeSweetenerButton.addEventListener('click',
-        e => removeIngredient(e, 'sweetener', sweetenersList, 0, 'There are no sweeteners to remove.')
-    );
-
-    const sweetenerButtons = createCustomElement('p', {
-        classes: 'center-content',
-        itemsToAppend: [addSweetenerButton, removeSweetenerButton]
-    });
-
-    const ingredientsDivider2 = createCustomElement('hr', { classes: 'ingredients-divider' });
+    const liquidInputs = generateIngredientInputs('Liquid', addLiquid, 1, 'Cannot remove this liquid. A concoction needs to have at least one liquid.');
+    const sweetenerInputs = generateIngredientInputs('Sweetener', addSweetener, 0, 'There are no sweeteners to remove.');
     
     const newConcoctionForm = generateForm('Create Concoction',
         requiredFieldMessage, concNameGroup, divider,
         coffeeList, divider2, ingredientsHeading,
-        liquidsHeading, liquidsList, liquidButtons, ingredientsDivider1,
-        sweetenersHeading, sweetenersList, sweetenerButtons, ingredientsDivider2
+        ...liquidInputs, ...sweetenerInputs
     );
     
     newConcoctionForm.addEventListener('submit', e => {
@@ -138,6 +97,35 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
     if (isRequired) textInput.required = true;
 
     return [label, textInput];
+}
+
+function generateIngredientInputs(category, addIngredientFunction, minIngredientCount, removeIngredientPlaceholderText) {    
+    const ingredientsHeading = createCustomElement('h4', { text: `${category}s:`, classes: 'indented-input' });
+    
+    const ingredientsList = document.createElement('ol');
+    if (category === 'Liquid') {
+        addIngredientFunction(ingredientsList);
+    } else if (category === 'Sweetener') {
+        ingredientsList.style.display = 'none';
+    }
+    
+    const addIngredientButton = createCustomElement('button', { text: `Add ${category}`, classes: 'add-ingredient' });
+    addIngredientButton.addEventListener('click', e => addIngredientFunction(ingredientsList, e));
+
+    const categoryLowerCase = category[0].toLowerCase() + category.slice(1);
+    const removeIngredientButton = createCustomElement('button', { id: `remove-${categoryLowerCase}-btn`, text: `Remove ${category}`, classes: 'remove-ingredient' });
+    removeIngredientButton.style.display = 'none';
+    removeIngredientButton.addEventListener('click',
+        e => removeIngredient(e, categoryLowerCase, ingredientsList, minIngredientCount, removeIngredientPlaceholderText)
+    );
+
+    const ingredientButtons = createCustomElement('p', {
+        classes: 'center-content',
+        itemsToAppend: [addIngredientButton, removeIngredientButton]
+    });
+    const ingredientsDivider = createCustomElement('hr', { classes: 'ingredients-divider' });
+
+    return [ingredientsHeading, ingredientsList, ingredientButtons, ingredientsDivider];
 }
 
 function addIngredient(category, ingredientsList, ingredientCount, amountPlaceholder, namePlaceholder) {
