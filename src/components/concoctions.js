@@ -71,7 +71,9 @@ async function generateNewConcoctionPage() {
 
     const removeLiquidButton = createCustomElement('button', { id: 'remove-liquid-btn', text: 'Remove Liquid', classes: 'remove-ingredient' });
     removeLiquidButton.style.display = 'none';
-    removeLiquidButton.addEventListener('click', e => removeLiquid(liquidsList, e));
+    removeLiquidButton.addEventListener('click',
+        e => removeIngredient(e, 'liquid', liquidsList, 1, 'Cannot remove this ingredient. A concoction needs to have at least one liquid.')
+    );
 
     const liquidButtons = createCustomElement('p', {
         classes: 'center-content',
@@ -89,7 +91,9 @@ async function generateNewConcoctionPage() {
 
     const removeSweetenerButton = createCustomElement('button', { id: 'remove-sweetener-btn', text: 'Remove Sweetener', classes: 'remove-ingredient' });
     removeSweetenerButton.style.display = 'none';
-    removeSweetenerButton.addEventListener('click', e => removeSweetener(sweetenersList, e));
+    removeSweetenerButton.addEventListener('click',
+        e => removeIngredient(e, 'sweetener', sweetenersList, 0, 'There are no sweeteners to remove.')
+    );
 
     const sweetenerButtons = createCustomElement('p', {
         classes: 'center-content',
@@ -136,39 +140,29 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
     return [label, textInput];
 }
 
+function addIngredient(category, ingredientsList, ingredientCount, amountPlaceholder, namePlaceholder) {
+    const categoryTitleCase = category[0].toUpperCase() + category.slice(1);
+    const categoryInput = createCustomElement('input', {
+        attributes: { type: 'hidden', name: 'category', value: categoryTitleCase }
+    });
+    const amountInput = createLabelAndTextInput(`${category}${ingredientCount}Amount`, 'Amount', amountPlaceholder, 50, true, 'amount');
+    const nameInput = createLabelAndTextInput(`${category}${ingredientCount}Name`, 'Name', namePlaceholder, 50, true, 'name');
+    
+    const ingredientInputGroup = document.createElement('p');
+    ingredientInputGroup.appendChild(
+        createCustomElement('li', { itemsToAppend: [categoryInput, ...amountInput, ...nameInput] })
+    );
+
+    ingredientsList.appendChild(ingredientInputGroup);
+}
+
 function addLiquid(liquidsList, e) {
     if (e) e.preventDefault();
     
     const liquidCount = liquidsList.childElementCount + 1;
     if (liquidCount === 2) document.getElementById('remove-liquid-btn').style.display = 'initial';
 
-    const liquidCategory = createCustomElement('input', {
-        attributes: { type: 'hidden', name: 'category', value: 'Liquid' }
-    });
-    const liquidAmount = createLabelAndTextInput(`liquid${liquidCount}Amount`, 'Amount', 'Enter amount (e.g. 2 cups)', 50, true, 'amount');
-    const liquidName = createLabelAndTextInput(`liquid${liquidCount}Name`, 'Name', 'Enter name (e.g. hot water)', 50, true, 'name');
-    
-    const liquidInputGroup = document.createElement('p');
-    liquidInputGroup.appendChild(
-        createCustomElement('li', { itemsToAppend: [liquidCategory, ...liquidAmount, ...liquidName] })
-    );
-
-    liquidsList.appendChild(liquidInputGroup);
-}
-
-function removeLiquid(liquidsList, e) {
-    e.preventDefault();
-
-    let liquidCount = liquidsList.childElementCount;
-    if (liquidCount === 1) { // Edge case
-        appendErrorHeading(liquidsList, 'Cannot remove this ingredient. A concoction needs to have at least one liquid.');
-        return;
-    }
-    
-    liquidCount--;
-    if (liquidCount === 1) document.getElementById('remove-liquid-btn').style.display = 'none';
-
-    liquidsList.removeChild(liquidsList.lastChild);
+    addIngredient('liquid', liquidsList, liquidCount, 'Enter amount (e.g. 2 cups)', 'Enter name (e.g. hot water)');
 }
 
 function addSweetener(sweetenersList, e) {
@@ -180,33 +174,21 @@ function addSweetener(sweetenersList, e) {
         document.getElementById('remove-sweetener-btn').style.display = 'initial';
     }
 
-    const sweetenerCategory = createCustomElement('input', {
-        attributes: { type: 'hidden', name: 'category', value: 'Sweetener' }
-    });
-    const sweetenerAmount = createLabelAndTextInput(`sweetener${sweetenerCount}Amount`, 'Amount', 'Enter amount (e.g. 1 tsp or a packet)', 50, true, 'amount');
-    const sweetenerName = createLabelAndTextInput(`sweetener${sweetenerCount}Name`, 'Name', "Enter name (e.g. sugar or SweetN' Low)", 50, true, 'name');
-    
-    const sweetenerInputGroup = document.createElement('p');
-    sweetenerInputGroup.appendChild(
-        createCustomElement('li', { itemsToAppend: [sweetenerCategory, ...sweetenerAmount, ...sweetenerName] })
-    );
-
-    sweetenersList.appendChild(sweetenerInputGroup);
+    addIngredient('sweetener', sweetenersList, sweetenerCount, 'Enter amount (e.g. 1 tsp)', "Enter name (e.g. sugar)");
 }
 
-function removeSweetener(sweetenersList, e) {
+function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientCount, minIngredientMessage) {
     e.preventDefault();
 
-    let sweetenerCount = sweetenersList.childElementCount;
-    if (sweetenerCount === 0) { // Edge case
-        appendErrorHeading(sweetenersList, 'There are no sweeteners to remove.');
+    let ingredientCount = ingredientsList.childElementCount;
+    if (ingredientCount === minIngredientCount) { // Edge case
+        appendErrorHeading(ingredientsList, minIngredientMessage);
         return;
     }
 
-    sweetenerCount--;
-    if (sweetenerCount === 0) document.getElementById('remove-sweetener-btn').style.display = 'none';
-
-    sweetenersList.removeChild(sweetenersList.lastChild);
+    ingredientsList.removeChild(ingredientsList.lastChild);
+    ingredientCount--;
+    if (ingredientCount === minIngredientCount) document.getElementById(`remove-${ingredientCategory}-btn`).style.display = 'none';
 }
 
 function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
