@@ -7,6 +7,7 @@ import Coffee from '../entities/Coffee.js';
 import Ingredient from '../entities/Ingredient.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
+import { capitalizeWord, lowerCaseWord } from '../utils/wordFunctions.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
 
 const mainContainer = document.getElementById('main-container');
@@ -38,15 +39,16 @@ async function generateNewConcoctionPage() {
 
     const coffeeRoastLabel = createLabel('roast', 'Roast', false);
     const coffeeRoastOptions = createCustomElement('select', { id: 'roast', attributes: { name: 'roast' } });
-    coffeeRoastOptions.append(
-        createCustomElement('option', { text: '--Please choose a roast--', attributes: { value: '' } }),
-        createCustomElement('option', { text: 'Blonde', attributes: { value: 'Blonde' } }),
-        createCustomElement('option', { text: 'Light', attributes: { value: 'Light' } }),
-        createCustomElement('option', { text: 'Medium-Light', attributes: { value: 'Medium-Light' } }),
-        createCustomElement('option', { text: 'Medium', attributes: { value: 'Medium' } }),
-        createCustomElement('option', { text: 'Medium-Dark', attributes: { value: 'Medium-Dark' } }),
-        createCustomElement('option', { text: 'Dark', attributes: { value: 'Dark' } }),
-    );
+    coffeeRoastOptions.appendChild(createCustomElement(
+        'option', { text: '--Please choose a roast--', attributes: { value: '' } }
+    ));
+
+    const roastOptionList = ['Blonde', 'Light', 'Medium-Light', 'Medium', 'Medium-Dark', 'Dark'];
+    for (let roastOption of roastOptionList) {
+        coffeeRoastOptions.appendChild(createCustomElement(
+            'option', { text: roastOption, attributes: { value: roastOption } }
+        ));
+    }
 
     const coffeeRoastGroup = document.createElement('p');
     coffeeRoastGroup.appendChild(createCustomElement('li', { itemsToAppend: [coffeeRoastLabel, coffeeRoastOptions] }));
@@ -107,7 +109,7 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
 }
 
 function createTextAreaGroup(textAreaName, placeholder, required) {
-    const nameCapitalized = textAreaName[0].toUpperCase() + textAreaName.slice(1);
+    const nameCapitalized = capitalizeWord(textAreaName);
 
     const label = createLabel(textAreaName, nameCapitalized, required);
     if (textAreaName === 'notes') label.id = 'notes-label';
@@ -128,7 +130,7 @@ function createTextAreaGroup(textAreaName, placeholder, required) {
 function generateIngredientInputs(category) {
     const ingredientsHeading = createCustomElement('h4', { text: `${category}s:`, classes: 'indented-input' });
     const ingredientsList = document.createElement('ol');
-    const categoryLowerCase = (category === 'Additional Ingredient') ? 'ingredient' : category[0].toLowerCase() + category.slice(1);
+    const categoryLowerCase = (category === 'Additional Ingredient') ? 'ingredient' : lowerCaseWord(category);
     let minIngredientCount;
 
     if (category === 'Liquid') {
@@ -181,10 +183,10 @@ function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
             break;
     }
     
-    const categoryTitleCase = (category === 'additional') ? 'Additional Ingredient': category[0].toUpperCase() + category.slice(1);
+    const categoryCapitalized = (category === 'ingredient') ? 'Additional Ingredient' : capitalizeWord(category);
     
     const categoryInput = createCustomElement('input', {
-        attributes: { type: 'hidden', name: 'category', value: categoryTitleCase }
+        attributes: { type: 'hidden', name: 'category', value: categoryCapitalized }
     });
 
     const ingredientCount = ingredientsList.childElementCount + 1;
