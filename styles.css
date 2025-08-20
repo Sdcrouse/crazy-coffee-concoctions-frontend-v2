@@ -99,6 +99,11 @@ nav button {
     justify-content: center;
 }
 
+.center-vertical {
+    display: flex;
+    align-items: center;
+}
+
 .extra-padding {
     padding-left: 10%;
     padding-right: 10%;
@@ -122,6 +127,22 @@ nav button {
 }
 
 .indented-input { padding-inline-start: 40px; }
+
+#instructions {
+    width: 70%;
+    height: 8em;
+    margin-left: 1em;
+}
+
+#notes-label {
+    margin-left: 37px;
+}
+
+#notes {
+    width: 70%;
+    height: 5em;
+    margin-left: 1em;
+}
 
 #main-container div { padding: 5%; }
 

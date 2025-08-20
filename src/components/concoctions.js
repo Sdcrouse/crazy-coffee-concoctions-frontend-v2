@@ -65,10 +65,14 @@ async function generateNewConcoctionPage() {
     const additionalIngredientInputs = generateIngredientInputs('Additional Ingredient');
     const divider3 = document.createElement('hr');
 
+    const instructionsGroup = createTextAreaGroup('instructions', 'Enter the instructions for creating your crazy coffee concoction here.', true);
+    const notesGroup = createTextAreaGroup('notes', 'Enter any concoction notes here.', false);
+
     const newConcoctionForm = generateForm('Create Concoction',
         requiredFieldMessage, concNameGroup, divider1,
         coffeeList, divider2, ingredientsHeading,
-        ...liquidInputs, ...sweetenerInputs, ...creamerInputs, ...additionalIngredientInputs, divider3
+        ...liquidInputs, ...sweetenerInputs, ...creamerInputs, ...additionalIngredientInputs,
+        divider3, instructionsGroup, notesGroup
     );
     
     newConcoctionForm.addEventListener('submit', e => {
@@ -100,6 +104,25 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
     if (isRequired) textInput.required = true;
 
     return [label, textInput];
+}
+
+function createTextAreaGroup(textAreaName, placeholder, required) {
+    const nameCapitalized = textAreaName[0].toUpperCase() + textAreaName.slice(1);
+
+    const label = createLabel(textAreaName, nameCapitalized, required);
+    if (textAreaName === 'notes') label.id = 'notes-label';
+    
+    const textArea = createCustomElement('textarea', {
+        id: textAreaName,
+        attributes: { name: textAreaName, placeholder, autocomplete: 'on'}
+    });
+    if (required) textArea.required = true;
+
+    const textAreaGroup = createCustomElement('p', {
+        classes: 'indented-input center-vertical',
+        itemsToAppend: [label, textArea]
+    });
+    return textAreaGroup;
 }
 
 function generateIngredientInputs(category) {
