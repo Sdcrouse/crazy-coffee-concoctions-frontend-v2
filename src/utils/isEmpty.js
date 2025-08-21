@@ -1,9 +1,8 @@
-export default function isEmpty(value) {
-    // Note: This does not check for empty objects; this can be changed later if need be.
-     
+export default function isEmpty(value) {     
+    if (value === null || value === undefined) return true;
     if (Array.isArray(value)) return value.length === 0;
     if (typeof value === 'string') return value.trim().length === 0;
-    if (!value && value !== 0) return true;
+    if (typeof value === 'object' && value.constructor === Object) return Object.keys(value).length === 0;
 
-    throw new TypeError('The isEmpty() function only accepts arrays and strings');
+    throw new TypeError('The isEmpty() function only accepts values that are null, undefined, arrays, strings, or objects.');
 };

@@ -8,6 +8,7 @@ h1 {
 nav {
     display: flex;
     flex-direction: column;
+    gap: 30px;
 }
 
 section {
@@ -41,7 +42,6 @@ footer {
 /* BUTTON STYLES */
 
 nav button {
-    margin-bottom: 25px;
     font-size: 1.3em;
     width: 100%;
     padding: 0.3em;
