@@ -77,13 +77,46 @@ async function generateNewConcoctionPage() {
         divider3, instructionsGroup, notesGroup
     );
     
-    newConcoctionForm.addEventListener('submit', e => {
-        e.preventDefault();
-        console.log('Concoction created!');
-    });
+    newConcoctionForm.addEventListener('submit', e => createConcoction(e, newConcoctionForm));
 
     newConcoctionDiv.appendChild(newConcoctionForm);
     mainContainer.replaceChildren(newConcoctionDiv);
+}
+
+function createConcoction(e, concoctionForm) {
+    e.preventDefault();
+    console.log('Concoction created!');
+
+    const inputNames = ['category', 'amount', 'name'];
+    const ingredients = Array.from(concoctionForm.querySelectorAll('ol.ingredient-list'))
+                             .filter(ingredientList => ingredientList.style.display !== 'none')
+                             .map(ingredientList => Array.from(ingredientList.querySelectorAll('li')))
+                             .flat()
+                             .map(ingredientListItem => {
+                                 const ingredientData = {};
+                                 for (const inputName of inputNames) {
+                                     ingredientData[inputName] = ingredientListItem.querySelector(`input[name="${inputName}"]`).value;
+                                 }
+                                 return ingredientData;
+                             });
+    
+    const formData = {
+        concoction: {
+            name: concoctionForm.querySelector('#concoctionName').value,
+            instructions: concoctionForm.querySelector('#instructions').value,
+            notes: concoctionForm.querySelector('#notes').value
+        },
+        coffee: {
+            amount: concoctionForm.querySelector('#coffeeAmount').value,
+            brand: concoctionForm.querySelector('#coffeeBrand').value,
+            blend: concoctionForm.querySelector('#coffeeBlend').value,
+            roast: concoctionForm.querySelector('#roast').value,
+            beanType: concoctionForm.querySelector('#coffeeBeanType').value
+        },
+        ingredients
+    };
+
+    console.log(formData);
 }
 
 function createLabel(labelFor, labelText, isRequired) {
@@ -129,7 +162,7 @@ function createTextAreaGroup(textAreaName, placeholder, required) {
 
 function generateIngredientInputs(category) {
     const ingredientsHeading = createCustomElement('h4', { text: `${category}s:`, classes: 'indented-input' });
-    const ingredientsList = document.createElement('ol');
+    const ingredientsList = createCustomElement('ol', { classes: 'ingredient-list' });
     const categoryLowerCase = (category === 'Additional Ingredient') ? 'ingredient' : lowerCaseWord(category);
     let minIngredientCount;
 
@@ -222,7 +255,11 @@ function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientC
 
     ingredientsList.removeChild(ingredientsList.lastChild);
     ingredientCount--;
-    if (ingredientCount === minIngredientCount) document.getElementById(`remove-${ingredientCategory}-btn`).style.display = 'none';
+
+    if (ingredientCount === minIngredientCount) {
+        document.getElementById(`remove-${ingredientCategory}-btn`).style.display = 'none';
+        if (ingredientCategory !== 'liquid') ingredientsList.style.display = 'none';
+    }
 }
 
 function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
