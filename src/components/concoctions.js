@@ -27,6 +27,7 @@ async function generateNewConcoctionPage() {
 
     const concNameLabelAndInput = createLabelAndTextInput('concoctionName', 'Name', 'Enter concoction name', 50, true);
     const concNameGroup = createCustomElement('p', {
+        id: 'concoctionNameGroup',
         classes: 'indented-input',
         itemsToAppend: concNameLabelAndInput
     });
@@ -67,7 +68,9 @@ async function generateNewConcoctionPage() {
     const additionalIngredientInputs = generateIngredientInputs('Additional Ingredient');
     const divider3 = document.createElement('hr');
 
-    const instructionsGroup = createTextAreaGroup('instructions', 'Enter the instructions for creating your crazy coffee concoction here.', true);
+    const instructionsGroup = createTextAreaGroup(
+        'instructions', 'Enter the instructions for creating your crazy coffee concoction here.', true, 'instructionsGroup'
+    );
     const notesGroup = createTextAreaGroup('notes', 'Enter any concoction notes here.', false);
 
     const newConcoctionForm = generateForm('Create Concoction',
@@ -85,7 +88,6 @@ async function generateNewConcoctionPage() {
 
 function createConcoction(e, concoctionForm) {
     e.preventDefault();
-    console.log('Concoction created!');
 
     const inputNames = ['category', 'amount', 'name'];
     const ingredients = Array.from(concoctionForm.querySelectorAll('ol.ingredient-list'))
@@ -117,6 +119,61 @@ function createConcoction(e, concoctionForm) {
     };
 
     console.log(formData);
+
+    const concoctionErrors = Concoction.validateData(formData.concoction);
+    
+    const concNameInputClasses = concoctionForm.querySelector('#concoctionName').classList;
+    const concNameGroup = concoctionForm.querySelector('#concoctionNameGroup');
+    const instructionsInputClasses = concoctionForm.querySelector('#instructions').classList;
+    const instructionsGroup = concoctionForm.querySelector('#instructionsGroup');
+
+    const hasErrorHeading = (elementGroup) => elementGroup.lastChild.classList.contains('error-text');
+
+    if (isEmpty(concoctionErrors)) {
+        if (hasErrorHeading(concNameGroup)) {
+            concNameGroup.removeChild(concNameGroup.lastChild);
+            concNameInputClasses.remove('input-validation-error');
+        }
+
+        if (hasErrorHeading(instructionsGroup)) {
+            instructionsGroup.removeChild(instructionsGroup.lastChild);
+            instructionsInputClasses.remove('input-validation-error');
+        }
+
+        console.log('Concoction created!');
+    } else {
+        const concNameError = concoctionErrors.name;
+
+        if (concNameError) {
+            if (!hasErrorHeading(concNameGroup)) {
+                concNameGroup.appendChild(createCustomElement('h4', { text: concNameError, classes: 'error-text' }));
+                concNameInputClasses.add('input-validation-error');
+            }
+        } else if (hasErrorHeading(concNameGroup)) {
+            concNameGroup.removeChild(concNameGroup.lastChild);
+            concNameInputClasses.remove('input-validation-error');
+        }
+
+        const instructionsError = concoctionErrors.instructions;
+
+        if (instructionsError) {
+            if (!hasErrorHeading(instructionsGroup)) {
+                const errorHeading = createCustomElement('h4', { text: instructionsError, classes: 'error-text' });
+                errorHeading.style['margin-left'] = '1em';
+                instructionsGroup.appendChild(errorHeading);
+                instructionsInputClasses.add('input-validation-error');
+            }
+        } else if (hasErrorHeading(instructionsGroup)) {
+            instructionsGroup.removeChild(instructionsGroup.lastChild);
+            instructionsInputClasses.remove('input-validation-error');
+        }
+
+        if (!concoctionForm.lastChild.classList.contains('error-text')) {
+            concoctionForm.appendChild(createCustomElement(
+                'h4', { text: 'There are errors in the form. Please correct them and try again.', classes: 'error-text center-content' }
+            ));
+        }
+    }
 }
 
 function createLabel(labelFor, labelText, isRequired) {
@@ -141,7 +198,7 @@ function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isR
     return [label, textInput];
 }
 
-function createTextAreaGroup(textAreaName, placeholder, required) {
+function createTextAreaGroup(textAreaName, placeholder, required, groupId) {
     const nameCapitalized = capitalizeWord(textAreaName);
 
     const label = createLabel(textAreaName, nameCapitalized, required);
@@ -157,6 +214,8 @@ function createTextAreaGroup(textAreaName, placeholder, required) {
         classes: 'indented-input center-vertical',
         itemsToAppend: [label, textArea]
     });
+    if (groupId) textAreaGroup.id = groupId;
+
     return textAreaGroup;
 }
 

@@ -1,3 +1,5 @@
+import isEmpty from "../utils/isEmpty.js";
+
 export default class Concoction {
     #id;
     #name;
@@ -68,5 +70,15 @@ export default class Concoction {
     addData(additionalData) {
         this.#instructions = additionalData.instructions;
         this.#notes = additionalData.notes;
+    }
+
+    static validateData(concoctionData) {
+        const { name, instructions } = concoctionData;
+        let errorMessages = {};
+
+        if (isEmpty(name)) errorMessages.name = 'Concoction name is required.';
+        if (isEmpty(instructions)) errorMessages.instructions = 'Instructions are required.';
+
+        return errorMessages;
     }
 };
