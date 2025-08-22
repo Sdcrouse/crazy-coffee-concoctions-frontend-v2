@@ -121,58 +121,47 @@ function createConcoction(e, concoctionForm) {
     console.log(formData);
 
     const concoctionErrors = Concoction.validateData(formData.concoction);
-    
-    const concNameInputClasses = concoctionForm.querySelector('#concoctionName').classList;
     const concNameGroup = concoctionForm.querySelector('#concoctionNameGroup');
-    const instructionsInputClasses = concoctionForm.querySelector('#instructions').classList;
+    const concNameInputClasses = concoctionForm.querySelector('#concoctionName').classList;
     const instructionsGroup = concoctionForm.querySelector('#instructionsGroup');
-
-    const hasErrorHeading = (elementGroup) => elementGroup.lastChild.classList.contains('error-text');
+    const instructionsInputClasses = concoctionForm.querySelector('#instructions').classList;
 
     if (isEmpty(concoctionErrors)) {
-        if (hasErrorHeading(concNameGroup)) {
-            concNameGroup.removeChild(concNameGroup.lastChild);
-            concNameInputClasses.remove('input-validation-error');
-        }
-
-        if (hasErrorHeading(instructionsGroup)) {
-            instructionsGroup.removeChild(instructionsGroup.lastChild);
-            instructionsInputClasses.remove('input-validation-error');
-        }
-
+        removeConcoctionError(concNameGroup, concNameInputClasses);
+        removeConcoctionError(instructionsGroup, instructionsInputClasses);
         console.log('Concoction created!');
     } else {
-        const concNameError = concoctionErrors.name;
-
-        if (concNameError) {
-            if (!hasErrorHeading(concNameGroup)) {
-                concNameGroup.appendChild(createCustomElement('h4', { text: concNameError, classes: 'error-text' }));
-                concNameInputClasses.add('input-validation-error');
-            }
-        } else if (hasErrorHeading(concNameGroup)) {
-            concNameGroup.removeChild(concNameGroup.lastChild);
-            concNameInputClasses.remove('input-validation-error');
-        }
-
-        const instructionsError = concoctionErrors.instructions;
-
-        if (instructionsError) {
-            if (!hasErrorHeading(instructionsGroup)) {
-                const errorHeading = createCustomElement('h4', { text: instructionsError, classes: 'error-text' });
-                errorHeading.style['margin-left'] = '1em';
-                instructionsGroup.appendChild(errorHeading);
-                instructionsInputClasses.add('input-validation-error');
-            }
-        } else if (hasErrorHeading(instructionsGroup)) {
-            instructionsGroup.removeChild(instructionsGroup.lastChild);
-            instructionsInputClasses.remove('input-validation-error');
-        }
+        handleConcoctionError(concoctionErrors.name, 'name', concNameGroup, concNameInputClasses);
+        handleConcoctionError(concoctionErrors.instructions, 'instructions', instructionsGroup, instructionsInputClasses);
 
         if (!concoctionForm.lastChild.classList.contains('error-text')) {
             concoctionForm.appendChild(createCustomElement(
                 'h4', { text: 'There are errors in the form. Please correct them and try again.', classes: 'error-text center-content' }
             ));
         }
+    }
+}
+
+const hasErrorHeading = (inputGroup) => inputGroup.lastChild.classList.contains('error-text');
+
+function removeConcoctionError(inputGroup, inputClasses) {
+    if (hasErrorHeading(inputGroup)) {
+        inputGroup.removeChild(inputGroup.lastChild);
+        inputClasses.remove('input-validation-error');
+    }
+}
+
+function handleConcoctionError(errorMessage, inputName, inputGroup, inputClasses) {
+    if (errorMessage) {
+        if (!hasErrorHeading(inputGroup)) {
+            const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'error-text' });
+            if (inputName === 'instructions') errorHeading.style['margin-left'] = '1em';
+            
+            inputGroup.appendChild(errorHeading);
+            inputClasses.add('input-validation-error');
+        }
+    } else {
+        removeConcoctionError(inputGroup, inputClasses);
     }
 }
 
