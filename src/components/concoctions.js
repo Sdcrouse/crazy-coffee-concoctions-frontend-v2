@@ -120,45 +120,39 @@ function createConcoction(e, concoctionForm) {
 
     console.log(formData);
 
+    const inputObjects = [];
+
     const concoctionErrors = Concoction.validateData(formData.concoction);
-    const concNameGroup = concoctionForm.querySelector('#concoctionNameGroup');
-    const concNameInputClasses = concoctionForm.querySelector('#concoctionName').classList;
-    const instructionsGroup = concoctionForm.querySelector('#instructionsGroup');
-    const instructionsInputClasses = concoctionForm.querySelector('#instructions').classList;
+    const concoctionInputNames = ['concoctionName', 'instructions'];
+
+    for (const inputName of concoctionInputNames) {
+        const inputGroup = concoctionForm.querySelector(`#${inputName}Group`);
+        const inputClasses = concoctionForm.querySelector(`#${inputName}`).classList;
+        inputObjects.push({ inputType: 'concoction', inputName, inputGroup, inputClasses });
+    }
 
     const coffeeErrors = Coffee.validateData(formData.coffee);
-    const requiredCoffeeFields = concoctionForm.querySelectorAll('.required-coffee-field');
-    const coffeeFieldObjects = [
-        { coffeeFieldName: 'amount' }, { coffeeFieldName: 'brand' }, { coffeeFieldName: 'blend' }
-    ];
+    const coffeeInputNames = ['Amount', 'Brand', 'Blend'];
 
-    for (let i = 0; i < 3; i++) {
-        const coffeeFieldObject = coffeeFieldObjects[i];
-        const coffeeFieldName = capitalizeWord(coffeeFieldObject.coffeeFieldName);
-
-        coffeeFieldObject['coffeeListItem'] = requiredCoffeeFields[i];
-        coffeeFieldObject['coffeeFieldClasses'] = concoctionForm.querySelector(`#coffee${coffeeFieldName}`).classList;
+    for (const inputName of coffeeInputNames) {
+        const inputGroup = concoctionForm.querySelector(`#coffee${inputName}ListItem`);
+        const inputClasses = concoctionForm.querySelector(`#coffee${inputName}`).classList;
+        inputObjects.push({ inputType: 'coffee', inputName: lowerCaseWord(inputName), inputGroup, inputClasses });
     }
     
     if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors)) {
-        removeRequiredFieldError(concNameGroup, concNameInputClasses);
-        removeRequiredFieldError(instructionsGroup, instructionsInputClasses);
-
-        for (const coffeeFieldObject of coffeeFieldObjects) {
-            removeRequiredFieldError(coffeeFieldObject.coffeeListItem, coffeeFieldObject.coffeeFieldClasses);
+        for (const inputObject of inputObjects) {
+            removeRequiredFieldError(inputObject.inputGroup, inputObject.inputClasses);
         }
 
         console.log('Concoction created!');
     } else {
-        handleRequiredFieldError(concoctionErrors.name, concNameGroup, concNameInputClasses);
-        handleRequiredFieldError(concoctionErrors.instructions, instructionsGroup, instructionsInputClasses);
-
-        for (const coffeeFieldObject of coffeeFieldObjects) {
-            handleRequiredFieldError(
-                coffeeErrors[coffeeFieldObject.coffeeFieldName],
-                coffeeFieldObject.coffeeListItem,
-                coffeeFieldObject.coffeeFieldClasses
-            );
+        for (const inputObject of inputObjects) {
+            const inputErrors = inputObject.inputType === 'concoction'
+                ? concoctionErrors[inputObject.inputName]
+                : coffeeErrors[inputObject.inputName];
+            
+            handleRequiredFieldError(inputErrors, inputObject.inputGroup, inputObject.inputClasses);
         }
 
         if (!concoctionForm.lastChild.classList.contains('error-text')) {
@@ -339,7 +333,7 @@ function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, l
     const coffeeLabelAndInput = createLabelAndTextInput(`coffee${inputName}`, labelText, placeholder, maxLength, isRequired);
     const coffeeInputGroup = document.createElement('p');
     const coffeeItem = createCustomElement('li', { itemsToAppend: coffeeLabelAndInput });
-    if (isRequired) coffeeItem.className = 'required-coffee-field';
+    if (isRequired) coffeeItem.id = `coffee${inputName}ListItem`;
 
     coffeeInputGroup.appendChild(coffeeItem);
     return coffeeInputGroup;

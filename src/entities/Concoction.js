@@ -76,7 +76,7 @@ export default class Concoction {
         const { name, instructions } = concoctionData;
         let errorMessages = {};
 
-        if (isEmpty(name)) errorMessages.name = 'Concoction name is required.';
+        if (isEmpty(name)) errorMessages.concoctionName = 'Concoction name is required.';
         if (isEmpty(instructions)) errorMessages.instructions = 'Instructions are required.';
 
         return errorMessages;
