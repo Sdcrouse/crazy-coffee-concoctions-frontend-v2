@@ -198,6 +198,11 @@ nav button {
 
 .error-message-list li { padding: 2% 5%; }
 
+.input-error-heading {
+    margin-left: 1em;
+    display: inline;
+}
+
 
 /* MAIN CONTAINER STYLES */
 

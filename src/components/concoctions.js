@@ -126,13 +126,20 @@ function createConcoction(e, concoctionForm) {
     const instructionsGroup = concoctionForm.querySelector('#instructionsGroup');
     const instructionsInputClasses = concoctionForm.querySelector('#instructions').classList;
 
-    if (isEmpty(concoctionErrors)) {
-        removeConcoctionError(concNameGroup, concNameInputClasses);
-        removeConcoctionError(instructionsGroup, instructionsInputClasses);
+    const coffeeErrors = Coffee.validateData(formData.coffee);
+    const requiredCoffeeFields = concoctionForm.querySelectorAll('.required-coffee-field');
+    const coffeeAmountFields = requiredCoffeeFields[0];
+    const coffeeAmountClasses = concoctionForm.querySelector('#coffeeAmount').classList;
+    
+    if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors)) {
+        removeRequiredFieldError(concNameGroup, concNameInputClasses);
+        removeRequiredFieldError(instructionsGroup, instructionsInputClasses);
+        removeRequiredFieldError(coffeeAmountFields, coffeeAmountClasses);
         console.log('Concoction created!');
     } else {
-        handleConcoctionError(concoctionErrors.name, 'name', concNameGroup, concNameInputClasses);
-        handleConcoctionError(concoctionErrors.instructions, 'instructions', instructionsGroup, instructionsInputClasses);
+        handleRequiredFieldError(concoctionErrors.name, concNameGroup, concNameInputClasses);
+        handleRequiredFieldError(concoctionErrors.instructions, instructionsGroup, instructionsInputClasses);
+        handleRequiredFieldError(coffeeErrors.amount, coffeeAmountFields, coffeeAmountClasses);
 
         if (!concoctionForm.lastChild.classList.contains('error-text')) {
             concoctionForm.appendChild(createCustomElement(
@@ -144,24 +151,22 @@ function createConcoction(e, concoctionForm) {
 
 const hasErrorHeading = (inputGroup) => inputGroup.lastChild.classList.contains('error-text');
 
-function removeConcoctionError(inputGroup, inputClasses) {
+function removeRequiredFieldError(inputGroup, inputClasses) {
     if (hasErrorHeading(inputGroup)) {
         inputGroup.removeChild(inputGroup.lastChild);
         inputClasses.remove('input-validation-error');
     }
 }
 
-function handleConcoctionError(errorMessage, inputName, inputGroup, inputClasses) {
+function handleRequiredFieldError(errorMessage, inputGroup, inputClasses) {
     if (errorMessage) {
         if (!hasErrorHeading(inputGroup)) {
-            const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'error-text' });
-            if (inputName === 'instructions') errorHeading.style['margin-left'] = '1em';
-            
+            const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'error-text input-error-heading' });
             inputGroup.appendChild(errorHeading);
             inputClasses.add('input-validation-error');
         }
     } else {
-        removeConcoctionError(inputGroup, inputClasses);
+        removeRequiredFieldError(inputGroup, inputClasses);
     }
 }
 
@@ -313,8 +318,10 @@ function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientC
 function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, labelText = inputName) {
     const coffeeLabelAndInput = createLabelAndTextInput(`coffee${inputName}`, labelText, placeholder, maxLength, isRequired);
     const coffeeInputGroup = document.createElement('p');
+    const coffeeItem = createCustomElement('li', { itemsToAppend: coffeeLabelAndInput });
+    if (isRequired) coffeeItem.className = 'required-coffee-field';
 
-    coffeeInputGroup.appendChild(createCustomElement('li', { itemsToAppend: coffeeLabelAndInput }));
+    coffeeInputGroup.appendChild(coffeeItem);
     return coffeeInputGroup;
 }
 

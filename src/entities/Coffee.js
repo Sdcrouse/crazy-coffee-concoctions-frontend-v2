@@ -1,3 +1,5 @@
+import isEmpty from "../utils/isEmpty.js";
+
 export default class Coffee {
     #amount;
     #brand;
@@ -33,5 +35,13 @@ export default class Coffee {
         }
 
         return descriptionParts.join(' ');
+    }
+
+    static validateData(coffeeData) {
+        const amount = coffeeData.amount;
+        let errorMessages = {};
+        
+        if (isEmpty(amount)) errorMessages.amount = 'Amount is required.';
+        return errorMessages;
     }
 };
