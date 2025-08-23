@@ -128,18 +128,38 @@ function createConcoction(e, concoctionForm) {
 
     const coffeeErrors = Coffee.validateData(formData.coffee);
     const requiredCoffeeFields = concoctionForm.querySelectorAll('.required-coffee-field');
-    const coffeeAmountFields = requiredCoffeeFields[0];
-    const coffeeAmountClasses = concoctionForm.querySelector('#coffeeAmount').classList;
+    const coffeeFieldObjects = [
+        { coffeeFieldName: 'amount' }, { coffeeFieldName: 'brand' }, { coffeeFieldName: 'blend' }
+    ];
+
+    for (let i = 0; i < 3; i++) {
+        const coffeeFieldObject = coffeeFieldObjects[i];
+        const coffeeFieldName = capitalizeWord(coffeeFieldObject.coffeeFieldName);
+
+        coffeeFieldObject['coffeeListItem'] = requiredCoffeeFields[i];
+        coffeeFieldObject['coffeeFieldClasses'] = concoctionForm.querySelector(`#coffee${coffeeFieldName}`).classList;
+    }
     
     if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors)) {
         removeRequiredFieldError(concNameGroup, concNameInputClasses);
         removeRequiredFieldError(instructionsGroup, instructionsInputClasses);
-        removeRequiredFieldError(coffeeAmountFields, coffeeAmountClasses);
+
+        for (const coffeeFieldObject of coffeeFieldObjects) {
+            removeRequiredFieldError(coffeeFieldObject.coffeeListItem, coffeeFieldObject.coffeeFieldClasses);
+        }
+
         console.log('Concoction created!');
     } else {
         handleRequiredFieldError(concoctionErrors.name, concNameGroup, concNameInputClasses);
         handleRequiredFieldError(concoctionErrors.instructions, instructionsGroup, instructionsInputClasses);
-        handleRequiredFieldError(coffeeErrors.amount, coffeeAmountFields, coffeeAmountClasses);
+
+        for (const coffeeFieldObject of coffeeFieldObjects) {
+            handleRequiredFieldError(
+                coffeeErrors[coffeeFieldObject.coffeeFieldName],
+                coffeeFieldObject.coffeeListItem,
+                coffeeFieldObject.coffeeFieldClasses
+            );
+        }
 
         if (!concoctionForm.lastChild.classList.contains('error-text')) {
             concoctionForm.appendChild(createCustomElement(

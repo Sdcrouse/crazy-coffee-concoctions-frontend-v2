@@ -38,10 +38,13 @@ export default class Coffee {
     }
 
     static validateData(coffeeData) {
-        const amount = coffeeData.amount;
+        const { amount, brand, blend } = coffeeData;
         let errorMessages = {};
         
         if (isEmpty(amount)) errorMessages.amount = 'Amount is required.';
+        if (isEmpty(brand)) errorMessages.brand = 'Brand is required.';
+        if (isEmpty(blend)) errorMessages.blend = 'Blend is required.';
+
         return errorMessages;
     }
 };
