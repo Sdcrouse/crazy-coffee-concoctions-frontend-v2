@@ -97,7 +97,10 @@ function createConcoction(e, concoctionForm) {
                              .map(ingredientListItem => {
                                  const ingredientData = {};
                                  for (const inputName of inputNames) {
-                                     ingredientData[inputName] = ingredientListItem.querySelector(`input[name="${inputName}"]`).value;
+                                     const ingredientInput = ingredientListItem.querySelector(`input[name="${inputName}"]`);
+                                     ingredientData[inputName] = ingredientInput.value;
+
+                                     if (inputName === 'amount') ingredientData['position'] = ingredientInput.id.match(/\d+/g)[0];
                                  }
                                  return ingredientData;
                              });
@@ -139,6 +142,9 @@ function createConcoction(e, concoctionForm) {
         const inputClasses = concoctionForm.querySelector(`#coffee${inputName}`).classList;
         inputObjects.push({ inputType: 'coffee', inputName: lowerCaseWord(inputName), inputGroup, inputClasses });
     }
+
+    const ingredientErrors = Ingredient.validateIngredients(formData.ingredients);
+    console.log('Ingredient errors:', ingredientErrors);
     
     if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors)) {
         for (const inputObject of inputObjects) {
