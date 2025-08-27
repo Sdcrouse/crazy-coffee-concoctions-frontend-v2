@@ -203,6 +203,10 @@ nav button {
     display: inline;
 }
 
+.ingredient-error {
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+}
 
 /* MAIN CONTAINER STYLES */
 

@@ -96,12 +96,14 @@ function createConcoction(e, concoctionForm) {
                              .flat()
                              .map(ingredientListItem => {
                                  const ingredientData = {};
-                                 for (const inputName of inputNames) {
+                                 const listItemId = ingredientListItem.id;
+                                 ingredientData['position'] = listItemId.charAt(listItemId.length - 1);
+                                 
+                                 for (const inputName of inputNames) {                                     
                                      const ingredientInput = ingredientListItem.querySelector(`input[name="${inputName}"]`);
                                      ingredientData[inputName] = ingredientInput.value;
-
-                                     if (inputName === 'amount') ingredientData['position'] = ingredientInput.id.match(/\d+/g)[0];
                                  }
+
                                  return ingredientData;
                              });
     
@@ -144,9 +146,8 @@ function createConcoction(e, concoctionForm) {
     }
 
     const ingredientErrors = Ingredient.validateIngredients(formData.ingredients);
-    console.log('Ingredient errors:', ingredientErrors);
     
-    if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors)) {
+    if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors) && isEmpty(ingredientErrors)) {
         for (const inputObject of inputObjects) {
             removeRequiredFieldError(inputObject.inputGroup, inputObject.inputClasses);
         }
@@ -159,6 +160,37 @@ function createConcoction(e, concoctionForm) {
                 : coffeeErrors[inputObject.inputName];
             
             handleRequiredFieldError(inputErrors, inputObject.inputGroup, inputObject.inputClasses);
+        }
+
+        for (const errorsByCategory of Object.entries(ingredientErrors)) {
+            const [category, ingredientErrorObjects] = errorsByCategory;
+
+            for (const errorObject of ingredientErrorObjects) {
+                const amountError = errorObject.amount;
+                const nameError = errorObject.name;
+                const categoryAndPosition = `${category}${errorObject.position}`;
+                const amountInput = document.getElementById(`${categoryAndPosition}Amount`);
+                const nameInput = document.getElementById(`${categoryAndPosition}Name`);
+                let errorMessage;
+
+                if (amountError) {
+                    amountInput.classList.add('input-validation-error');
+
+                    if (nameError) {
+                        nameInput.classList.add('input-validation-error');
+                        errorMessage = `${amountError} ${nameError}`;
+                    } else {
+                        errorMessage = amountError;
+                    }
+                } else {
+                    nameInput.classList.add('input-validation-error');
+                    errorMessage = nameError;
+                }
+
+                document.getElementById(categoryAndPosition).appendChild(createCustomElement('h4', {
+                    text: errorMessage, classes: 'ingredient-error error-text'
+                }));
+            }
         }
 
         if (!concoctionForm.lastChild.classList.contains('error-text')) {
@@ -305,9 +337,10 @@ function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
     }
 
     const ingredientInputGroup = document.createElement('p');
-    ingredientInputGroup.appendChild(
-        createCustomElement('li', { itemsToAppend: [categoryInput, ...amountInput, ...nameInput] })
-    );
+    ingredientInputGroup.appendChild(createCustomElement('li', {
+        id: `${category}${ingredientCount}`,
+        itemsToAppend: [categoryInput, ...amountInput, ...nameInput]
+    }));
 
     ingredientsList.appendChild(ingredientInputGroup);
 }

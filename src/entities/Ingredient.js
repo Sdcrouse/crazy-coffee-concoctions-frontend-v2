@@ -1,4 +1,5 @@
 import isEmpty from "../utils/isEmpty.js";
+import { lowerCaseWord } from "../utils/wordFunctions.js";
 
 export default class Ingredient {
     #amount;
@@ -35,16 +36,17 @@ export default class Ingredient {
 
         for (const ingredient of ingredients) {
             const ingredientErrors = this.validateData(ingredient);
+            const category = ingredient.category === 'Additional Ingredient' ? 'ingredient' : lowerCaseWord(ingredient.category);
 
             if (ingredientErrors.position) {
-                if (Array.isArray(ingredientErrorsByCategory[ingredient.category])) {
-                    ingredientErrorsByCategory[ingredient.category].push(ingredientErrors);
+                if (Array.isArray(ingredientErrorsByCategory[category])) {
+                    ingredientErrorsByCategory[category].push(ingredientErrors);
                 } else {
-                    ingredientErrorsByCategory[ingredient.category] = [ingredientErrors];
+                    ingredientErrorsByCategory[category] = [ingredientErrors];
                 }
             }
         }
-
+        
         return ingredientErrorsByCategory;
     }
 }
