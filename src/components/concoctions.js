@@ -150,6 +150,19 @@ function createConcoction(e, concoctionForm) {
             removeRequiredFieldError(inputObject.inputGroup, inputObject.inputClasses);
         }
 
+        for (const ingredientListItem of ingredientListItems) {
+            if (hasErrorHeading(ingredientListItem)) {
+                const errorHeading = ingredientListItem.lastChild;
+                const listItemId = ingredientListItem.id;
+                const amountInput = document.getElementById(`${listItemId}Amount`);
+                const nameInput = document.getElementById(`${listItemId}Name`);
+
+                addOrRemoveIngrErrorClasses('remove', errorHeading.textContent, amountInput, nameInput);
+                ingredientListItem.removeChild(errorHeading);
+            }
+        }
+
+        if (hasErrorHeading(concoctionForm)) concoctionForm.removeChild(concoctionForm.lastChild);
         console.log('Concoction created!');
     } else {
         for (const inputObject of inputObjects) {
@@ -172,28 +185,16 @@ function createConcoction(e, concoctionForm) {
 
                 if (errorMessage) {
                     if (errorMessage != errorHeadingText) {
-                        if (errorMessage.includes('Amount') && !errorHeadingText.includes('Amount')) {
-                            amountInput.classList.add('input-validation-error');
-                        } else if (!errorMessage.includes('Amount') && errorHeadingText.includes('Amount')) {
-                            amountInput.classList.remove('input-validation-error');
-                        }
-
-                        if (errorMessage.includes('name') && !errorHeadingText.includes('name')) {
-                            nameInput.classList.add('input-validation-error');
-                        } else if (!errorMessage.includes('name') && errorHeadingText.includes('name')) {
-                            nameInput.classList.remove('input-validation-error');
-                        }
-
+                        addOrRemoveIngrErrorClass(amountInput, 'Amount', errorMessage, errorHeadingText);
+                        addOrRemoveIngrErrorClass(nameInput, 'name', errorMessage, errorHeadingText);
                         errorHeading.textContent = errorMessage;
                     }
                 } else {
-                    if (errorHeadingText.includes('Amount')) amountInput.classList.remove('input-validation-error');
-                    if (errorHeadingText.includes('name')) nameInput.classList.remove('input-validation-error');
+                    addOrRemoveIngrErrorClasses('remove', errorHeadingText, amountInput, nameInput);
                     ingredientListItem.removeChild(errorHeading);
                 }
             } else if (errorMessage) {
-                if (errorMessage.includes('Amount')) amountInput.classList.add('input-validation-error');
-                if (errorMessage.includes('name')) nameInput.classList.add('input-validation-error');
+                addOrRemoveIngrErrorClasses('add', errorMessage, amountInput, nameInput);
 
                 ingredientListItem.appendChild(createCustomElement('h4', {
                     text: errorMessage, classes: 'ingredient-error error-text'
@@ -201,7 +202,7 @@ function createConcoction(e, concoctionForm) {
             }
         }
 
-        if (!concoctionForm.lastChild.classList.contains('error-text')) {
+        if (!hasErrorHeading(concoctionForm)) {
             concoctionForm.appendChild(createCustomElement(
                 'h4', { text: 'There are errors in the form. Please correct them and try again.', classes: 'error-text center-content' }
             ));
@@ -209,7 +210,7 @@ function createConcoction(e, concoctionForm) {
     }
 }
 
-const hasErrorHeading = (inputGroup) => inputGroup.lastChild.classList.contains('error-text');
+const hasErrorHeading = (element) => element.lastChild.classList.contains('error-text');
 
 function removeRequiredFieldError(inputGroup, inputClasses) {
     if (hasErrorHeading(inputGroup)) {
@@ -227,6 +228,29 @@ function handleRequiredFieldError(errorMessage, inputGroup, inputClasses) {
         }
     } else {
         removeRequiredFieldError(inputGroup, inputClasses);
+    }
+}
+
+const addIngredientErrorClass = (ingredientInput) => ingredientInput.classList.add('input-validation-error');
+const removeIngredientErrorClass = (ingredientInput) => ingredientInput.classList.remove('input-validation-error');
+
+function addOrRemoveIngrErrorClass(ingredientInput, inputName, errorMessage, errorHeadingText) {
+    if (errorMessage.includes(inputName) && !errorHeadingText.includes(inputName)) {
+        addIngredientErrorClass(ingredientInput);
+    } else if (!errorMessage.includes(inputName) && errorHeadingText.includes(inputName)) {
+        removeIngredientErrorClass(ingredientInput);
+    }
+}
+
+function addOrRemoveIngrErrorClasses(addOrRemove, errorMessage, amountInput, nameInput) {
+    if (addOrRemove === 'add') {
+        if (errorMessage.includes('Amount')) addIngredientErrorClass(amountInput);
+        if (errorMessage.includes('name')) addIngredientErrorClass(nameInput);
+    } else if (addOrRemove === 'remove') {
+        if (errorMessage.includes('Amount')) removeIngredientErrorClass(amountInput);
+        if (errorMessage.includes('name')) removeIngredientErrorClass(nameInput);
+    } else {
+        throw new Error("You can only 'add' or 'remove' an error class.");
     }
 }
 
