@@ -195,18 +195,11 @@ function createConcoction(e, concoctionForm) {
                 }
             } else if (errorMessage) {
                 addOrRemoveIngrErrorClasses('add', errorMessage, amountInput, nameInput);
-
-                ingredientListItem.appendChild(createCustomElement('h4', {
-                    text: errorMessage, classes: 'ingredient-error error-text'
-                }));
+                appendErrorHeading(ingredientListItem, errorMessage, 'h4', 'ingredient-error error-text');
             }
         }
 
-        if (!hasErrorHeading(concoctionForm)) {
-            concoctionForm.appendChild(createCustomElement(
-                'h4', { text: 'There are errors in the form. Please correct them and try again.', classes: 'error-text center-content' }
-            ));
-        }
+        if (!hasErrorHeading(concoctionForm)) appendErrorHeading(concoctionForm, 'There are errors in the form. Please correct them and try again.');
     }
 }
 
@@ -224,8 +217,7 @@ function removeRequiredFieldError(inputGroup, inputField) {
 function handleRequiredFieldError(errorMessage, inputGroup, inputField) {
     if (errorMessage) {
         if (!hasErrorHeading(inputGroup)) {
-            const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'error-text input-error-heading' });
-            inputGroup.appendChild(errorHeading);
+            appendErrorHeading(inputGroup, errorMessage, 'h4', 'error-text input-error-heading');
             addInputErrorClass(inputField);
         }
     } else {

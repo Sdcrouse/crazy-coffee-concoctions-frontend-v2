@@ -1,10 +1,10 @@
 import createCustomElement from "./createCustomElement.js";
 
-function appendErrorHeading(wrapper, errorMessage, headingType = 'h4') {
+function appendErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text') {
     const wrapperElement = typeof wrapper === 'string' ? document.getElementById(wrapper) : wrapper;
     
     const errorHeading = createCustomElement(
-        headingType, { text: errorMessage, classes: 'center-content error-text' }
+        headingType, { text: errorMessage, classes }
     );
 
     wrapperElement.appendChild(errorHeading);
