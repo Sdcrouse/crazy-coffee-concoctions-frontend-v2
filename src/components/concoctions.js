@@ -1,7 +1,7 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
 import generateForm from '../utils/generateForm.js';
-import isEmpty from '../utils/isEmpty.js';
+import isEmpty, { allEmpty } from '../utils/isEmpty.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
 import Ingredient from '../entities/Ingredient.js';
@@ -145,7 +145,7 @@ function createConcoction(e, concoctionForm) {
     const ingredientErrors = Ingredient.validateIngredients(formData.ingredients);
     const ingredientListItems = document.querySelectorAll('.ingredient-list li');
     
-    if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors) && isEmpty(ingredientErrors)) {
+    if (allEmpty(concoctionErrors, coffeeErrors, ingredientErrors)) {
         for (const inputObject of inputObjects) {
             removeRequiredFieldError(inputObject.inputGroup, inputObject.inputField);
         }

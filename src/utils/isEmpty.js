@@ -6,3 +6,10 @@ export default function isEmpty(value) {
 
     throw new TypeError('The isEmpty() function only accepts values that are null, undefined, arrays, strings, or objects.');
 };
+
+export function allEmpty(...values) {
+    for (const value of values) {
+        if (!isEmpty(value)) return false;
+    }
+    return true;
+};

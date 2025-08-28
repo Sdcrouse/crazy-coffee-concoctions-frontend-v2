@@ -1,5 +1,4 @@
-import isEmpty from "../utils/isEmpty.js";
-import { lowerCaseWord } from "../utils/wordFunctions.js";
+import isEmpty, { allEmpty } from "../utils/isEmpty.js";
 
 export default class Ingredient {
     #amount;
@@ -26,7 +25,7 @@ export default class Ingredient {
         for (const ingredientData of ingredients) {
             const { listItemId, amount, name } = ingredientData;
 
-            if (isEmpty(amount) && isEmpty(name)) {
+            if (allEmpty(amount, name)) {
                 ingredientErrors[listItemId] = 'Amount is required. Ingredient name is required.';
             } else if (isEmpty(amount)) {
                 ingredientErrors[listItemId] = 'Amount is required.';

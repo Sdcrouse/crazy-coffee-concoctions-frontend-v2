@@ -1,4 +1,4 @@
-import isEmpty from "../utils/isEmpty.js";
+import isEmpty, { allEmpty } from "../utils/isEmpty.js";
 
 export default class User {
     #username;
@@ -73,7 +73,7 @@ export default class User {
     validateCredentials() {
         this.#validateUsername();
         this.#validatePassword();
-        return isEmpty(this.#usernameErrors) && isEmpty(this.#passwordErrors);
+        return allEmpty(this.#usernameErrors, this.#passwordErrors);
     }
 
     addUsernameError(error) {
