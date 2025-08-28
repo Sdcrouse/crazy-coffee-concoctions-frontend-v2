@@ -88,21 +88,6 @@ async function generateNewConcoctionPage() {
 
 function createConcoction(e, concoctionForm) {
     e.preventDefault();
-    
-    const formData = {
-        concoction: {
-            name: concoctionForm.querySelector('#concoctionName').value,
-            instructions: concoctionForm.querySelector('#instructions').value,
-            notes: concoctionForm.querySelector('#notes').value
-        },
-        coffee: {
-            amount: concoctionForm.querySelector('#coffeeAmount').value,
-            brand: concoctionForm.querySelector('#coffeeBrand').value,
-            blend: concoctionForm.querySelector('#coffeeBlend').value,
-            roast: concoctionForm.querySelector('#roast').value,
-            beanType: concoctionForm.querySelector('#coffeeBeanType').value
-        }
-    };
 
     const inputNames = ['category', 'amount', 'name'];
     const ingredients = Array.from(concoctionForm.querySelectorAll('ol.ingredient-list'))
@@ -120,10 +105,22 @@ function createConcoction(e, concoctionForm) {
 
                                  return ingredientData;
                              });
-
-    formData.ingredients = ingredients.map(ingredientData => {
-        return {'category': ingredientData.category, 'amount': ingredientData.amount, 'name': ingredientData.name};
-    });
+    
+    const formData = {
+        concoction: {
+            name: concoctionForm.querySelector('#concoctionName').value,
+            instructions: concoctionForm.querySelector('#instructions').value,
+            notes: concoctionForm.querySelector('#notes').value
+        },
+        coffee: {
+            amount: concoctionForm.querySelector('#coffeeAmount').value,
+            brand: concoctionForm.querySelector('#coffeeBrand').value,
+            blend: concoctionForm.querySelector('#coffeeBlend').value,
+            roast: concoctionForm.querySelector('#roast').value,
+            beanType: concoctionForm.querySelector('#coffeeBeanType').value
+        },
+        ingredients
+    };
     console.log(formData);
 
     const inputObjects = [];
