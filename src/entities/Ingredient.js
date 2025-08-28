@@ -20,33 +20,21 @@ export default class Ingredient {
         return `${this.#amount} ${this.#name}`;
     }
 
-    static validateData(ingredientData) {
-        const { amount, name } = ingredientData;
-        let errorMessages = {};
-
-        if (isEmpty(amount)) errorMessages.amount = 'Amount is required.';
-        if (isEmpty(name)) errorMessages.name = 'Ingredient name is required.';
-        if (!isEmpty(errorMessages)) errorMessages.position = ingredientData.position;
-
-        return errorMessages;
-    }
-
     static validateIngredients(ingredients) {
-        let ingredientErrorsByCategory = {};
+        let ingredientErrors = {};
 
-        for (const ingredient of ingredients) {
-            const ingredientErrors = this.validateData(ingredient);
-            const category = ingredient.category === 'Additional Ingredient' ? 'ingredient' : lowerCaseWord(ingredient.category);
+        for (const ingredientData of ingredients) {
+            const { listItemId, amount, name } = ingredientData;
 
-            if (ingredientErrors.position) {
-                if (Array.isArray(ingredientErrorsByCategory[category])) {
-                    ingredientErrorsByCategory[category].push(ingredientErrors);
-                } else {
-                    ingredientErrorsByCategory[category] = [ingredientErrors];
-                }
+            if (isEmpty(amount) && isEmpty(name)) {
+                ingredientErrors[listItemId] = 'Amount is required. Ingredient name is required.';
+            } else if (isEmpty(amount)) {
+                ingredientErrors[listItemId] = 'Amount is required.';
+            } else if (isEmpty(name)) {
+                ingredientErrors[listItemId] = 'Ingredient name is required.';
             }
         }
-        
-        return ingredientErrorsByCategory;
+
+        return ingredientErrors;
     }
 }

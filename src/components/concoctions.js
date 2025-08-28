@@ -96,8 +96,7 @@ function createConcoction(e, concoctionForm) {
                              .flat()
                              .map(ingredientListItem => {
                                  const ingredientData = {};
-                                 const listItemId = ingredientListItem.id;
-                                 ingredientData['position'] = listItemId.charAt(listItemId.length - 1);
+                                 ingredientData.listItemId = ingredientListItem.id;
                                  
                                  for (const inputName of inputNames) {                                     
                                      const ingredientInput = ingredientListItem.querySelector(`input[name="${inputName}"]`);
@@ -122,11 +121,9 @@ function createConcoction(e, concoctionForm) {
         },
         ingredients
     };
-
     console.log(formData);
 
     const inputObjects = [];
-
     const concoctionErrors = Concoction.validateData(formData.concoction);
     const concoctionInputNames = ['concoctionName', 'instructions'];
 
@@ -146,6 +143,7 @@ function createConcoction(e, concoctionForm) {
     }
 
     const ingredientErrors = Ingredient.validateIngredients(formData.ingredients);
+    const ingredientListItems = document.querySelectorAll('.ingredient-list li');
     
     if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors) && isEmpty(ingredientErrors)) {
         for (const inputObject of inputObjects) {
@@ -162,67 +160,44 @@ function createConcoction(e, concoctionForm) {
             handleRequiredFieldError(inputErrors, inputObject.inputGroup, inputObject.inputClasses);
         }
 
-        for (const errorsByCategory of Object.entries(ingredientErrors)) {
-            const [category, ingredientErrorObjects] = errorsByCategory;
+        for (const ingredientListItem of ingredientListItems) {
+            const listItemId = ingredientListItem.id;
+            const errorMessage = ingredientErrors[listItemId];
+            const amountInput = document.getElementById(`${listItemId}Amount`);
+            const nameInput = document.getElementById(`${listItemId}Name`);
 
-            for (const errorObject of ingredientErrorObjects) {
-                const amountError = errorObject.amount, nameError = errorObject.name;
-                const categoryAndPosition = `${category}${errorObject.position}`;
-                const amountInput = document.getElementById(`${categoryAndPosition}Amount`);
-                const nameInput = document.getElementById(`${categoryAndPosition}Name`);
-                const ingredientListItem = document.getElementById(categoryAndPosition);
-                let errorHeading;
+            if (hasErrorHeading(ingredientListItem)) {
+                const errorHeading = ingredientListItem.lastChild;
+                const errorHeadingText = errorHeading.textContent;
 
-                if (amountError && nameError) {
-                    if (hasErrorHeading(ingredientListItem)) {
-                        errorHeading = ingredientListItem.lastChild;
-
-                        if (errorHeading.textContent === amountError) {
-                            nameInput.classList.add('input-validation-error');
-                        } else if (errorHeading.textContent === nameError) {
+                if (errorMessage) {
+                    if (errorMessage != errorHeadingText) {
+                        if (errorMessage.includes('Amount') && !errorHeadingText.includes('Amount')) {
                             amountInput.classList.add('input-validation-error');
+                        } else if (!errorMessage.includes('Amount') && errorHeadingText.includes('Amount')) {
+                            amountInput.classList.remove('input-validation-error');
                         }
 
-                        errorHeading.textContent = `${amountError} ${nameError}`;
-                    } else {
-                        amountInput.classList.add('input-validation-error');
-                        nameInput.classList.add('input-validation-error');
+                        if (errorMessage.includes('name') && !errorHeadingText.includes('name')) {
+                            nameInput.classList.add('input-validation-error');
+                        } else if (!errorMessage.includes('name') && errorHeadingText.includes('name')) {
+                            nameInput.classList.remove('input-validation-error');
+                        }
 
-                        ingredientListItem.appendChild(createCustomElement('h4', {
-                            text: `${amountError} ${nameError}`, classes: 'ingredient-error error-text'
-                        }));
+                        errorHeading.textContent = errorMessage;
                     }
-                } else if (amountError) {
-                    if (hasErrorHeading(ingredientListItem)) {
-                        errorHeading = ingredientListItem.lastChild;
-                        
-                        if (errorHeading.textContent !== amountError) {
-                            if (!amountInput.classList.contains('input-validation-error')) amountInput.classList.add('input-validation-error');
-                            if (errorHeading.textContent.includes('Ingredient name is required.')) nameInput.classList.remove('input-validation-error');
-                            errorHeading.textContent = amountError;
-                        }
-                    } else {
-                        amountInput.classList.add('input-validation-error');
-                        ingredientListItem.appendChild(createCustomElement('h4', {
-                            text: amountError, classes: 'ingredient-error error-text'
-                        }));
-                    }
-                } else if (nameError) {
-                    if (hasErrorHeading(ingredientListItem)) {
-                        errorHeading = ingredientListItem.lastChild;
-                        
-                        if (errorHeading.textContent !== nameError) {
-                            if (!nameInput.classList.contains('input-validation-error')) nameInput.classList.add('input-validation-error');
-                            if (errorHeading.textContent.includes('Amount is required.')) amountInput.classList.remove('input-validation-error');
-                            errorHeading.textContent = nameError;
-                        }
-                    } else {
-                        nameInput.classList.add('input-validation-error');
-                        ingredientListItem.appendChild(createCustomElement('h4', {
-                            text: nameError, classes: 'ingredient-error error-text'
-                        }));
-                    }
+                } else {
+                    if (errorHeadingText.includes('Amount')) amountInput.classList.remove('input-validation-error');
+                    if (errorHeadingText.includes('name')) nameInput.classList.remove('input-validation-error');
+                    ingredientListItem.removeChild(errorHeading);
                 }
+            } else if (errorMessage) {
+                if (errorMessage.includes('Amount')) amountInput.classList.add('input-validation-error');
+                if (errorMessage.includes('name')) nameInput.classList.add('input-validation-error');
+
+                ingredientListItem.appendChild(createCustomElement('h4', {
+                    text: errorMessage, classes: 'ingredient-error error-text'
+                }));
             }
         }
 
