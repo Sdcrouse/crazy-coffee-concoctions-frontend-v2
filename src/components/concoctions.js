@@ -203,7 +203,7 @@ function createConcoction(e, concoctionForm) {
     }
 }
 
-const hasErrorHeading = (element) => element.lastChild.classList.contains('error-text');
+const hasErrorHeading = (element) => element.lastChild && element.lastChild.classList.contains('error-text');
 const addInputErrorClass = (input) => input.classList.add('input-validation-error');
 const removeInputErrorClass = (input) => input.classList.remove('input-validation-error');
 
@@ -323,6 +323,7 @@ function generateIngredientInputs(category) {
 
 function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
     if (e) e.preventDefault();
+    if (hasErrorHeading(ingredientsList)) ingredientsList.removeChild(ingredientsList.lastChild); // Edge case
 
     let amountPlaceholder, namePlaceholder;
     switch (category) {
@@ -354,7 +355,7 @@ function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
     const amountInput = createLabelAndTextInput(`${category}${ingredientCount}Amount`, 'Amount', amountPlaceholder, 50, true, 'amount');
     const nameInput = createLabelAndTextInput(`${category}${ingredientCount}Name`, 'Name', namePlaceholder, 50, true, 'name');
     
-    if (ingredientCount === minimumIngredientCount + 1){
+    if (ingredientCount === minimumIngredientCount + 1) {
         document.getElementById(`remove-${category}-btn`).style.display = 'initial';
         if (category !== 'liquid') ingredientsList.style.display = 'block';
     }
@@ -370,6 +371,7 @@ function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
 
 function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientCount) {
     e.preventDefault();
+    if (hasErrorHeading(ingredientsList)) return; // Edge case
 
     let ingredientCount = ingredientsList.childElementCount;
 
@@ -377,8 +379,9 @@ function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientC
         const minIngredientMessage = (ingredientCategory === 'liquid')
             ? 'Cannot remove this liquid. A concoction needs to have at least one liquid.'
             : `There are no ${ingredientCategory}s to remove.`;
-        
-            appendErrorHeading(ingredientsList, minIngredientMessage);
+
+        ingredientsList.style.display = 'block';
+        appendErrorHeading(ingredientsList, minIngredientMessage);
         return;
     }
 
