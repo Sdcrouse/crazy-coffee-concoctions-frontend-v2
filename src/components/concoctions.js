@@ -129,8 +129,8 @@ function createConcoction(e, concoctionForm) {
 
     for (const inputName of concoctionInputNames) {
         const inputGroup = concoctionForm.querySelector(`#${inputName}Group`);
-        const inputClasses = concoctionForm.querySelector(`#${inputName}`).classList;
-        inputObjects.push({ inputType: 'concoction', inputName, inputGroup, inputClasses });
+        const inputField = concoctionForm.querySelector(`#${inputName}`);
+        inputObjects.push({ inputType: 'concoction', inputName, inputGroup, inputField });
     }
 
     const coffeeErrors = Coffee.validateData(formData.coffee);
@@ -138,8 +138,8 @@ function createConcoction(e, concoctionForm) {
 
     for (const inputName of coffeeInputNames) {
         const inputGroup = concoctionForm.querySelector(`#coffee${inputName}ListItem`);
-        const inputClasses = concoctionForm.querySelector(`#coffee${inputName}`).classList;
-        inputObjects.push({ inputType: 'coffee', inputName: lowerCaseWord(inputName), inputGroup, inputClasses });
+        const inputField = concoctionForm.querySelector(`#coffee${inputName}`);
+        inputObjects.push({ inputType: 'coffee', inputName: lowerCaseWord(inputName), inputGroup, inputField });
     }
 
     const ingredientErrors = Ingredient.validateIngredients(formData.ingredients);
@@ -147,7 +147,7 @@ function createConcoction(e, concoctionForm) {
     
     if (isEmpty(concoctionErrors) && isEmpty(coffeeErrors) && isEmpty(ingredientErrors)) {
         for (const inputObject of inputObjects) {
-            removeRequiredFieldError(inputObject.inputGroup, inputObject.inputClasses);
+            removeRequiredFieldError(inputObject.inputGroup, inputObject.inputField);
         }
 
         for (const ingredientListItem of ingredientListItems) {
@@ -170,7 +170,7 @@ function createConcoction(e, concoctionForm) {
                 ? concoctionErrors[inputObject.inputName]
                 : coffeeErrors[inputObject.inputName];
             
-            handleRequiredFieldError(inputErrors, inputObject.inputGroup, inputObject.inputClasses);
+            handleRequiredFieldError(inputErrors, inputObject.inputGroup, inputObject.inputField);
         }
 
         for (const ingredientListItem of ingredientListItems) {
@@ -211,44 +211,43 @@ function createConcoction(e, concoctionForm) {
 }
 
 const hasErrorHeading = (element) => element.lastChild.classList.contains('error-text');
+const addInputErrorClass = (input) => input.classList.add('input-validation-error');
+const removeInputErrorClass = (input) => input.classList.remove('input-validation-error');
 
-function removeRequiredFieldError(inputGroup, inputClasses) {
+function removeRequiredFieldError(inputGroup, inputField) {
     if (hasErrorHeading(inputGroup)) {
         inputGroup.removeChild(inputGroup.lastChild);
-        inputClasses.remove('input-validation-error');
+        removeInputErrorClass(inputField);
     }
 }
 
-function handleRequiredFieldError(errorMessage, inputGroup, inputClasses) {
+function handleRequiredFieldError(errorMessage, inputGroup, inputField) {
     if (errorMessage) {
         if (!hasErrorHeading(inputGroup)) {
             const errorHeading = createCustomElement('h4', { text: errorMessage, classes: 'error-text input-error-heading' });
             inputGroup.appendChild(errorHeading);
-            inputClasses.add('input-validation-error');
+            addInputErrorClass(inputField);
         }
     } else {
-        removeRequiredFieldError(inputGroup, inputClasses);
+        removeRequiredFieldError(inputGroup, inputField);
     }
 }
 
-const addIngredientErrorClass = (ingredientInput) => ingredientInput.classList.add('input-validation-error');
-const removeIngredientErrorClass = (ingredientInput) => ingredientInput.classList.remove('input-validation-error');
-
 function addOrRemoveIngrErrorClass(ingredientInput, inputName, errorMessage, errorHeadingText) {
     if (errorMessage.includes(inputName) && !errorHeadingText.includes(inputName)) {
-        addIngredientErrorClass(ingredientInput);
+        addInputErrorClass(ingredientInput);
     } else if (!errorMessage.includes(inputName) && errorHeadingText.includes(inputName)) {
-        removeIngredientErrorClass(ingredientInput);
+        removeInputErrorClass(ingredientInput);
     }
 }
 
 function addOrRemoveIngrErrorClasses(addOrRemove, errorMessage, amountInput, nameInput) {
     if (addOrRemove === 'add') {
-        if (errorMessage.includes('Amount')) addIngredientErrorClass(amountInput);
-        if (errorMessage.includes('name')) addIngredientErrorClass(nameInput);
+        if (errorMessage.includes('Amount')) addInputErrorClass(amountInput);
+        if (errorMessage.includes('name')) addInputErrorClass(nameInput);
     } else if (addOrRemove === 'remove') {
-        if (errorMessage.includes('Amount')) removeIngredientErrorClass(amountInput);
-        if (errorMessage.includes('name')) removeIngredientErrorClass(nameInput);
+        if (errorMessage.includes('Amount')) removeInputErrorClass(amountInput);
+        if (errorMessage.includes('name')) removeInputErrorClass(nameInput);
     } else {
         throw new Error("You can only 'add' or 'remove' an error class.");
     }
