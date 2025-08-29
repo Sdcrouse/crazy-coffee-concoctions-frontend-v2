@@ -1,4 +1,5 @@
 import isEmpty from "../utils/isEmpty.js";
+import { toTitleCase } from "../utils/wordFunctions.js";
 
 export default class Concoction {
     #id;
@@ -80,5 +81,17 @@ export default class Concoction {
         if (isEmpty(instructions)) errorMessages.instructions = 'Instructions are required.';
 
         return errorMessages;
+    }
+
+    static formatData(concoctionData) {
+        let formattedConcoction = {
+            name: toTitleCase(concoctionData.name.trim()),
+            instructions: concoctionData.instructions.trim()
+        };
+
+        let notes = concoctionData.notes;
+        if (!isEmpty(notes)) formattedConcoction.notes = notes.trim();
+
+        return formattedConcoction;
     }
 };

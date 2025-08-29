@@ -121,7 +121,6 @@ function createConcoction(e, concoctionForm) {
         },
         ingredients
     };
-    console.log(formData);
 
     const inputObjects = [];
     const concoctionErrors = Concoction.validateData(formData.concoction);
@@ -163,6 +162,14 @@ function createConcoction(e, concoctionForm) {
         }
 
         if (hasErrorHeading(concoctionForm)) concoctionForm.removeChild(concoctionForm.lastChild);
+
+        const formattedData = {
+            concoction: Concoction.formatData(formData.concoction),
+            coffee: Coffee.formatData(formData.coffee),
+            ingredients: Ingredient.formatData(formData.ingredients)
+        };
+
+        console.log(formattedData);
         console.log('Concoction created!');
     } else {
         for (const inputObject of inputObjects) {

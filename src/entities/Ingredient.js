@@ -36,4 +36,14 @@ export default class Ingredient {
 
         return ingredientErrors;
     }
+
+    static formatData(ingredients) {
+        return ingredients.map(ingredient => {
+            return {
+                category: ingredient.category,
+                amount: ingredient.amount.trim(),
+                name: ingredient.name.trim()
+            };
+        });
+    }
 }

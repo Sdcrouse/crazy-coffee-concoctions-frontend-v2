@@ -1,4 +1,5 @@
 import isEmpty from "../utils/isEmpty.js";
+import { capitalizeWord, toTitleCase } from "../utils/wordFunctions.js";
 
 export default class Coffee {
     #amount;
@@ -46,5 +47,18 @@ export default class Coffee {
         if (isEmpty(blend)) errorMessages.blend = 'Blend is required.';
 
         return errorMessages;
+    }
+
+    static formatData(coffeeData) {
+        let formattedCoffee = {
+            amount: coffeeData.amount.trim(),
+            brand: toTitleCase(coffeeData.brand.trim()),
+            blend: toTitleCase(coffeeData.blend.trim())
+        };
+
+        if (!isEmpty(coffeeData.roast)) formattedCoffee.roast = coffeeData.roast;
+        if (!isEmpty(coffeeData.beanType)) formattedCoffee.beanType = capitalizeWord(coffeeData.beanType.trim());
+        
+        return formattedCoffee;
     }
 };
