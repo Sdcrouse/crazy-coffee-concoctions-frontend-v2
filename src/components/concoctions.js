@@ -86,7 +86,7 @@ async function generateNewConcoctionPage() {
     mainContainer.replaceChildren(newConcoctionDiv);
 }
 
-function createConcoction(e, concoctionForm) {
+async function createConcoction(e, concoctionForm) {
     e.preventDefault();
 
     const inputNames = ['category', 'amount', 'name'];
@@ -169,8 +169,45 @@ function createConcoction(e, concoctionForm) {
             ingredients: Ingredient.formatData(formData.ingredients)
         };
 
-        console.log(formattedData);
-        console.log('Concoction created!');
+        try {
+            // TODO: Add a separate case for HTTP 400, when (as an edge case) there are blank required values
+            // TODO: Add a separate case for HTTP 409, when a user already has a concoction with the same name
+            // TODO: Render the concoction page with the saved concoction data
+
+            // TODO: Move this code and the code from generateConcoctionsPage's try/catch block into its own function
+            let data = await createNewConcoction(formattedData);
+
+            if (data.status === 400 || data.status === 401) {
+                data = await refreshSession();
+
+                if (data.status !== 200) {
+                    console.error(data);
+                    toggleButtonDisplay({ userIsLoggedIn: false });
+                    generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                    return;
+                }
+                
+                data = await createNewConcoction(formattedData);
+            }
+
+            switch (data.status) {
+                case 201:
+                    console.log(data.successMessage);
+                    console.log('Concoction data:', data);
+                    break;
+                case 500:
+                    console.error(data);
+                    generateServerErrorPage(data.errorMessage);
+                    break;
+                default:
+                    console.error(data);
+                    appendErrorHeading(concoctionForm, 'An unknown error has occurred on the server. Please try again later.');
+                    break;
+            }
+        } catch (error) {
+            console.error(error.message);
+            appendErrorHeading(concoctionForm, 'There was an error while submitting the New Concoction form. Please try again.');
+        }
     } else {
         for (const inputObject of inputObjects) {
             const inputErrors = inputObject.inputType === 'concoction'
@@ -250,6 +287,17 @@ function addOrRemoveIngrErrorClasses(addOrRemove, errorMessage, amountInput, nam
     } else {
         throw new Error("You can only 'add' or 'remove' an error class.");
     }
+}
+
+async function createNewConcoction(concoctionData) {
+    const response = await fetch(concoctionsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(concoctionData)
+    });
+
+    return await response.json();
 }
 
 function createLabel(labelFor, labelText, isRequired) {
