@@ -170,8 +170,6 @@ async function createConcoction(e, concoctionForm) {
         };
 
         try {
-            // TODO: Add a separate case for HTTP 400, when (as an edge case) there are blank required values
-            // TODO: Add a separate case for HTTP 409, when a user already has a concoction with the same name
             // TODO: Render the concoction page with the saved concoction data
 
             // TODO: Move this code and the code from generateConcoctionsPage's try/catch block into its own function
@@ -194,6 +192,18 @@ async function createConcoction(e, concoctionForm) {
                 case 201:
                     console.log(data.successMessage);
                     console.log('Concoction data:', data);
+                    break;
+                case 409:
+                    if (data.errorMessage.includes('Please enter a different name.')) {
+                        handleRequiredFieldError(
+                            data.errorMessage,
+                            concoctionForm.querySelector('#concoctionNameGroup'),
+                            concoctionForm.querySelector('#concoctionName')
+                        );
+                        appendErrorHeading(concoctionForm, 'There is an error in the form. Please correct it and try again.');
+                    } else {
+                        console.error(data);
+                    }
                     break;
                 case 500:
                     console.error(data);
