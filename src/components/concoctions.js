@@ -175,7 +175,7 @@ async function createConcoction(e, concoctionForm) {
             // TODO: Move this code and the code from generateConcoctionsPage's try/catch block into its own function
             let data = await createNewConcoction(formattedData);
 
-            if (data.status === 400 || data.status === 401) {
+            if ((data.status === 400 && !data.errors) || data.status === 401) {
                 data = await refreshSession();
 
                 if (data.status !== 200) {
@@ -192,6 +192,29 @@ async function createConcoction(e, concoctionForm) {
                 case 201:
                     console.log(data.successMessage);
                     console.log('Concoction data:', data);
+                    break;
+                case 400:
+                    let errorsList = concoctionForm.querySelector('#data-errors-list');
+
+                    if (errorsList) {
+                        errorsList.replaceChildren();
+                        for (const dataError of data.errors) {
+                            errorsList.appendChild(createCustomElement('li', { text: dataError }));
+                        }
+                    } else {
+                        const dataErrorWrapper = createCustomElement('div', { classes: 'error-text' });
+                        dataErrorWrapper.style.padding = 0;
+                        appendErrorHeading(dataErrorWrapper, data.errorMessage);
+
+                        errorsList = createCustomElement('ul', { id: 'data-errors-list' });
+                        for (const dataError of data.errors) {
+                            errorsList.appendChild(createCustomElement('li', { text: dataError }));
+                        }
+
+                        dataErrorWrapper.appendChild(errorsList);
+                        concoctionForm.appendChild(dataErrorWrapper);
+                    }
+
                     break;
                 case 409:
                     if (data.errorMessage.includes('Please enter a different name.')) {
@@ -253,11 +276,19 @@ async function createConcoction(e, concoctionForm) {
             }
         }
 
-        if (!hasErrorHeading(concoctionForm)) appendErrorHeading(concoctionForm, 'There are errors in the form. Please correct them and try again.');
+        const lastChildTag = concoctionForm.lastChild.tagName;
+        if (lastChildTag !== 'H4' && lastChildTag !== 'UL') appendErrorHeading(concoctionForm, 'There are errors in the form. Please correct them and try again.');
     }
 }
 
-const hasErrorHeading = (element) => element.lastChild && element.lastChild.classList.contains('error-text');
+function hasErrorHeading(element) {
+    const headings = element.querySelectorAll('h4');
+    for (const heading of headings) {
+        if (heading.classList.contains('error-text')) return true;
+    }
+    return false;
+}
+
 const addInputErrorClass = (input) => input.classList.add('input-validation-error');
 const removeInputErrorClass = (input) => input.classList.remove('input-validation-error');
 

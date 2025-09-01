@@ -208,6 +208,11 @@ nav button {
     margin-bottom: 2em;
 }
 
+#data-errors-list {
+    display: grid;
+    justify-content: center;
+}
+
 /* MAIN CONTAINER STYLES */
 
 #main-container {
