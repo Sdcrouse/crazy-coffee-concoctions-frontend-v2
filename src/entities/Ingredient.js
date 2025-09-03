@@ -19,6 +19,10 @@ export default class Ingredient {
         return `${this.#amount} ${this.#name}`;
     }
 
+    static get categories() {
+        return ['Liquid', 'Sweetener', 'Creamer', 'Additional Ingredient'];
+    }
+
     static validateIngredients(ingredients) {
         let ingredientErrors = {};
 

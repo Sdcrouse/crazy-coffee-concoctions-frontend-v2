@@ -617,10 +617,7 @@ async function generateConcoctionPage(concoction) {
 
                 const coffee = new Coffee(additionalData.coffee);
 
-                // Do I need to save ingredientData to a concoction, or just make a list of ingredients?
-                // I have the same question about an ingredient's categories.
-                // Update: It would make more sense to not have a Concoction keep track of its coffee or ingredients, given the data returned by createConcoction.
-                for (let ingredientData of additionalData.ingredients) {
+                for (const ingredientData of additionalData.ingredients) {
                     const ingredient = new Ingredient(ingredientData);
                     concoction.addIngredient(ingredient);
                 }
@@ -643,8 +640,7 @@ async function generateConcoctionPage(concoction) {
 }
 
 function displayConcoction(concoction, coffee) {
-    // Idea: Pass an ingredients argument, then use Ingredient.categories
-    const { name, instructions, notes, ingredients, ingredientCategories } = concoction;
+    const { name, instructions, notes, ingredients } = concoction;
     generatePageTitle(name);
 
     const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
@@ -652,7 +648,7 @@ function displayConcoction(concoction, coffee) {
 
     const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
     createAndAppendAttribute("Coffee", coffee.description(), concoctionAttrsWrapper);
-    createAndAppendIngredientList(ingredients, ingredientCategories, concoctionAttrsWrapper);
+    createAndAppendIngredientList(ingredients, Ingredient.categories, concoctionAttrsWrapper);
     createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
     if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
 

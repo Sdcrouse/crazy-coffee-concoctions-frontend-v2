@@ -20,7 +20,6 @@ export default class Concoction {
             'Creamer': [],
             'Additional Ingredient': []
         };
-        this.#ingredientCategories = ['Liquid', 'Sweetener', 'Creamer', 'Additional Ingredient']; // Should this be a static variable in Ingredient?
     }
 
     get id() {
