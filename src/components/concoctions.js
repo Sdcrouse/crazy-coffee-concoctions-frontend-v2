@@ -615,27 +615,17 @@ async function generateConcoctionPage(concoction) {
             case 200:
                 concoction.addData(additionalData.concoction);
 
-                const { name, instructions, notes } = concoction;
-                generatePageTitle(name);
-
                 const coffee = new Coffee(additionalData.coffee);
-                concoction.coffee = coffee;
 
+                // Do I need to save ingredientData to a concoction, or just make a list of ingredients?
+                // I have the same question about an ingredient's categories.
+                // Update: It would make more sense to not have a Concoction keep track of its coffee or ingredients, given the data returned by createConcoction.
                 for (let ingredientData of additionalData.ingredients) {
                     const ingredient = new Ingredient(ingredientData);
                     concoction.addIngredient(ingredient);
                 }
 
-                const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
-                appendPageHeading(concoctionDiv, name);
-
-                const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
-                createAndAppendAttribute("Coffee", coffee.description(), concoctionAttrsWrapper);
-                createAndAppendIngredientList(concoction.ingredients, concoction.ingredientCategories, concoctionAttrsWrapper);
-                createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
-                if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
-
-                mainContainer.replaceChildren(concoctionDiv, concoctionAttrsWrapper);
+                displayConcoction(concoction, coffee);
                 break;
             case 500:
                 console.error(additionalData);
@@ -650,6 +640,23 @@ async function generateConcoctionPage(concoction) {
         console.error(error.message);
         appendErrorHeading(concoction.listItemId(), 'An unexpected error occurred while fetching this concoction. Please try again later.');
     }
+}
+
+function displayConcoction(concoction, coffee) {
+    // Idea: Pass an ingredients argument, then use Ingredient.categories
+    const { name, instructions, notes, ingredients, ingredientCategories } = concoction;
+    generatePageTitle(name);
+
+    const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
+    appendPageHeading(concoctionDiv, name);
+
+    const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });
+    createAndAppendAttribute("Coffee", coffee.description(), concoctionAttrsWrapper);
+    createAndAppendIngredientList(ingredients, ingredientCategories, concoctionAttrsWrapper);
+    createAndAppendAttribute("Instructions", instructions, concoctionAttrsWrapper);
+    if (notes) createAndAppendAttribute("Notes", notes, concoctionAttrsWrapper);
+
+    mainContainer.replaceChildren(concoctionDiv, concoctionAttrsWrapper);
 }
 
 function createAndAppendAttribute(attributeName, attributeValue, attributeWrapper) {

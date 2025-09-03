@@ -5,7 +5,6 @@ export default class Concoction {
     #id;
     #name;
     #created;
-    #coffee;
     #ingredients;
     #ingredientCategories;
     #instructions;
@@ -21,7 +20,7 @@ export default class Concoction {
             'Creamer': [],
             'Additional Ingredient': []
         };
-        this.#ingredientCategories = ['Liquid', 'Sweetener', 'Creamer', 'Additional Ingredient'];
+        this.#ingredientCategories = ['Liquid', 'Sweetener', 'Creamer', 'Additional Ingredient']; // Should this be a static variable in Ingredient?
     }
 
     get id() {
@@ -46,10 +45,6 @@ export default class Concoction {
 
     get notes() {
         return this.#notes;
-    }
-
-    set coffee(coffeeData) {
-        this.#coffee = coffeeData;
     }
 
     addIngredient(ingredient) {
