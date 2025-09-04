@@ -170,9 +170,6 @@ async function createConcoction(e, concoctionForm) {
         };
 
         try {
-            // TODO: Render the concoction page with the saved concoction data
-
-            // TODO: Move this code and the code from generateConcoctionsPage's try/catch block into its own function
             let data = await createNewConcoction(formattedData);
 
             if ((data.status === 400 && !data.errors) || data.status === 401) {
@@ -190,8 +187,15 @@ async function createConcoction(e, concoctionForm) {
 
             switch (data.status) {
                 case 201:
-                    console.log(data.successMessage);
-                    console.log('Concoction data:', data);
+                    const newConcoction = new Concoction(data.concoction);
+                    const newCoffee = new Coffee(data.coffee);
+
+                    for (const ingredientData of data.ingredients) {
+                        const newIngredient = new Ingredient(ingredientData);
+                        newConcoction.addIngredient(newIngredient);
+                    }
+
+                    displayConcoction(newConcoction, newCoffee, data.successMessage);
                     break;
                 case 400:
                     let errorsList = concoctionForm.querySelector('#data-errors-list');
@@ -614,7 +618,6 @@ async function generateConcoctionPage(concoction) {
         switch(additionalData.status) {
             case 200:
                 concoction.addData(additionalData.concoction);
-
                 const coffee = new Coffee(additionalData.coffee);
 
                 for (const ingredientData of additionalData.ingredients) {
@@ -639,11 +642,12 @@ async function generateConcoctionPage(concoction) {
     }
 }
 
-function displayConcoction(concoction, coffee) {
+function displayConcoction(concoction, coffee, successMessage) {
     const { name, instructions, notes, ingredients } = concoction;
     generatePageTitle(name);
 
     const concoctionDiv = createCustomElement('div', { id: 'concoction-div' });
+    if (successMessage) appendSuccessHeading(concoctionDiv, successMessage);
     appendPageHeading(concoctionDiv, name);
 
     const concoctionAttrsWrapper = createCustomElement('div', { classes: 'concoction-attribute' });

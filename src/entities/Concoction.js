@@ -11,15 +11,18 @@ export default class Concoction {
     #notes;
 
     constructor(concoctionData) {
-        this.#id = concoctionData.id;
         this.#name = concoctionData.name;
-        this.#created = concoctionData.created;
         this.#ingredients = {
             'Liquid': [],
             'Sweetener': [],
             'Creamer': [],
             'Additional Ingredient': []
         };
+
+        if (concoctionData.id) this.#id = concoctionData.id;
+        if (concoctionData.created) this.#created = concoctionData.created;
+        if (concoctionData.instructions) this.#instructions = concoctionData.instructions;
+        if (concoctionData.notes) this.#notes = concoctionData.notes;
     }
 
     get id() {
