@@ -4,6 +4,7 @@ import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
+import { capitalizeWord } from '../utils/wordFunctions.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -36,19 +37,19 @@ function generateLoginPage({ userInfo = null, messages = {} } = {}) {
 
 async function login(event, loginForm) {
     event.preventDefault();
+    removeErrorList(loginForm, 'username');
+    removeErrorList(loginForm, 'password');
 
     const loginFormInputs = new FormData(loginForm);
     const { username, password } = Object.fromEntries(loginFormInputs);
-    let user = new User(username, password);
-
-    if (isEmpty(username)) user.addUsernameError('Username is required');
-    if (isEmpty(password)) user.addPasswordError('Password is required');
-
-    let { usernameErrors, passwordErrors } = user;
-    if (!isEmpty(usernameErrors) || !isEmpty(passwordErrors)) {
-        generateLoginPage({ userInfo: user });
+    
+    if (isEmpty(username) || isEmpty(password)) {
+        handleMissingInput(loginForm, 'username', username);
+        handleMissingInput(loginForm, 'password', password);
         return;
     }
+    
+    let user = new User(username, password);
 
     try {
         const response = await fetch(`${apiBase}/users/login`, {
@@ -269,15 +270,42 @@ function createUserInputGroup(userInputName, userInfo, formAction, options = { m
     return inputGroup;
 }
 
-function generateErrorList(errors) {
+function generateErrorList(errors, inputName) {
     const errorList = createCustomElement('ul', { classes: 'error-message-list' });
+    if (inputName) errorList.id = `${inputName}-error-list`;
 
-    errors.forEach(error => {
+    for (const error of errors) {
         const errorItem = createCustomElement('li', { text: error });
         errorList.append(errorItem);
-    });
+    };
 
     return errorList;
+}
+
+function removeErrorList(form, inputName) {
+    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+    const inputField = form.querySelector(`#${inputName}`);
+    const errorList = form.querySelector(`#${inputName}-error-list`);
+    
+    if (errorList) {
+        form.removeChild(errorList);
+        inputLabel.classList.remove('error-text');
+        inputField.classList.remove('input-validation-error');
+    }
+}
+
+function handleMissingInput(form, inputName, inputValue) {
+    if (isEmpty(inputValue)) {
+        const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+        inputLabel.className = 'error-text';
+
+        const inputField = form.querySelector(`#${inputName}`);
+        inputField.className = 'input-validation-error';
+        if (inputName === 'password') inputField.value = '';
+
+        const errorList = generateErrorList([`${capitalizeWord(inputName)} is required`], inputName);
+        inputField.parentNode.after(errorList);
+    }
 }
 
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
