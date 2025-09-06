@@ -37,20 +37,20 @@ function generateLoginPage({ userInfo = null, messages = {} } = {}) {
 
 async function login(event, loginForm) {
     event.preventDefault();
-    removeErrorList(loginForm, 'username');
-    removeErrorList(loginForm, 'password');
-
+    
     const loginFormInputs = new FormData(loginForm);
     const { username, password } = Object.fromEntries(loginFormInputs);
     
+    // TODO: Move this somewhere else to make user login faster
+    removeErrorList(loginForm, 'username');
+    removeErrorList(loginForm, 'password');
+
     if (isEmpty(username) || isEmpty(password)) {
         handleMissingInput(loginForm, 'username', username);
         handleMissingInput(loginForm, 'password', password);
         return;
     }
     
-    let user = new User(username, password);
-
     try {
         const response = await fetch(`${apiBase}/users/login`, {
             method: 'POST',
@@ -67,22 +67,19 @@ async function login(event, loginForm) {
                 await generateConcoctionsPage(data.successMessage);
                 break;
             case 400:
-            case 401:
-                // Currently, cases 400 and 401 are expecting at most one username error and/or one password error
+                // Currently, this expects at most one username error and/or one password error
                 // If multiple errors are later returned for usernames and passwords, this should be updated
-                console.error(data);
 
-                const { username: usernameError, password: passwordError } = data.errors;
-                if (usernameError) user.addUsernameError(usernameError);
-                if (passwordError) user.addPasswordError(passwordError);
-
-                generateLoginPage({ userInfo: user });
+                if (data.errors.username) displayUserError(loginForm, 'username', data.errors.username);
+                if (data.errors.password) displayUserError(loginForm, 'password', data.errors.password);
+                break;
+            case 401:
+                // Currently, this only expects one password error; this can be updated later if other errors are returned.
+                displayUserError(loginForm, 'password', data.errors.password);
                 break;
             case 404:
                 // Currently, this only expects a "User not found" error; this can be updated with other error messages later.
-                console.error(data);
-                user.addUsernameError(data.errors.username);
-                generateLoginPage({ userInfo: user });
+                displayUserError(loginForm, 'username', data.errors.username);
                 break;
             case 500:
                 console.error(data);
@@ -286,6 +283,8 @@ function removeErrorList(form, inputName) {
     const inputLabel = form.querySelector(`label[for="${inputName}"]`);
     const inputField = form.querySelector(`#${inputName}`);
     const errorList = form.querySelector(`#${inputName}-error-list`);
+
+    if (inputName === 'password') inputField.value = '';
     
     if (errorList) {
         form.removeChild(errorList);
@@ -294,6 +293,18 @@ function removeErrorList(form, inputName) {
     }
 }
 
+function displayUserError(form, inputName, userError) {
+    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+    inputLabel.className = 'error-text';
+
+    const inputField = form.querySelector(`#${inputName}`);
+    inputField.className = 'input-validation-error';
+
+    const errorList = generateErrorList([userError], inputName);
+    inputField.parentNode.after(errorList);
+}
+
+// TODO: Refactor this with the function above, or replace it with that function entirely
 function handleMissingInput(form, inputName, inputValue) {
     if (isEmpty(inputValue)) {
         const inputLabel = form.querySelector(`label[for="${inputName}"]`);
@@ -301,7 +312,6 @@ function handleMissingInput(form, inputName, inputValue) {
 
         const inputField = form.querySelector(`#${inputName}`);
         inputField.className = 'input-validation-error';
-        if (inputName === 'password') inputField.value = '';
 
         const errorList = generateErrorList([`${capitalizeWord(inputName)} is required`], inputName);
         inputField.parentNode.after(errorList);
