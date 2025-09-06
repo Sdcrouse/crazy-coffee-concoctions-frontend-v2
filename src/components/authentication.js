@@ -4,7 +4,6 @@ import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
-import { capitalizeWord } from '../utils/wordFunctions.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -40,14 +39,11 @@ async function login(event, loginForm) {
     
     const loginFormInputs = new FormData(loginForm);
     const { username, password } = Object.fromEntries(loginFormInputs);
-    
-    // TODO: Move this somewhere else to make user login faster
-    removeErrorList(loginForm, 'username');
-    removeErrorList(loginForm, 'password');
 
     if (isEmpty(username) || isEmpty(password)) {
-        handleMissingInput(loginForm, 'username', username);
-        handleMissingInput(loginForm, 'password', password);
+        removeErrorLists(loginForm, 'username', 'password');
+        if (isEmpty(username)) displayUserError(loginForm, 'username', 'Username is required');
+        if (isEmpty(password)) displayUserError(loginForm, 'password', 'Password is required');
         return;
     }
     
@@ -60,6 +56,7 @@ async function login(event, loginForm) {
         });
         
         const data = await response.json();
+        if (data.status !== 200 && data.status !== 500) removeErrorLists(loginForm, 'username', 'password');
         
         switch (data.status) {
             case 200:
@@ -92,6 +89,7 @@ async function login(event, loginForm) {
         }
     } catch (error) {
         console.error(error.message);
+        removeErrorLists(loginForm, 'username', 'password');
         appendErrorHeading('login-div', 'There was an error while submitting the login form. Please try again.');
     }
 }
@@ -279,17 +277,19 @@ function generateErrorList(errors, inputName) {
     return errorList;
 }
 
-function removeErrorList(form, inputName) {
-    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
-    const inputField = form.querySelector(`#${inputName}`);
-    const errorList = form.querySelector(`#${inputName}-error-list`);
-
-    if (inputName === 'password') inputField.value = '';
+function removeErrorLists(form, ...inputNames) {
+    for (const inputName of inputNames) {
+        const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+        const inputField = form.querySelector(`#${inputName}`);
+        const errorList = form.querySelector(`#${inputName}-error-list`);
     
-    if (errorList) {
-        form.removeChild(errorList);
-        inputLabel.classList.remove('error-text');
-        inputField.classList.remove('input-validation-error');
+        if (inputName === 'password') inputField.value = '';
+        
+        if (errorList) {
+            form.removeChild(errorList);
+            inputLabel.classList.remove('error-text');
+            inputField.classList.remove('input-validation-error');
+        }
     }
 }
 
@@ -302,20 +302,6 @@ function displayUserError(form, inputName, userError) {
 
     const errorList = generateErrorList([userError], inputName);
     inputField.parentNode.after(errorList);
-}
-
-// TODO: Refactor this with the function above, or replace it with that function entirely
-function handleMissingInput(form, inputName, inputValue) {
-    if (isEmpty(inputValue)) {
-        const inputLabel = form.querySelector(`label[for="${inputName}"]`);
-        inputLabel.className = 'error-text';
-
-        const inputField = form.querySelector(`#${inputName}`);
-        inputField.className = 'input-validation-error';
-
-        const errorList = generateErrorList([`${capitalizeWord(inputName)} is required`], inputName);
-        inputField.parentNode.after(errorList);
-    }
 }
 
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
