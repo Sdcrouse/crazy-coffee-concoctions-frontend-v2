@@ -79,7 +79,7 @@ async function login(event, loginForm) {
                 displayUserError(loginForm, 'username', data.errors.username);
                 break;
             case 500:
-                console.error(data);
+                console.error(data); // TODO: I may be able to remove this error log
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
@@ -110,16 +110,18 @@ function generateSignupPage(userInfo) {
     mainContainer.replaceChildren(signupDiv);
 };
 
+// TODO: Remove old error headings at the bottom of the login function
 async function signup(event, signupForm) {
     event.preventDefault();
 
     const signupFormInputs = new FormData(signupForm);
     const { username, password } = Object.fromEntries(signupFormInputs);
-    
     const user = new User(username, password);
     
     if (!user.validateCredentials()) {
-        generateSignupPage(user);
+        removeErrorLists(signupForm, 'username', 'password');
+        if (!isEmpty(user.usernameErrors)) displayUserErrors(signupForm, 'username', user.usernameErrors);
+        if (!isEmpty(user.passwordErrors)) displayUserErrors(signupForm, 'password', user.passwordErrors);
         return;
     }
 
@@ -131,29 +133,25 @@ async function signup(event, signupForm) {
         });
         
         const data = await response.json();
+        if (data.status !== 201 && data.status !== 500) removeErrorLists(signupForm, 'username', 'password');
         
         switch (data.status) {
             case 201:
                 generateLoginPage({ messages: { successMessage: data.successMessage } });
                 break;
             case 400:
-                console.error(data);
-                
                 const { username: usernameErrors, password: passwordErrors } = data.errors;
-                if (usernameErrors) user.addUsernameErrors(usernameErrors);
-                if (passwordErrors) user.addPasswordErrors(passwordErrors);
 
-                generateSignupPage(user);
+                if (!isEmpty(usernameErrors)) displayUserErrors(signupForm, 'username', usernameErrors);
+                if (!isEmpty(passwordErrors)) displayUserErrors(signupForm, 'password', passwordErrors);
                 break;
             case 409:
                 // If there are other error messages with an HTTP 409 status, update this and the backend
                 // For now, the only expected HTTP 409 error is a user who already exists
-                console.error(data);
-                user.addUsernameError(data.errorMessage);
-                generateSignupPage(user);
+                
+                displayUserError(signupForm, 'username', data.errorMessage);
                 break;
             case 500:
-                console.error(data);
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
@@ -163,6 +161,7 @@ async function signup(event, signupForm) {
         }
     } catch (error) {
         console.error(error.message);
+        removeErrorLists(signupForm, 'username', 'password');
         appendErrorHeading('signup-div', 'There was an error while submitting the signup form. Please try again.');
     }
 }
@@ -291,6 +290,17 @@ function removeErrorLists(form, ...inputNames) {
             inputField.classList.remove('input-validation-error');
         }
     }
+}
+// TODO: Combine the following two functions
+function displayUserErrors(form, inputName, userErrors) {
+    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+    inputLabel.className = 'error-text';
+
+    const inputField = form.querySelector(`#${inputName}`);
+    inputField.className = 'input-validation-error';
+
+    const errorList = generateErrorList(userErrors, inputName);
+    inputField.parentNode.after(errorList);
 }
 
 function displayUserError(form, inputName, userError) {
