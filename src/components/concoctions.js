@@ -178,7 +178,7 @@ async function createConcoction(e, concoctionForm) {
                 if (data.status !== 200) {
                     console.error(data);
                     toggleButtonDisplay({ userIsLoggedIn: false });
-                    generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                    generateLoginPage({ errorMessage: data.errorMessage });
                     return;
                 }
                 
@@ -524,7 +524,7 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
             if (data.status !== 200) {
                 console.error(data);
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                generateLoginPage({ errorMessage: data.errorMessage });
                 return;
             }
 
@@ -608,7 +608,7 @@ async function generateConcoctionPage(concoction) {
             if (additionalData.status !== 200) {
                 console.error(additionalData);
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ messages: { errorMessage: additionalData.errorMessage } });
+                generateLoginPage({ errorMessage: additionalData.errorMessage });
                 return;
             }
 

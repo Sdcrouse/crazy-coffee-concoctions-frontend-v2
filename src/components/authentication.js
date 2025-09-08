@@ -10,7 +10,7 @@ import { generateConcoctionsPage } from './concoctions.js';
 const mainContainer = document.getElementById('main-container');
 const apiBase = 'http://localhost:5000';
 
-function generateLoginPage({ messages = {} } = {}) {
+function generateLoginPage(messages = {}) {
     generatePageTitle('Log In');
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
@@ -137,7 +137,7 @@ async function signup(event, signupForm) {
         
         switch (data.status) {
             case 201:
-                generateLoginPage({ messages: { successMessage: data.successMessage } });
+                generateLoginPage({ successMessage: data.successMessage });
                 break;
             case 400:
                 const { username: usernameErrors, password: passwordErrors } = data.errors;
@@ -179,13 +179,13 @@ async function logout() {
         switch (data.status) {
             case 200:
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ messages: { successMessage: data.logoutSuccessMessage } });
+                generateLoginPage({ successMessage: data.logoutSuccessMessage });
                 break;
             case 400:
             case 401:
                 console.error(data);
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ messages: { errorMessage: data.errorMessage } });
+                generateLoginPage({ errorMessage: data.errorMessage });
                 break;
             case 500:
                 console.error(data);
