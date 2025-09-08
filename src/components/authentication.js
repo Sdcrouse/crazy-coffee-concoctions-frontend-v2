@@ -10,7 +10,7 @@ import { generateConcoctionsPage } from './concoctions.js';
 const mainContainer = document.getElementById('main-container');
 const apiBase = 'http://localhost:5000';
 
-function generateLoginPage({ userInfo = null, messages = {} } = {}) {
+function generateLoginPage({ messages = {} } = {}) {
     generatePageTitle('Log In');
 
     const loginDiv = createCustomElement('div', { id: 'login-div' });
@@ -24,8 +24,8 @@ function generateLoginPage({ userInfo = null, messages = {} } = {}) {
 
     appendPageHeading(loginDiv, 'Log in to your account here!');
 
-    const usernameInputGroup = createUserInputGroup('username', userInfo, 'login', { minLength: 2 });
-    const passwordInputGroup = createUserInputGroup('password', userInfo, 'login', { minLength: 2 });
+    const usernameInputGroup = createUserInputGroup('username', 'login', { minLength: 2 });
+    const passwordInputGroup = createUserInputGroup('password', 'login', { minLength: 2 });
 
     const loginForm = generateForm('Log In', usernameInputGroup, passwordInputGroup);
     loginForm.addEventListener('submit', e => login(e, loginForm));
@@ -94,14 +94,14 @@ async function login(event, loginForm) {
     }
 }
 
-function generateSignupPage(userInfo) {
+function generateSignupPage() {
     generatePageTitle('Sign Up');
 
     const signupDiv = createCustomElement('div', { id: 'signup-div' });
     appendPageHeading(signupDiv, 'Sign up here!');
     
-    const usernameFields = createUserInputGroup('username', userInfo, 'register');
-    const passwordFields = createUserInputGroup('password', userInfo, 'register');
+    const usernameFields = createUserInputGroup('username', 'register');
+    const passwordFields = createUserInputGroup('password', 'register');
 
     const signupForm = generateForm('Sign Up', usernameFields, passwordFields);
     signupForm.addEventListener('submit', e => signup(e, signupForm));
@@ -202,7 +202,7 @@ async function logout() {
     }
 }
 
-function createUserInputGroup(userInputName, userInfo, formAction, options = { minLength: 8 }) {
+function createUserInputGroup(userInputName, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = userInputName.charAt(0).toUpperCase() + userInputName.slice(1);
     
     const label = createCustomElement('label', {
@@ -230,37 +230,12 @@ function createUserInputGroup(userInputName, userInfo, formAction, options = { m
         }
     }
 
-    let inputValue, inputErrors;
-
-    if (userInfo) {
-        if (userInputName === 'username') {
-            inputValue = userInfo.username;
-            inputErrors = userInfo.usernameErrors;
-        } else {
-            // For now, the user input is either a username or password; this can be updated later if need be.
-            inputErrors = userInfo.passwordErrors;
-        }
-    }
-
-    if (inputValue) input.setAttribute('value', inputValue);
     input.required = true;
     
     const inputGroup = createCustomElement('p', {
         classes: 'center-content',
         itemsToAppend: [label, input]
     });
-
-    if (Array.isArray(inputErrors) && inputErrors.length > 0) {
-        label.className = 'error-text';
-        input.className = 'input-validation-error';
-
-        const inputErrorList = generateErrorList(inputErrors);
-        const inputFragment = new DocumentFragment();
-        inputFragment.append(inputGroup, inputErrorList);
-
-        return inputFragment;
-    }
-
     return inputGroup;
 }
 
