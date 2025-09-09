@@ -176,7 +176,6 @@ async function createConcoction(e, concoctionForm) {
                 data = await refreshSession();
 
                 if (data.status !== 200) {
-                    console.error(data);
                     toggleButtonDisplay({ userIsLoggedIn: false });
                     generateLoginPage({ errorMessage: data.errorMessage });
                     return;
@@ -233,7 +232,6 @@ async function createConcoction(e, concoctionForm) {
                     }
                     break;
                 case 500:
-                    console.error(data);
                     generateServerErrorPage(data.errorMessage);
                     break;
                 default:
@@ -522,7 +520,6 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
             data = await refreshSession();
 
             if (data.status !== 200) {
-                console.error(data);
                 toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ errorMessage: data.errorMessage });
                 return;
@@ -562,7 +559,6 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
                 mainContainer.replaceChildren(concoctionsDiv);
                 break;
             case 500:
-                console.error(data);
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
@@ -606,7 +602,6 @@ async function generateConcoctionPage(concoction) {
             additionalData = await refreshSession();
 
             if (additionalData.status !== 200) {
-                console.error(additionalData);
                 toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ errorMessage: additionalData.errorMessage });
                 return;
@@ -628,7 +623,6 @@ async function generateConcoctionPage(concoction) {
                 displayConcoction(concoction, coffee);
                 break;
             case 500:
-                console.error(additionalData);
                 generateServerErrorPage(additionalData.errorMessage);
                 break;
             default:

@@ -74,7 +74,6 @@ async function login(event, loginForm) {
                 generateErrorList(loginForm, 'username', data.errors.username);
                 break;
             case 500:
-                console.error(data); // TODO: I may be able to remove this error log
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
@@ -105,7 +104,6 @@ function generateSignupPage() {
     mainContainer.replaceChildren(signupDiv);
 };
 
-// TODO: Remove old error headings at the bottom of the login function
 async function signup(event, signupForm) {
     event.preventDefault();
 
@@ -175,12 +173,10 @@ async function logout() {
                 break;
             case 400:
             case 401:
-                console.error(data);
                 toggleButtonDisplay({ userIsLoggedIn: false });
                 generateLoginPage({ errorMessage: data.errorMessage });
                 break;
             case 500:
-                console.error(data);
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
