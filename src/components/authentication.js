@@ -42,8 +42,8 @@ async function login(event, loginForm) {
 
     if (isEmpty(username) || isEmpty(password)) {
         removeErrorLists(loginForm, 'username', 'password');
-        if (isEmpty(username)) displayUserError(loginForm, 'username', 'Username is required');
-        if (isEmpty(password)) displayUserError(loginForm, 'password', 'Password is required');
+        if (isEmpty(username)) generateErrorList(loginForm, 'username', 'Username is required');
+        if (isEmpty(password)) generateErrorList(loginForm, 'password', 'Password is required');
         return;
     }
     
@@ -64,19 +64,14 @@ async function login(event, loginForm) {
                 await generateConcoctionsPage(data.successMessage);
                 break;
             case 400:
-                // Currently, this expects at most one username error and/or one password error
-                // If multiple errors are later returned for usernames and passwords, this should be updated
-
-                if (data.errors.username) displayUserError(loginForm, 'username', data.errors.username);
-                if (data.errors.password) displayUserError(loginForm, 'password', data.errors.password);
+                if (data.errors.username) generateErrorList(loginForm, 'username', data.errors.username);
+                if (data.errors.password) generateErrorList(loginForm, 'password', data.errors.password);
                 break;
             case 401:
-                // Currently, this only expects one password error; this can be updated later if other errors are returned.
-                displayUserError(loginForm, 'password', data.errors.password);
+                generateErrorList(loginForm, 'password', data.errors.password);
                 break;
             case 404:
-                // Currently, this only expects a "User not found" error; this can be updated with other error messages later.
-                displayUserError(loginForm, 'username', data.errors.username);
+                generateErrorList(loginForm, 'username', data.errors.username);
                 break;
             case 500:
                 console.error(data); // TODO: I may be able to remove this error log
@@ -120,8 +115,8 @@ async function signup(event, signupForm) {
     
     if (!user.validateCredentials()) {
         removeErrorLists(signupForm, 'username', 'password');
-        if (!isEmpty(user.usernameErrors)) displayUserErrors(signupForm, 'username', user.usernameErrors);
-        if (!isEmpty(user.passwordErrors)) displayUserErrors(signupForm, 'password', user.passwordErrors);
+        if (!isEmpty(user.usernameErrors)) generateErrorList(signupForm, 'username', ...user.usernameErrors);
+        if (!isEmpty(user.passwordErrors)) generateErrorList(signupForm, 'password', ...user.passwordErrors);
         return;
     }
 
@@ -142,14 +137,11 @@ async function signup(event, signupForm) {
             case 400:
                 const { username: usernameErrors, password: passwordErrors } = data.errors;
 
-                if (!isEmpty(usernameErrors)) displayUserErrors(signupForm, 'username', usernameErrors);
-                if (!isEmpty(passwordErrors)) displayUserErrors(signupForm, 'password', passwordErrors);
+                if (!isEmpty(usernameErrors)) generateErrorList(signupForm, 'username', ...usernameErrors);
+                if (!isEmpty(passwordErrors)) generateErrorList(signupForm, 'password', ...passwordErrors);
                 break;
-            case 409:
-                // If there are other error messages with an HTTP 409 status, update this and the backend
-                // For now, the only expected HTTP 409 error is a user who already exists
-                
-                displayUserError(signupForm, 'username', data.errorMessage);
+            case 409:                
+                generateErrorList(signupForm, 'username', data.errorMessage);
                 break;
             case 500:
                 generateServerErrorPage(data.errorMessage);
@@ -239,16 +231,21 @@ function createUserInputGroup(userInputName, formAction, options = { minLength: 
     return inputGroup;
 }
 
-function generateErrorList(errors, inputName) {
-    const errorList = createCustomElement('ul', { classes: 'error-message-list' });
-    if (inputName) errorList.id = `${inputName}-error-list`;
+function generateErrorList(form, inputName, ...errors) {
+    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
+    inputLabel.className = 'error-text';
+
+    const inputField = form.querySelector(`#${inputName}`);
+    inputField.className = 'input-validation-error';
+
+    const errorList = createCustomElement('ul', { id: `${inputName}-error-list`, classes: 'error-message-list' });
 
     for (const error of errors) {
         const errorItem = createCustomElement('li', { text: error });
         errorList.append(errorItem);
     };
 
-    return errorList;
+    inputField.parentNode.after(errorList);
 }
 
 function removeErrorLists(form, ...inputNames) {
@@ -265,28 +262,6 @@ function removeErrorLists(form, ...inputNames) {
             inputField.classList.remove('input-validation-error');
         }
     }
-}
-// TODO: Combine the following two functions
-function displayUserErrors(form, inputName, userErrors) {
-    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
-    inputLabel.className = 'error-text';
-
-    const inputField = form.querySelector(`#${inputName}`);
-    inputField.className = 'input-validation-error';
-
-    const errorList = generateErrorList(userErrors, inputName);
-    inputField.parentNode.after(errorList);
-}
-
-function displayUserError(form, inputName, userError) {
-    const inputLabel = form.querySelector(`label[for="${inputName}"]`);
-    inputLabel.className = 'error-text';
-
-    const inputField = form.querySelector(`#${inputName}`);
-    inputField.className = 'input-validation-error';
-
-    const errorList = generateErrorList([userError], inputName);
-    inputField.parentNode.after(errorList);
 }
 
 function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
