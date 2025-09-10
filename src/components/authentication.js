@@ -3,7 +3,7 @@ import generatePageTitle from '../utils/pageTitle.js';
 import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
 import User from '../entities/User.js';
-import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -181,12 +181,12 @@ async function logout() {
                 break;
             default:
                 console.error(data);
-                appendErrorHeading('main-container', 'An unknown error has occurred. Please try again later.');
+                prependErrorHeading('main-container', 'An unknown error has occurred. Please try again later.');
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        appendErrorHeading('main-container', 'There was an error while logging you out. Please try again.');
+        prependErrorHeading('main-container', 'There was an error while logging you out. Please try again.');
     }
 }
 

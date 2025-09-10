@@ -5,7 +5,7 @@ import isEmpty, { allEmpty } from '../utils/isEmpty.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
 import Ingredient from '../entities/Ingredient.js';
-import { appendErrorHeading, appendSuccessHeading, appendPageHeading } from '../utils/headings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { capitalizeWord, lowerCaseWord } from '../utils/wordFunctions.js';
 import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
@@ -563,13 +563,13 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
                 break;
             default:
                 console.error(data);
-                appendErrorHeading(concoctionsDiv, 'An unknown error has occurred on the server. Please try again later.');
+                prependErrorHeading(concoctionsDiv, 'An unknown error has occurred on the server. Please try again later.');
                 mainContainer.replaceChildren(concoctionsDiv);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        appendErrorHeading(concoctionsDiv, 'An unknown error occurred while getting your concoctions. Please try again later.');
+        prependErrorHeading(concoctionsDiv, 'An unknown error occurred while getting your concoctions. Please try again later.');
         mainContainer.replaceChildren(concoctionsDiv);
     }
 }
@@ -627,12 +627,12 @@ async function generateConcoctionPage(concoction) {
                 break;
             default:
                 console.error(additionalData);
-                appendErrorHeading(concoction.listItemId(), 'An unknown error has occurred on the server. Please try again later.');
+                prependErrorHeading(document.getElementById('concoctions-div'), 'An unknown error has occurred on the server. Please try again later.');
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        appendErrorHeading(concoction.listItemId(), 'An unexpected error occurred while fetching this concoction. Please try again later.');
+        prependErrorHeading(document.getElementById('concoctions-div'), 'An unexpected error occurred while fetching this concoction. Please try again later.');
     }
 }
 
