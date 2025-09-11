@@ -423,7 +423,9 @@ function generateIngredientInputs(category) {
 
 function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
     if (e) e.preventDefault();
-    if (hasErrorHeading(ingredientsList)) ingredientsList.removeChild(ingredientsList.lastChild); // Edge case
+
+    const removeIngredientError = document.getElementById(`remove-${category}-error`); // Edge case
+    if (removeIngredientError) document.querySelector('form').removeChild(removeIngredientError);
 
     let amountPlaceholder, namePlaceholder;
     switch (category) {
@@ -471,8 +473,10 @@ function addIngredient(category, ingredientsList, minimumIngredientCount, e) {
 
 function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientCount) {
     e.preventDefault();
-    if (hasErrorHeading(ingredientsList)) return; // Edge case
 
+    let errorHeading = document.getElementById(`remove-${ingredientCategory}-error`);
+    if (errorHeading) return; // Edge case
+    
     let ingredientCount = ingredientsList.childElementCount;
 
     if (ingredientCount === minIngredientCount) { // Edge case
@@ -480,8 +484,13 @@ function removeIngredient(e, ingredientCategory, ingredientsList, minIngredientC
             ? 'Cannot remove this liquid. A concoction needs to have at least one liquid.'
             : `There are no ${ingredientCategory}s to remove.`;
 
-        ingredientsList.style.display = 'block';
-        appendErrorHeading(ingredientsList, minIngredientMessage);
+        errorHeading = createCustomElement('h4', {
+            id: `remove-${ingredientCategory}-error`,
+            classes: 'error-text center-content',
+            text: minIngredientMessage
+        });
+
+        e.target.parentNode.after(errorHeading);
         return;
     }
 
