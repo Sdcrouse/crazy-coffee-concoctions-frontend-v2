@@ -1,6 +1,7 @@
 import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
 import generateForm from '../utils/generateForm.js';
+import createLabel from '../utils/labels.js';
 import isEmpty, { allEmpty } from '../utils/isEmpty.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
@@ -341,16 +342,6 @@ async function createNewConcoction(concoctionData) {
     });
 
     return await response.json();
-}
-
-function createLabel(labelFor, labelText, isRequired) {
-    const label = createCustomElement('label', {
-        attributes: { for: labelFor },
-        text: `${labelText}:`
-    });
-
-    if (isRequired) label.className = 'required-field';
-    return label;
 }
 
 function createLabelAndTextInput(inputId, labelText, placeholder, maxLength, isRequired, inputName = inputId) {

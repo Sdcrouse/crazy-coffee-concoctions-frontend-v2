@@ -2,6 +2,7 @@ import createCustomElement from '../utils/createCustomElement.js';
 import generatePageTitle from '../utils/pageTitle.js';
 import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
+import createLabel from '../utils/labels.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
@@ -192,11 +193,7 @@ async function logout() {
 
 function createUserInputGroup(userInputName, formAction, options = { minLength: 8 }) {
     const capitalizedInputName = userInputName.charAt(0).toUpperCase() + userInputName.slice(1);
-    
-    const label = createCustomElement('label', {
-        attributes: { for: userInputName },
-        text: `${capitalizedInputName}: `
-    });
+    const label = createLabel(userInputName, capitalizedInputName, false);
 
     const input = createCustomElement('input', { 
         id: userInputName,
