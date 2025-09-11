@@ -208,6 +208,12 @@ nav button {
     margin-bottom: 2em;
 }
 
+.prepended-error {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 2%;
+}
+
 #data-errors-list {
     display: grid;
     justify-content: center;

@@ -1,12 +1,22 @@
 import createCustomElement from "./createCustomElement.js";
 
-function appendErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text') {
+function createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classes) {
     const wrapperElement = typeof wrapper === 'string' ? document.getElementById(wrapper) : wrapper;
     
     const errorHeading = createCustomElement(
         headingType, { text: errorMessage, classes }
     );
 
+    return [wrapperElement, errorHeading];
+}
+
+function prependErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text prepended-error') {
+    const [wrapperElement, errorHeading] = createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classes);
+    wrapperElement.prepend(errorHeading);
+}
+
+function appendErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text') {
+    const [wrapperElement, errorHeading] = createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classes);
     wrapperElement.appendChild(errorHeading);
 }
 
@@ -28,4 +38,4 @@ function appendPageHeading(wrapper, pageTitle) {
     wrapper.appendChild(pageHeading);
 }
 
-export { appendErrorHeading, appendSuccessHeading, appendPageHeading };
+export { prependErrorHeading, appendErrorHeading, appendSuccessHeading, appendPageHeading };
