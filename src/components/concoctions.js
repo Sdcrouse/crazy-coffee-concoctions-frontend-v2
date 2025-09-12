@@ -530,22 +530,27 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
 
         switch (data.status) {
             case 200:
-                // TODO: Make the list of concoctions look better - maybe replace the list with <div>s?
                 const { concoctions, noConcoctionsMessage } = data;
 
                 if (concoctions) {
-                    const concoctionsList = document.createElement('ul');
+                    const concoctionsList = createCustomElement('ul', { id: 'concoctions-list' });
 
                     for (const concoctionData of concoctions) {
                         const concoction = new Concoction(concoctionData);
+
                         const concoctionItem = createCustomElement('li', { id: concoction.listItemId() });
                         const concoctionPar = createCustomElement('p', { text: concoction.description() });
+                        const concoctionButtons = createCustomElement('p', { classes: 'center-content concoction-buttons' });
                         
-                        const concoctionButton = createCustomElement('button', { text: 'View Concoction' });
-                        concoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
+                        const viewConcoctionButton = createCustomElement('button', { text: 'View Concoction', classes: 'view-concoction' });
+                        viewConcoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
                         
-                        concoctionPar.appendChild(concoctionButton);
-                        concoctionItem.appendChild(concoctionPar);
+                        const deleteConcoctionButton = createCustomElement('button', {
+                            text: 'Delete Concoction', classes: 'delete-concoction'
+                        });
+                        
+                        concoctionButtons.append(viewConcoctionButton, deleteConcoctionButton);
+                        concoctionItem.append(concoctionPar, concoctionButtons);
                         concoctionsList.appendChild(concoctionItem);
                     }
 

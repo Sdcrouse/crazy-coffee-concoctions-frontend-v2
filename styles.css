@@ -54,13 +54,6 @@ button[type="submit"] {
     font-size: 100%;
 }
 
-ul li button {
-    margin-left: 2%;
-    height: 2em;
-    background-color: #2581c8;
-    color: white;
-}
-
 .add-ingredient {
     color: white;
     background-color: green;
@@ -72,6 +65,22 @@ ul li button {
     background-color: red;
     margin-left: 2%;
     padding: 3px 5px;
+}
+
+#concoctions-list .concoction-buttons {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#concoctions-list .concoction-buttons button {
+    height: 2em;
+    padding: 3px 5px;
+    color: white;
+}
+
+#concoctions-list .concoction-buttons .delete-concoction {
+    margin-left: 1em;
+    background-color: red;
 }
 
 
@@ -86,6 +95,8 @@ nav button {
 #signup, #login, #logout { background-color: #63A7E4; }
 
 .coffee-text { color: #A65F40; }
+
+.view-concoction { background-color: #2581c8; }
 
 .error-text, .required-field { color: red; }
 
@@ -127,6 +138,14 @@ nav button {
 }
 
 .indented-input { padding-inline-start: 40px; }
+
+#concoctions-list { padding-inline-start: 0; }
+
+#concoctions-list li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 #instructions {
     width: 70%;
