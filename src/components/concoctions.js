@@ -545,9 +545,8 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
                         const viewConcoctionButton = createCustomElement('button', { text: 'View Concoction', classes: 'view-concoction' });
                         viewConcoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
                         
-                        const deleteConcoctionButton = createCustomElement('button', {
-                            text: 'Delete Concoction', classes: 'delete-concoction'
-                        });
+                        const deleteConcoctionButton = createCustomElement('button', { text: 'Delete Concoction', classes: 'delete-concoction' });
+                        deleteConcoctionButton.addEventListener('click', () => deleteConcoction(concoction));
                         
                         concoctionButtons.append(viewConcoctionButton, deleteConcoctionButton);
                         concoctionItem.append(concoctionPar, concoctionButtons);
@@ -679,6 +678,51 @@ function createAndAppendIngredientList(ingredients, ingredientCategories, wrappe
         }
 
         wrapper.append(ingredientHeading, ingredientList);
+    }
+}
+
+async function deleteConcoction(concoction) {
+    const id = concoction.id;
+    const concListItemId = concoction.listItemId();
+    const concListItem = document.getElementById(concListItemId);
+    let errorMessage, errorHeading = document.querySelector(`#${concListItemId} h4`);
+
+    try {
+        const response = await fetch(`${concoctionsUrl}/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        let data = (response.status === 204) ? null : await response.json();
+        
+        switch (response.status) {
+            case 204:
+                concListItem.parentElement.removeChild(concListItem);
+                break;
+            case 500:
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                console.error(data);
+                errorMessage = 'An unknown error has occurred on the server. Please try again later.';
+                
+                if (errorHeading) {
+                    errorHeading.textContent = errorMessage;
+                } else {
+                    appendErrorHeading(concListItem, errorMessage);
+                }
+
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+        errorMessage = 'An unexpected error occurred while deleting this concoction. Please try again.';
+        
+        if (errorHeading) {
+            errorHeading.textContent = errorMessage;
+        } else {
+            appendErrorHeading(concListItem, errorMessage);
+        }
     }
 }
 
