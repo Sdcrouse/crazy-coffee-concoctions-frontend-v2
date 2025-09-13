@@ -685,14 +685,23 @@ async function deleteConcoction(concoction) {
     const id = concoction.id;
     const concListItemId = concoction.listItemId();
     const concListItem = document.getElementById(concListItemId);
-    let errorMessage, errorHeading = document.querySelector(`#${concListItemId} h4`);
+    let errorHeading = document.querySelector(`#${concListItemId} h4`);
 
     try {
-        const response = await fetch(`${concoctionsUrl}/${id}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
+        let response = await deleteConcoctionData(id);
+
+        if (response.status === 400 || response.status === 401) {
+            const refreshedSession = await refreshSession();
+
+            if (refreshedSession.status !== 200) {
+                toggleButtonDisplay({ userIsLoggedIn: false });
+                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
+                return;
+            }
+
+            response = await deleteConcoctionData(id);
+        }
+
         let data = (response.status === 204) ? null : await response.json();
         
         switch (response.status) {
@@ -704,25 +713,28 @@ async function deleteConcoction(concoction) {
                 break;
             default:
                 console.error(data);
-                errorMessage = 'An unknown error has occurred on the server. Please try again later.';
-                
-                if (errorHeading) {
-                    errorHeading.textContent = errorMessage;
-                } else {
-                    appendErrorHeading(concListItem, errorMessage);
-                }
-
+                displayErrorMessage('An unknown error has occurred on the server. Please try again later.', concListItem, errorHeading);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        errorMessage = 'An unexpected error occurred while deleting this concoction. Please try again.';
-        
-        if (errorHeading) {
-            errorHeading.textContent = errorMessage;
-        } else {
-            appendErrorHeading(concListItem, errorMessage);
-        }
+        displayErrorMessage('An unexpected error occurred while deleting this concoction. Please try again.', concListItem, errorHeading);
+    }
+}
+
+async function deleteConcoctionData(concoctionId) {
+    return await fetch(`${concoctionsUrl}/${concoctionId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+}
+
+function displayErrorMessage(errorMessage, concoctionListItem, errorHeading) {
+    if (errorHeading) {
+        errorHeading.textContent = errorMessage;
+    } else {
+        appendErrorHeading(concoctionListItem, errorMessage);
     }
 }
 
