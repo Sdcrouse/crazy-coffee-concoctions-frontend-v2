@@ -175,13 +175,7 @@ async function createConcoction(e, concoctionForm) {
 
             if ((data.status === 400 && !data.errors) || data.status === 401) {
                 const refreshedSession = await refreshSession();
-
-                if (refreshedSession.status !== 200) {
-                    toggleButtonDisplay({ userIsLoggedIn: false });
-                    generateLoginPage({ errorMessage: refreshedSession.errorMessage });
-                    return;
-                }
-                
+                if (refreshedSession === null) return;
                 data = await createNewConcoction(formattedData);
             }
 
@@ -518,13 +512,7 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
 
         if (data.status === 400 || data.status === 401) {
             const refreshedSession = await refreshSession();
-
-            if (refreshedSession.status !== 200) {
-                toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
-                return;
-            }
-
+            if (refreshedSession === null) return;
             data = await fetchConcoctionData(concoctionsUrl);
         }
 
@@ -595,7 +583,15 @@ async function refreshSession() {
         credentials: 'include'
     });
 
-    return await response.json();
+    const newSession = await response.json();
+
+    if (newSession.status != 200) {
+        toggleButtonDisplay({ userIsLoggedIn: false });
+        generateLoginPage({ errorMessage: newSession.errorMessage });
+        return null;
+    }
+
+    return true;
 }
 
 async function generateConcoctionPage(concoction) {
@@ -604,13 +600,7 @@ async function generateConcoctionPage(concoction) {
 
         if (additionalData.status === 400 || additionalData.status === 401) {
             const refreshedSession = await refreshSession();
-
-            if (refreshedSession.status !== 200) {
-                toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
-                return;
-            }
-
+            if (refreshedSession === null) return;
             additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
         }
 
@@ -692,13 +682,7 @@ async function deleteConcoction(concoction) {
 
         if (response.status === 400 || response.status === 401) {
             const refreshedSession = await refreshSession();
-
-            if (refreshedSession.status !== 200) {
-                toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
-                return;
-            }
-
+            if (refreshedSession === null) return;
             response = await deleteConcoctionData(id);
         }
 
