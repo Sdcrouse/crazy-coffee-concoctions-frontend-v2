@@ -174,11 +174,11 @@ async function createConcoction(e, concoctionForm) {
             let data = await createNewConcoction(formattedData);
 
             if ((data.status === 400 && !data.errors) || data.status === 401) {
-                data = await refreshSession();
+                const refreshedSession = await refreshSession();
 
-                if (data.status !== 200) {
+                if (refreshedSession.status !== 200) {
                     toggleButtonDisplay({ userIsLoggedIn: false });
-                    generateLoginPage({ errorMessage: data.errorMessage });
+                    generateLoginPage({ errorMessage: refreshedSession.errorMessage });
                     return;
                 }
                 
@@ -517,11 +517,11 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
         let data = await fetchConcoctionData(concoctionsUrl);
 
         if (data.status === 400 || data.status === 401) {
-            data = await refreshSession();
+            const refreshedSession = await refreshSession();
 
-            if (data.status !== 200) {
+            if (refreshedSession.status !== 200) {
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: data.errorMessage });
+                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
                 return;
             }
 
@@ -603,11 +603,11 @@ async function generateConcoctionPage(concoction) {
         let additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
 
         if (additionalData.status === 400 || additionalData.status === 401) {
-            additionalData = await refreshSession();
+            const refreshedSession = await refreshSession();
 
-            if (additionalData.status !== 200) {
+            if (refreshedSession.status !== 200) {
                 toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: additionalData.errorMessage });
+                generateLoginPage({ errorMessage: refreshedSession.errorMessage });
                 return;
             }
 
