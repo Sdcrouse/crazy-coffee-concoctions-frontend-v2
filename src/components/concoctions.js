@@ -171,13 +171,8 @@ async function createConcoction(e, concoctionForm) {
         };
 
         try {
-            let data = await createNewConcoction(formattedData);
-
-            if ((data.status === 400 && !data.errors) || data.status === 401) {
-                const refreshedSession = await refreshSession();
-                if (refreshedSession === null) return;
-                data = await createNewConcoction(formattedData);
-            }
+            const data = await handleDataOrRefreshSession(createNewConcoction, formattedData);
+            if (data === null) return;
 
             switch (data.status) {
                 case 201:
@@ -508,13 +503,8 @@ async function generateConcoctionsPage(loginSuccessMessage = '') {
     // I could name that function "createConcoctionsList" or something similar.)
     // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
-        let data = await fetchConcoctionData(concoctionsUrl);
-
-        if (data.status === 400 || data.status === 401) {
-            const refreshedSession = await refreshSession();
-            if (refreshedSession === null) return;
-            data = await fetchConcoctionData(concoctionsUrl);
-        }
+        const data = await handleDataOrRefreshSession(fetchConcoctionData, concoctionsUrl);
+        if (data === null) return;
 
         switch (data.status) {
             case 200:
@@ -576,6 +566,18 @@ async function fetchConcoctionData(url) {
     return await response.json();
 }
 
+async function handleDataOrRefreshSession(dataHandler, handlerArgument) {
+    let response = await dataHandler(handlerArgument);
+
+    if ((response.status === 400 && !response.errors) || response.status === 401) {
+        const refreshedSession = await refreshSession();
+        if (refreshedSession === null) return null;
+        response = await dataHandler(handlerArgument);
+    }
+
+    return response;
+}
+
 async function refreshSession() {
     const response = await fetch(`${apiBase}/users/refresh`, {
         method: 'POST',
@@ -596,13 +598,8 @@ async function refreshSession() {
 
 async function generateConcoctionPage(concoction) {
     try {
-        let additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
-
-        if (additionalData.status === 400 || additionalData.status === 401) {
-            const refreshedSession = await refreshSession();
-            if (refreshedSession === null) return;
-            additionalData = await fetchConcoctionData(`${concoctionsUrl}/${concoction.id}`);
-        }
+        const additionalData = await handleDataOrRefreshSession(fetchConcoctionData, `${concoctionsUrl}/${concoction.id}`);
+        if (additionalData === null) return;
 
         switch(additionalData.status) {
             case 200:
@@ -678,14 +675,8 @@ async function deleteConcoction(concoction) {
     let errorHeading = document.querySelector(`#${concListItemId} h4`);
 
     try {
-        let response = await deleteConcoctionData(id);
-
-        if (response.status === 400 || response.status === 401) {
-            const refreshedSession = await refreshSession();
-            if (refreshedSession === null) return;
-            response = await deleteConcoctionData(id);
-        }
-
+        const response = await handleDataOrRefreshSession(deleteConcoctionData, id);
+        if (response === null) return;
         let data = (response.status === 204) ? null : await response.json();
         
         switch (response.status) {
