@@ -491,54 +491,20 @@ function createCoffeeInputGroup(inputName, placeholder, maxLength, isRequired, l
     return coffeeInputGroup;
 }
 
-async function generateConcoctionsPage(loginSuccessMessage = '') {
+async function generateConcoctionsPage(loginSuccessMessage) {
     generatePageTitle('Your Concoctions');
 
     const concoctionsDiv = createCustomElement('div', { id: 'concoctions-div' });
     if (loginSuccessMessage) appendSuccessHeading(concoctionsDiv, loginSuccessMessage);
     appendPageHeading(concoctionsDiv, 'Your Concoctions');
 
-    // TODO?: Move this logic into a separate getConcoctions function
-    // (Or I may wind up renaming this function and moving the logic for creating the concoctions page into a separate function.
-    // I could name that function "createConcoctionsList" or something similar.)
-    // Just remember that I am ALSO sending this function a success message when the user logs in
     try {
         const data = await handleDataOrRefreshSession(fetchConcoctionData, concoctionsUrl);
         if (data === null) return;
 
         switch (data.status) {
             case 200:
-                const { concoctions, noConcoctionsMessage } = data;
-
-                if (concoctions) {
-                    const concoctionsList = createCustomElement('ul', { id: 'concoctions-list' });
-
-                    for (const concoctionData of concoctions) {
-                        const concoction = new Concoction(concoctionData);
-
-                        const concoctionItem = createCustomElement('li', { id: concoction.listItemId() });
-                        const concoctionPar = createCustomElement('p', { text: concoction.description() });
-                        const concoctionButtons = createCustomElement('p', { classes: 'center-content concoction-buttons' });
-                        
-                        const viewConcoctionButton = createCustomElement('button', { text: 'View Concoction', classes: 'view-concoction' });
-                        viewConcoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
-                        
-                        const deleteConcoctionButton = createCustomElement('button', { text: 'Delete Concoction', classes: 'delete-concoction' });
-                        deleteConcoctionButton.addEventListener('click', () => deleteConcoction(concoction));
-                        
-                        concoctionButtons.append(viewConcoctionButton, deleteConcoctionButton);
-                        concoctionItem.append(concoctionPar, concoctionButtons);
-                        concoctionsList.appendChild(concoctionItem);
-                    }
-
-                    concoctionsDiv.appendChild(concoctionsList);
-                } else {
-                    concoctionsDiv.appendChild(
-                        createCustomElement('p', { text: noConcoctionsMessage, classes: 'center-content' })
-                    );
-                }
-
-                mainContainer.replaceChildren(concoctionsDiv);
+                displayConcoctions(data, concoctionsDiv);
                 break;
             case 500:
                 generateServerErrorPage(data.errorMessage);
@@ -594,6 +560,40 @@ async function refreshSession() {
     }
 
     return true;
+}
+
+function displayConcoctions(concoctionsData, concoctionsDiv) {
+    const { concoctions, noConcoctionsMessage } = concoctionsData;
+
+    if (concoctions) {
+        const concoctionsList = createCustomElement('ul', { id: 'concoctions-list' });
+
+        for (const concoctionData of concoctions) {
+            const concoction = new Concoction(concoctionData);
+
+            const concoctionItem = createCustomElement('li', { id: concoction.listItemId() });
+            const concoctionPar = createCustomElement('p', { text: concoction.description() });
+            const concoctionButtons = createCustomElement('p', { classes: 'center-content concoction-buttons' });
+            
+            const viewConcoctionButton = createCustomElement('button', { text: 'View Concoction', classes: 'view-concoction' });
+            viewConcoctionButton.addEventListener('click', async () => generateConcoctionPage(concoction));
+            
+            const deleteConcoctionButton = createCustomElement('button', { text: 'Delete Concoction', classes: 'delete-concoction' });
+            deleteConcoctionButton.addEventListener('click', () => deleteConcoction(concoction));
+            
+            concoctionButtons.append(viewConcoctionButton, deleteConcoctionButton);
+            concoctionItem.append(concoctionPar, concoctionButtons);
+            concoctionsList.appendChild(concoctionItem);
+        }
+
+        concoctionsDiv.appendChild(concoctionsList);
+    } else {
+        concoctionsDiv.appendChild(
+            createCustomElement('p', { text: noConcoctionsMessage, classes: 'center-content' })
+        );
+    }
+
+    mainContainer.replaceChildren(concoctionsDiv);
 }
 
 async function generateConcoctionPage(concoction) {
