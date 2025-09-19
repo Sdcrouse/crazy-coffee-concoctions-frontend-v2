@@ -1,4 +1,4 @@
-import { generateSignupPage, generateLoginPage, logout } from './components/authentication.js';
+import { generateSignupPage, generateLoginPage, logout, confirmProfileDeletion } from './components/authentication.js';
 import { generateNewConcoctionPage, generateConcoctionsPage } from './components/concoctions.js';
 import { generateTeapotPage } from './utils/errorPages.js';
 
@@ -15,6 +15,7 @@ const newConcoctionButton = document.getElementById('new-concoction');
 const concoctionsButton = document.getElementById('display-concoctions');
 const coffeeTeapotBtn = document.getElementById('coffee-with-teapot-btn');
 const logoutButton = document.getElementById('logout');
+const deleteProfileButton = document.getElementById('delete-profile');
 
 initialPageSetup();
 
@@ -26,6 +27,7 @@ function initialPageSetup() {
     concoctionsButton.addEventListener('click', async () => await generateConcoctionsPage());
     coffeeTeapotBtn.addEventListener('click', generateTeapotPage);
     logoutButton.addEventListener('click', async () => await logout());
+    deleteProfileButton.addEventListener('click', confirmProfileDeletion);
 }
 
 function generateHomePage() {

@@ -263,6 +263,7 @@ function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
     const newConcoctionButton = document.getElementById('new-concoction');
     const concoctionsButton = document.getElementById('display-concoctions');
     const logoutButton = document.getElementById('logout');
+    const deleteProfileButton = document.getElementById('delete-profile');
 
     if (userIsLoggedIn) {
         signupButton.style.display = 'none';
@@ -270,13 +271,41 @@ function toggleButtonDisplay({ userIsLoggedIn = true } = {}) {
         newConcoctionButton.style.display = 'initial';
         concoctionsButton.style.display = 'initial';
         logoutButton.style.display = 'initial';
+        deleteProfileButton.style.display = 'initial';
     } else {
         signupButton.style.display = 'initial';
         loginButton.style.display = 'initial';
         newConcoctionButton.style.display = 'none';
         concoctionsButton.style.display = 'none';
         logoutButton.style.display = 'none';
+        deleteProfileButton.style.display = 'none';
     }
 }
 
-export { generateSignupPage, generateLoginPage, logout, toggleButtonDisplay };
+function confirmProfileDeletion() {
+    generatePageTitle('Delete Profile');
+
+    const deleteProfileDiv = createCustomElement('div', { id: 'delete-profile-div' });
+    appendPageHeading(deleteProfileDiv, 'Delete Profile');
+
+    const confirmDeletionMessage = createCustomElement('h3', {
+        id: 'delete-profile-message',
+        text: 'Are you sure you want to delete your profile? This action cannot be undone.',
+        classes: 'center-content'
+    });
+
+    const confirmDeletionButton = createCustomElement('button', { id: 'confirm-delete-profile-btn', text: 'Confirm' });
+    confirmDeletionButton.addEventListener('click', () => console.log('Profile deleted!'));
+    
+    const cancelDeletionButton = createCustomElement('button', { id: 'cancel-delete-profile-btn', text: 'Cancel' });
+    cancelDeletionButton.addEventListener('click', async () => await generateConcoctionsPage());
+    
+    const profileDeletionButtons = createCustomElement(
+        'div', { classes: 'center-content', itemsToAppend: [confirmDeletionButton, cancelDeletionButton] }
+    );
+
+    deleteProfileDiv.append(confirmDeletionMessage, profileDeletionButtons);
+    mainContainer.replaceChildren(deleteProfileDiv);
+}
+
+export { generateSignupPage, generateLoginPage, logout, toggleButtonDisplay, confirmProfileDeletion };

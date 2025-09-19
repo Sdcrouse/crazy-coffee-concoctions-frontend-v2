@@ -47,13 +47,6 @@ nav button {
     padding: 0.3em;
 }
 
-button[type="submit"] {
-    color: white;
-    background-color: #63A7E4;
-    padding: 2%;
-    font-size: 100%;
-}
-
 .add-ingredient {
     color: white;
     background-color: green;
@@ -65,6 +58,14 @@ button[type="submit"] {
     background-color: red;
     margin-left: 2%;
     padding: 3px 5px;
+}
+
+#cancel-delete-profile-btn { margin-left: 2em; }
+
+button[type="submit"], #confirm-delete-profile-btn, #cancel-delete-profile-btn {
+    color: white;
+    padding: 2%;
+    font-size: 100%;
 }
 
 #concoctions-list .concoction-buttons {
@@ -92,15 +93,17 @@ nav button {
     color: white;
 }
 
-#signup, #login, #logout { background-color: #63A7E4; }
+button[type="submit"], #signup, #login, #logout, #cancel-delete-profile-btn { background-color: #63A7E4; }
 
 .coffee-text { color: #A65F40; }
 
 .view-concoction { background-color: #2581c8; }
 
-.error-text, .required-field { color: red; }
+.error-text, .required-field, #delete-profile-message { color: red; }
 
 .success-text { color: #2581c8; }
+
+#delete-profile, #confirm-delete-profile-btn { background-color: red; }
 
 
 /* BOX STYLES */
