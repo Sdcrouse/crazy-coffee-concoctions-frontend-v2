@@ -677,7 +677,7 @@ async function deleteConcoction(concoction) {
     try {
         const response = await handleDataOrRefreshSession(deleteConcoctionData, id);
         if (response === null) return;
-        let data = (response.status === 204) ? null : await response.json();
+        const data = (response.status === 204) ? null : await response.json();
         
         switch (response.status) {
             case 204:

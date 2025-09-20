@@ -295,7 +295,7 @@ function confirmProfileDeletion() {
     });
 
     const confirmDeletionButton = createCustomElement('button', { id: 'confirm-delete-profile-btn', text: 'Confirm' });
-    confirmDeletionButton.addEventListener('click', () => console.log('Profile deleted!'));
+    confirmDeletionButton.addEventListener('click', async () => await deleteProfile());
     
     const cancelDeletionButton = createCustomElement('button', { id: 'cancel-delete-profile-btn', text: 'Cancel' });
     cancelDeletionButton.addEventListener('click', async () => await generateConcoctionsPage());
@@ -306,6 +306,75 @@ function confirmProfileDeletion() {
 
     deleteProfileDiv.append(confirmDeletionMessage, profileDeletionButtons);
     mainContainer.replaceChildren(deleteProfileDiv);
+}
+
+async function deleteProfile() {
+    const deleteProfileDiv = document.getElementById('delete-profile-div');
+    const errorHeading = deleteProfileDiv.querySelector('h4');
+
+    try {
+        // TODO: Refactor this with the handleDataOrRefreshSession function from concoctions.js (i.e. move it into a utility file)
+        let response = await deleteUserData(`${apiBase}/users/delete-profile`);
+
+        if ((response.status === 400) || response.status === 401) {
+            // TODO: Refactor this with the refreshSession method from concoctions.js
+            const refreshedSession = await fetch(`${apiBase}/users/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            const sessionData = await refreshedSession.json();
+
+            if (sessionData.status != 200) {
+                toggleButtonDisplay({ userIsLoggedIn: false });
+                generateLoginPage({ errorMessage: sessionData.errorMessage });
+                return;
+            }
+
+            response = await deleteUserData(`${apiBase}/users/delete-profile`);
+        }
+
+        const data = (response.status === 204) ? null : await response.json();
+
+        switch (response.status) {
+            case 204:
+                toggleButtonDisplay({ userIsLoggedIn: false });
+                generateLoginPage({ successMessage: 'Profile deleted! Please login with a different profile or sign up to create a new one.' });
+                break;
+            case 404: // Edge case
+                toggleButtonDisplay({ userIsLoggedIn: false });
+                generateLoginPage({ errorMessage: data.errorMessage });
+                break;
+            case 500:
+                generateServerErrorPage(data.errorMessage);
+                break;
+            default:
+                displayDeleteProfileError('An unknown error has occurred. Please try again later.', deleteProfileDiv, errorHeading);
+                break;
+        }
+    } catch (error) {
+        console.error(error.message);
+        displayDeleteProfileError('There was an unexpected error while deleting your profile. Please try again.', deleteProfileDiv, errorHeading);
+    }
+}
+
+async function deleteUserData(userUrl) {
+    return await fetch(userUrl, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+}
+
+// TODO: Combine this with the displayError function from concoction.js and move it into a utility file
+// I may need to use this to refactor the catch statements in signup and login (see if they add the same error message multiple times)
+function displayDeleteProfileError(errorMessage, deleteProfileDiv, errorHeading) {
+    if (errorHeading) {
+        errorHeading.textContent = errorMessage;
+    } else {
+        appendErrorHeading(deleteProfileDiv, errorMessage);
+    }
 }
 
 export { generateSignupPage, generateLoginPage, logout, toggleButtonDisplay, confirmProfileDeletion };
