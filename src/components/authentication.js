@@ -3,6 +3,7 @@ import generatePageTitle from '../utils/pageTitle.js';
 import generateForm from '../utils/generateForm.js';
 import isEmpty from '../utils/isEmpty.js';
 import createLabel from '../utils/labels.js';
+import handleDataOrRefreshSession from '../utils/sessions.js';
 import User from '../entities/User.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
@@ -313,28 +314,8 @@ async function deleteProfile() {
     const errorHeading = deleteProfileDiv.querySelector('h4');
 
     try {
-        // TODO: Refactor this with the handleDataOrRefreshSession function from concoctions.js (i.e. move it into a utility file)
-        let response = await deleteUserData(`${apiBase}/users/delete-profile`);
-
-        if ((response.status === 400) || response.status === 401) {
-            // TODO: Refactor this with the refreshSession method from concoctions.js
-            const refreshedSession = await fetch(`${apiBase}/users/refresh`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            });
-
-            const sessionData = await refreshedSession.json();
-
-            if (sessionData.status != 200) {
-                toggleButtonDisplay({ userIsLoggedIn: false });
-                generateLoginPage({ errorMessage: sessionData.errorMessage });
-                return;
-            }
-
-            response = await deleteUserData(`${apiBase}/users/delete-profile`);
-        }
-
+        const response = await handleDataOrRefreshSession(deleteUserData, `${apiBase}/users/delete-profile`);
+        if (response === null) return;
         const data = (response.status === 204) ? null : await response.json();
 
         switch (response.status) {

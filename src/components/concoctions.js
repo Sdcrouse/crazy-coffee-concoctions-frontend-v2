@@ -9,7 +9,7 @@ import Ingredient from '../entities/Ingredient.js';
 import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { capitalizeWord, lowerCaseWord } from '../utils/wordFunctions.js';
-import { generateLoginPage, toggleButtonDisplay } from './authentication.js';
+import handleDataOrRefreshSession from '../utils/sessions.js';
 
 const mainContainer = document.getElementById('main-container');
 const apiBase = 'http://localhost:5000';
@@ -530,36 +530,6 @@ async function fetchConcoctionData(url) {
     });
 
     return await response.json();
-}
-
-async function handleDataOrRefreshSession(dataHandler, handlerArgument) {
-    let response = await dataHandler(handlerArgument);
-
-    if ((response.status === 400 && !response.errors) || response.status === 401) {
-        const refreshedSession = await refreshSession();
-        if (refreshedSession === null) return null;
-        response = await dataHandler(handlerArgument);
-    }
-
-    return response;
-}
-
-async function refreshSession() {
-    const response = await fetch(`${apiBase}/users/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-    });
-
-    const newSession = await response.json();
-
-    if (newSession.status != 200) {
-        toggleButtonDisplay({ userIsLoggedIn: false });
-        generateLoginPage({ errorMessage: newSession.errorMessage });
-        return null;
-    }
-
-    return true;
 }
 
 function displayConcoctions(concoctionsData, concoctionsDiv) {
