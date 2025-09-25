@@ -11,8 +11,15 @@ function createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classe
 }
 
 function prependErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text prepended-error') {
-    const [wrapperElement, errorHeading] = createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classes);
-    wrapperElement.prepend(errorHeading);
+    const wrapperElement = typeof wrapper === 'string' ? document.getElementById(wrapper) : wrapper;
+    const existingErrorHeading = wrapperElement.firstChild;
+
+    if (existingErrorHeading.tagName === 'H4' && existingErrorHeading.classList.contains('prepended-error')) {
+        existingErrorHeading.textContent = errorMessage;
+    } else {
+        const [wrapperElement, errorHeading] = createErrorHeadingForWrapper(wrapper, errorMessage, headingType, classes);
+        wrapperElement.prepend(errorHeading);
+    }
 }
 
 function appendErrorHeading(wrapper, errorMessage, headingType = 'h4', classes = 'center-content error-text') {
