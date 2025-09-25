@@ -6,7 +6,7 @@ import isEmpty, { allEmpty } from '../utils/isEmpty.js';
 import Concoction from '../entities/Concoction.js';
 import Coffee from '../entities/Coffee.js';
 import Ingredient from '../entities/Ingredient.js';
-import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading, displayDeletionError } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { capitalizeWord, lowerCaseWord } from '../utils/wordFunctions.js';
 import handleDataOrRefreshSession from '../utils/sessions.js';
@@ -658,12 +658,12 @@ async function deleteConcoction(concoction) {
                 break;
             default:
                 console.error(data);
-                displayErrorMessage('An unknown error has occurred on the server. Please try again later.', concListItem, errorHeading);
+                displayDeletionError('An unknown error has occurred on the server. Please try again later.', concListItem, errorHeading);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        displayErrorMessage('An unexpected error occurred while deleting this concoction. Please try again.', concListItem, errorHeading);
+        displayDeletionError('An unexpected error occurred while deleting this concoction. Please try again.', concListItem, errorHeading);
     }
 }
 
@@ -673,14 +673,6 @@ async function deleteConcoctionData(concoctionId) {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
     });
-}
-
-function displayErrorMessage(errorMessage, concoctionListItem, errorHeading) {
-    if (errorHeading) {
-        errorHeading.textContent = errorMessage;
-    } else {
-        appendErrorHeading(concoctionListItem, errorMessage);
-    }
 }
 
 export { generateNewConcoctionPage, generateConcoctionsPage };

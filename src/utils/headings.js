@@ -38,4 +38,12 @@ function appendPageHeading(wrapper, pageTitle) {
     wrapper.appendChild(pageHeading);
 }
 
-export { prependErrorHeading, appendErrorHeading, appendSuccessHeading, appendPageHeading };
+function displayDeletionError(errorMessage, errorWrapper, errorHeading) {
+    if (errorHeading) {
+        errorHeading.textContent = errorMessage;
+    } else {
+        appendErrorHeading(errorWrapper, errorMessage);
+    }
+}
+
+export { prependErrorHeading, appendErrorHeading, appendSuccessHeading, appendPageHeading, displayDeletionError };

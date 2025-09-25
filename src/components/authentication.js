@@ -5,7 +5,7 @@ import isEmpty from '../utils/isEmpty.js';
 import createLabel from '../utils/labels.js';
 import handleDataOrRefreshSession from '../utils/sessions.js';
 import User from '../entities/User.js';
-import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading } from '../utils/headings.js';
+import { appendErrorHeading, appendSuccessHeading, appendPageHeading, prependErrorHeading, displayDeletionError } from '../utils/headings.js';
 import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
@@ -331,12 +331,13 @@ async function deleteProfile() {
                 generateServerErrorPage(data.errorMessage);
                 break;
             default:
-                displayDeleteProfileError('An unknown error has occurred. Please try again later.', deleteProfileDiv, errorHeading);
+                console.error(data);
+                displayDeletionError('An unknown error has occurred. Please try again later.', deleteProfileDiv, errorHeading);
                 break;
         }
     } catch (error) {
         console.error(error.message);
-        displayDeleteProfileError('There was an unexpected error while deleting your profile. Please try again.', deleteProfileDiv, errorHeading);
+        displayDeletionError('There was an unexpected error while deleting your profile. Please try again.', deleteProfileDiv, errorHeading);
     }
 }
 
@@ -346,16 +347,6 @@ async function deleteUserData(userUrl) {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
     });
-}
-
-// TODO: Combine this with the displayError function from concoction.js and move it into a utility file
-// I may need to use this to refactor the catch statements in signup and login (see if they add the same error message multiple times)
-function displayDeleteProfileError(errorMessage, deleteProfileDiv, errorHeading) {
-    if (errorHeading) {
-        errorHeading.textContent = errorMessage;
-    } else {
-        appendErrorHeading(deleteProfileDiv, errorMessage);
-    }
 }
 
 export { generateSignupPage, generateLoginPage, logout, toggleButtonDisplay, confirmProfileDeletion };
