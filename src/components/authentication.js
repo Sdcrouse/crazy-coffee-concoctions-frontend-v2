@@ -10,7 +10,7 @@ import { generateServerErrorPage } from '../utils/errorPages.js';
 import { generateConcoctionsPage } from './concoctions.js';
 
 const mainContainer = document.getElementById('main-container');
-const apiBase = 'http://localhost:5000';
+const apiBase = 'http://localhost:5000/users';
 
 function generateLoginPage(messages = {}) {
     generatePageTitle('Log In');
@@ -50,7 +50,7 @@ async function login(event, loginForm) {
     }
     
     try {
-        const response = await fetch(`${apiBase}/users/login`, {
+        const response = await fetch(`${apiBase}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -121,7 +121,7 @@ async function signup(event, signupForm) {
     }
 
     try {
-        const response = await fetch(`${apiBase}/users/signup`, {
+        const response = await fetch(`${apiBase}/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -160,7 +160,7 @@ async function signup(event, signupForm) {
 
 async function logout() {
     try {
-        const response = await fetch(`${apiBase}/users/logout`, {
+        const response = await fetch(`${apiBase}/logout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -314,7 +314,7 @@ async function deleteProfile() {
     const errorHeading = deleteProfileDiv.querySelector('h4');
 
     try {
-        const response = await handleDataOrRefreshSession(deleteUserData, `${apiBase}/users/delete-profile`);
+        const response = await handleDataOrRefreshSession(deleteUserData, `${apiBase}/delete-profile`);
         if (response === null) return;
         const data = (response.status === 204) ? null : await response.json();
 

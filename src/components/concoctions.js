@@ -12,8 +12,7 @@ import { capitalizeWord, lowerCaseWord } from '../utils/wordFunctions.js';
 import handleDataOrRefreshSession from '../utils/sessions.js';
 
 const mainContainer = document.getElementById('main-container');
-const apiBase = 'http://localhost:5000';
-const concoctionsUrl = `${apiBase}/concoctions`;
+const concoctionsUrl = 'http://localhost:5000/concoctions';
 
 async function generateNewConcoctionPage() {
     generatePageTitle('New Concoction');
