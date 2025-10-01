@@ -14,7 +14,7 @@ First, follow the instructions on the [Crazy Coffee Concoctions backend](https:/
 Next, come back to the frontend. From your terminal, navigate to this project's root directory. Run the following Docker commands:
 
 - `docker build -t crazy-coffee-concoctions-frontend .`
-- `docker run -d -p 5500:80 crazy-coffee-concoctions-frontend`
+- `docker run -d -p 5500:80 -v "$(pwd):/usr/share/nginx/html" crazy-coffee-concoctions-frontend`
 
 Finally, navigate to http://127.0.0.1:5500/ (**Note:** http://localhost:5500/ will NOT work! The backend will return a CORS error). You should now be able to create an account, login, and create your favorite crazy coffee concoctions!
 
